@@ -103,11 +103,11 @@
 	var/pressure = environment.return_pressure()
 	var/total_moles = environment.total_moles()
 
-	user.show_message("<span class='info'><B>Results:</B></span>", 1)
+	to_chat(user, "<span class='info'><B>Results:</B></span>")
 	if(abs(pressure - ONE_ATMOSPHERE) < 10)
-		user.show_message("<span class='info'>Pressure: [round(pressure,0.1)] kPa</span>", 1)
+		to_chat(user, "<span class='info'>Pressure: [round(pressure,0.1)] kPa</span>")
 	else
-		user.show_message("<span class='alert'>Pressure: [round(pressure,0.1)] kPa</span>", 1)
+		to_chat(user, "<span class='alert'>Pressure: [round(pressure,0.1)] kPa</span>")
 	if(total_moles)
 		var/list/env_gases = environment.gases
 
@@ -119,26 +119,26 @@
 		environment.garbage_collect()
 
 		if(abs(n2_concentration - N2STANDARD) < 20)
-			user << "<span class='info'>Nitrogen: [round(n2_concentration*100, 0.01)] %</span>"
+			to_chat(user, "<span class='info'>Nitrogen: [round(n2_concentration*100, 0.01)] %</span>")
 		else
-			user << "<span class='alert'>Nitrogen: [round(n2_concentration*100, 0.01)] %</span>"
+			to_chat(user, "<span class='alert'>Nitrogen: [round(n2_concentration*100, 0.01)] %</span>")
 
 		if(abs(o2_concentration - O2STANDARD) < 2)
-			user << "<span class='info'>Oxygen: [round(o2_concentration*100, 0.01)] %</span>"
+			to_chat(user, "<span class='info'>Oxygen: [round(o2_concentration*100, 0.01)] %</span>")
 		else
-			user << "<span class='alert'>Oxygen: [round(o2_concentration*100, 0.01)] %</span>"
+			to_chat(user, "<span class='alert'>Oxygen: [round(o2_concentration*100, 0.01)] %</span>")
 
 		if(co2_concentration > 0.01)
-			user << "<span class='alert'>CO2: [round(co2_concentration*100, 0.01)] %</span>"
+			to_chat(user, "<span class='alert'>CO2: [round(co2_concentration*100, 0.01)] %</span>")
 		else
-			user << "<span class='info'>CO2: [round(co2_concentration*100, 0.01)] %</span>"
+			to_chat(user, "<span class='info'>CO2: [round(co2_concentration*100, 0.01)] %</span>")
 
 		if(plasma_concentration > 0.005)
-			user << "<span class='alert'>Plasma: [round(plasma_concentration*100, 0.01)] %</span>"
+			to_chat(user, "<span class='alert'>Plasma: [round(plasma_concentration*100, 0.01)] %</span>")
 		else
-			user << "<span class='info'>Plasma: [round(plasma_concentration*100, 0.01)] %</span>"
+			to_chat(user, "<span class='info'>Plasma: [round(plasma_concentration*100, 0.01)] %</span>")
 
-		user.show_message("<span class='info'>Temperature: [round(environment.temperature-T0C)] &deg;C</span>", 1)
+		to_chat(user, "<span class='info'>Temperature: [round(environment.temperature-T0C)] &deg;C</span>")
 	return
 
 
@@ -198,11 +198,11 @@
 	if(!proximity || !check_allowed_items(target))
 		return
 	if(user.client && (target in user.client.screen))
-		user << "<span class='warning'>You need to take that [target.name] off before cleaning it!</span>"
+		to_chat(user, "<span class='warning'>You need to take that [target.name] off before cleaning it!</span>")
 	else if(istype(target,/obj/effect/decal/cleanable))
-		user.visible_message("[user] begins to lick off \the [target.name].", "<span class='warning'>You begin to lick off \the [target.name]...</span>")
+		to_chat(user, "[user] begins to lick off \the [target.name].", "<span class='warning'>You begin to lick off \the [target.name]...</span>")
 		if(do_after(user, src.cleanspeed, target = target))
-			user << "<span class='notice'>You finish licking off \the [target.name].</span>"
+			to_chat(user, "<span class='notice'>You finish licking off \the [target.name].</span>")
 			qdel(target)
 			var/mob/living/silicon/robot.R = user
 			R.cell.charge = R.cell.charge + 50
@@ -210,7 +210,7 @@
 		if(istype(target,/obj/item/trash))
 			user.visible_message("[user] nibbles away at \the [target.name].", "<span class='warning'>You begin to nibble away at \the [target.name]...</span>")
 			if(do_after(user, src.cleanspeed, target = target))
-				user << "<span class='notice'>You finish off \the [target.name].</span>"
+				to_chat(user, "<span class='notice'>You finish off \the [target.name].</span>")
 				qdel(target)
 				var/mob/living/silicon/robot.R = user
 				R.cell.charge = R.cell.charge + 250
@@ -218,7 +218,7 @@
 		if(istype(target,/obj/item/weapon/stock_parts/cell))
 			user.visible_message("[user] begins cramming \the [target.name] down its throat.", "<span class='warning'>You begin cramming \the [target.name] down your throat...</span>")
 			if(do_after(user, 50, target = target))
-				user << "<span class='notice'>You finish off \the [target.name].</span>"
+				to_chat(user, "<span class='notice'>You finish off \the [target.name].</span>")
 				var/mob/living/silicon/robot.R = user
 				var/obj/item/weapon/stock_parts/cell.C = target
 				R.cell.charge = R.cell.charge + (C.charge / 3) //Instant full cell upgrades op idgaf
@@ -226,10 +226,10 @@
 			return
 		var/obj/item/I = target //HAHA FUCK IT, NOT LIKE WE ALREADY HAVE A SHITTON OF WAYS TO REMOVE SHIT
 		if(!I.anchored && src.emagged)
-			user.visible_message("[user] begins chewing up \the [target.name]. Looks like it's trying to loophole around its diet restriction!", "<span class='warning'>You begin chewing up \the [target.name]...</span>")
+			to_chat(user, "[user] begins chewing up \the [target.name]. Looks like it's trying to loophole around its diet restriction!", "<span class='warning'>You begin chewing up \the [target.name]...</span>")
 			if(do_after(user, 100, target = I)) //Nerf dat time yo
 				visible_message("<span class='warning'>[user] chews up \the [target.name] and cleans off the debris!</span>")
-				user << "<span class='notice'>You finish off \the [target.name].</span>"
+				to_chat(user, "<span class='notice'>You finish off \the [target.name].</span>")
 				qdel(I)
 				var/mob/living/silicon/robot.R = user
 				R.cell.charge = R.cell.charge + 500
@@ -260,13 +260,13 @@
 	else if(istype(target, /obj/structure/window))
 		user.visible_message("[user] begins to lick \the [target.name] clean...", "<span class='notice'>You begin to lick \the [target.name] clean...</span>")
 		if(do_after(user, src.cleanspeed, target = target))
-			user << "<span class='notice'>You clean \the [target.name].</span>"
+			to_chat(user, "<span class='notice'>You clean \the [target.name].</span>")
 			target.color = initial(target.color)
 			target.set_opacity(initial(target.opacity))
 	else
 		user.visible_message("[user] begins to lick \the [target.name] clean...", "<span class='notice'>You begin to lick \the [target.name] clean...</span>")
 		if(do_after(user, src.cleanspeed, target = target))
-			user << "<span class='notice'>You clean \the [target.name].</span>"
+			to_chat(user, "<span class='notice'>You clean \the [target.name].</span>")
 			var/obj/effect/decal/cleanable/C = locate() in target
 			qdel(C)
 			target.clean_blood()
@@ -327,7 +327,7 @@
 		patient = target
 		hound = user
 		target.reset_perspective(src)
-		user << "<span class='notice'>[target] successfully loaded into [src]. Life support functions engaged.</span>"
+		to_chat(user, "<span class='notice'>[target] successfully loaded into [src]. Life support functions engaged.</span>")
 		user.visible_message("<span class='warning'>[user] loads [target] into [src].</span>")
 		user.visible_message("[target] loaded. Life support functions engaged.")
 		src.occupied = 1
@@ -344,10 +344,10 @@
 
 /obj/item/weapon/dogborg/sleeper/proc/patient_insertion_check(mob/living/carbon/target, mob/user)
 	if(target.anchored)
-		user << "<span class='warning'>[target] will not fit into the sleeper because they are buckled to [target.buckled]!</span>"
+		to_chat(user, "<span class='warning'>[target] will not fit into the sleeper because they are buckled to [target.buckled]!</span>")
 		return
 	if(patient)
-		user << "<span class='warning'>The sleeper is already occupied!</span>"
+		to_chat(user, "<span class='warning'>The sleeper is already occupied!</span>")
 		return
 	return 1
 
@@ -355,7 +355,7 @@
 	if(src.occupied == 0)
 		return
 	var/mob/living/silicon/robot.R = hound
-	hound << "<span class='notice'>[patient] ejected. Life support functions disabled.</span>"
+	to_chat(hound, "<span class='notice'>[patient] ejected. Life support functions disabled.</span>")
 	R.sleeper_r = 0
 	R.sleeper_g = 0
 	R.update_icons()
@@ -458,9 +458,9 @@
 		if(href_list["inject"] == "epinephrine" || patient.health > min_health)
 			inject_chem(usr, href_list["inject"])
 		else
-			usr << "<span class='notice'>ERROR: Subject is not in stable condition for auto-injection.</span>"
+			to_chat(usr, "<span class='notice'>ERROR: Subject is not in stable condition for auto-injection.</span>")
 	else
-		usr << "<span class='notice'>ERROR: Subject cannot metabolise chemicals.</span>"
+		to_chat(usr, "<span class='notice'>ERROR: Subject cannot metabolise chemicals.</span>")
 	src.updateUsrDialog()
 	sleeperUI(usr) //Needs a callback to boop the page to refresh.
 	return
@@ -473,7 +473,7 @@
 				var/mob/living/silicon/robot.R = user
 				R.cell.charge = R.cell.charge - 250 //-250 charge per sting.
 			var/units = round(patient.reagents.get_reagent_amount(chem))
-			user << "<span class='notice'>Occupant now has [units] unit\s of [chemical_reagents_list[chem]] in their bloodstream.</span>"
+			to_chat(user, "<span class='notice'>Occupant now has [units] unit\s of [chemical_reagents_list[chem]] in their bloodstream.</span>")
 
 /obj/item/weapon/dogborg/sleeper/process()
 	if(src.occupied == 0)
@@ -519,14 +519,14 @@
 
 /mob/living/silicon/robot/proc/leap_at(atom/A)
 	if(pounce_cooldown)
-		src << "<span class='danger'>Your leg actuators are still recharging!</span>"
+		to_chat(src, "<span class='danger'>Your leg actuators are still recharging!</span>")
 		return
 
 	if(leaping) //Leap while you leap, so you can leap while you leap
 		return
 
 	if(!has_gravity(src) || !has_gravity(A))
-		src << "<span class='danger'>It is unsafe to leap without gravity!</span>"
+		to_chat(src, "<span class='danger'>It is unsafe to leap without gravity!</span>")
 		//It's also extremely buggy visually, so it's balance+bugfix
 		return
 

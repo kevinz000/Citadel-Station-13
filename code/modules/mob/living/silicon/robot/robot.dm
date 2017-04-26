@@ -190,12 +190,14 @@
 	"Medical" = /obj/item/weapon/robot_module/medical, \
 	"Miner" = /obj/item/weapon/robot_module/miner, \
 	"Janitor" = /obj/item/weapon/robot_module/janitor, \
-	"Service" = /obj/item/weapon/robot_module/butler)
+	"Service" = /obj/item/weapon/robot_module/butler, \
+	"{Dog Configuration} MediHound \[Medical\]" = /obj/item/weapon/robot_module/medihound, \
+	"{Dog Configuration} Borgi \[Standard\]" = /obj/item/weapon/robot_module/borgi)
 	if(!config.forbid_peaceborg)
 		modulelist["Peacekeeper"] = /obj/item/weapon/robot_module/peacekeeper
 	if(!config.forbid_secborg)
 		modulelist["Security"] = /obj/item/weapon/robot_module/security
-
+		modulelist["{Dog Configuration} Security K-9 Unit \[Security\]"] = /obj/item/weapon/robot_module/k9
 	var/input_module = input("Please, select a module!", "Robot", null, null) as null|anything in modulelist
 	if(!input_module || module.type != /obj/item/weapon/robot_module)
 		return
