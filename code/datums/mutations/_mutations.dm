@@ -1,5 +1,3 @@
-GLOBAL_LIST_EMPTY(mutations_list)
-
 /datum/mutation
 
 	var/name
