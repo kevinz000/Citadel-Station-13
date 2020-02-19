@@ -897,9 +897,9 @@ GLOBAL_VAR_INIT(exploit_warn_spam_prevention, 0)
 /mob/proc/update_health_hud()
 	return
 
+/// Update the lighting plane and sight of this mob (sends COMSIG_MOB_UPDATE_SIGHT)
 /mob/proc/update_sight()
 	SEND_SIGNAL(src, COMSIG_MOB_UPDATE_SIGHT)
-
 	sync_lighting_plane_alpha()
 
 /mob/proc/sync_lighting_plane_alpha()
