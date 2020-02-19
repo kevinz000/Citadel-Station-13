@@ -258,8 +258,8 @@
 		return
 
 /datum/dna/proc/is_same_as(datum/dna/D)
-	if(uni_identity == D.uni_identity && struc_enzymes == D.struc_enzymes && real_name == D.real_name && nameless == D.nameless && custom_species == D.custom_species)
-		if(species.type == D.species.type && features == D.features && blood_type == D.blood_type)
+	if(uni_identity == D.uni_identity && mutation_index ~= D.mutation_index && real_name == D.real_name && nameless == D.nameless && custom_species == D.custom_species)
+		if(species.type == D.species.type && features ~= D.features && blood_type == D.blood_type)
 			return 1
 	return 0
 
@@ -363,7 +363,7 @@
 	return dna
 
 
-/mob/living/carbon/human/proc/hardset_dna(ui, se, newreal_name, newblood_type, datum/species/mrace, newfeatures)
+/mob/living/carbon/human/proc/hardset_dna(ui, list/mutation_index, newreal_name, newblood_type, datum/species/mrace, newfeatures)
 
 	if(newfeatures)
 		dna.features = newfeatures
