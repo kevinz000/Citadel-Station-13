@@ -1417,13 +1417,17 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 		for(var/obj/item/I in H.held_items)
 			if(I.item_flags & SLOWS_WHILE_IN_HAND)
 				. += I.slowdown
-		var/stambufferinfluence = (H.bufferedstam*(100/H.stambuffer))*0.2 //CIT CHANGE - makes stamina buffer influence movedelay
-		var/health_deficiency = ((100 + stambufferinfluence) - H.health + (H.getStaminaLoss()*0.75))//CIT CHANGE - reduces the impact of staminaloss on movement speed and makes stamina buffer influence movedelay
-		if(health_deficiency >= 40)
-			if(flight)
-				. += ((health_deficiency-39) / 75) // CIT CHANGE - adds -39 to health deficiency penalty to make the transition to low health movement a little less jarring
-			else
-				. += ((health_deficiency-39) / 25) // CIT CHANGE - ditto
+
+		if(!HAS_TRAIT(src, TRAIT_IGNOREDAMAGESLOWDOWN))
+
+			var/stambufferinfluence = (H.bufferedstam*(100/H.stambuffer))*0.2 //CIT CHANGE - makes stamina buffer influence movedelay
+			var/health_deficiency = ((100 + stambufferinfluence) - H.health + (H.getStaminaLoss()*0.75))//CIT CHANGE - reduces the impact of staminaloss on movement speed and makes stamina buffer influence movedelay
+			if(health_deficiency >= 40)
+				if(flight)
+					. += ((health_deficiency-39) / 75) // CIT CHANGE - adds -39 to health deficiency penalty to make the transition to low health movement a little less jarring
+				else
+					. += ((health_deficiency-39) / 25) // CIT CHANGE - ditto
+
 		if(CONFIG_GET(flag/disable_human_mood))
 			var/hungry = (500 - H.nutrition) / 5 //So overeat would be 100 and default level would be 80
 			if((hungry >= 70) && !flight) //Being hungry will still allow you to use a flightsuit/wings.

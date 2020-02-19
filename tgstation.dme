@@ -1857,6 +1857,8 @@
 #include "code\modules\genetics\cloning\console.dm"
 #include "code\modules\genetics\cloning\exp_clonepod.dm"
 #include "code\modules\genetics\cloning\exp_consoel.dm"
+#include "code\modules\genetics\items\chromosome.dm"
+#include "code\modules\genetics\items\dna_injector.dm"
 #include "code\modules\goonchat\browserOutput.dm"
 #include "code\modules\holiday\easter.dm"
 #include "code\modules\holiday\holidays.dm"

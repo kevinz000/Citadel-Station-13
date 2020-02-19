@@ -91,7 +91,8 @@
 #define DNA_MUTANTMARKING_BLOCK		13
 #define DNA_TAUR_BLOCK 				14
 
-#define DNA_STRUC_ENZYMES_BLOCKS	18
+#define DNA_SEQUENCE_LENGTH			4
+#define DNA_MUTATION_BLOCKS			8
 #define DNA_UNIQUE_ENZYMES_LEN		32
 
 //Transformation proc stuff
