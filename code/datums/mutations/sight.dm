@@ -104,7 +104,7 @@
 	to_chat(source, "<span class='warning'>You shoot with your laser eyes!</span>")
 	source.changeNext_move(CLICK_CD_RANGE)
 	source.newtonian_move(get_dir(target, source))
-	var/obj/projectile/item/beam/laser_eyes/LE = new(source.loc)
+	var/obj/item/projectile/beam/laser_eyes/LE = new(source.loc)
 	LE.firer = source
 	LE.def_zone = ran_zone(source.zone_selected)
 	LE.preparePixelProjectile(target, source, mouseparams)
@@ -112,7 +112,7 @@
 	playsound(source, 'sound/weapons/taser2.ogg', 75, TRUE)
 
 ///Projectile type used by laser eyes
-/obj/projectile/item/beam/laser_eyes
+/obj/item/projectile/beam/laser_eyes
 	name = "beam"
 	icon = 'icons/effects/genetics.dmi'
 	icon_state = "eyelasers"
