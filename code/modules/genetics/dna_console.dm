@@ -561,8 +561,6 @@
 /obj/machinery/computer/scan_consolenew/Topic(href, href_list)
 	if(..())
 		return
-	if(!isturf(usr.loc))
-		return
 	if(!((isturf(loc) && in_range(src, usr)) || hasSiliconAccessInArea(usr)))
 		return
 	if(current_screen == "working")
@@ -966,10 +964,6 @@
 		//Each laser level reduces damage by lvl^2, so no effect on 1 lvl, 4 times less damage on 2 and 9 times less damage on 3
 		//Numbers are this high because other way upgrading laser is just not worth the hassle, and i cant think of anything better to inmrove
 		switch(action)
-			if(SCANNER_ACTION_SE)
-				if(buffer_slot["SE"])
-					viable_occupant.dna.struc_enzymes = buffer_slot["SE"]
-					viable_occupant.domutcheck()
 			if(SCANNER_ACTION_UI)
 				if(buffer_slot["UI"])
 					viable_occupant.dna.uni_identity = buffer_slot["UI"]
