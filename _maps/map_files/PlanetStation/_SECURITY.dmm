@@ -3920,6 +3920,13 @@
 	},
 /turf/open/floor/plasteel/dark,
 /area/space)
+"Yi" = (
+/mob/living/simple_animal/pet/cat{
+	desc = "A boycat who supposedly turned up on site one day. Nicknamed Barbs for climbing the barbwire fences surrounding the place.";
+	name = "Kevin"
+	},
+/turf/open/floor/plasteel,
+/area/space)
 "Yj" = (
 /obj/structure/bodycontainer/morgue,
 /obj/effect/turf_decal/tile/neutral{
@@ -7799,7 +7806,7 @@ aI
 aI
 aI
 aI
-aI
+Yi
 aI
 aI
 aI
