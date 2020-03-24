@@ -228,10 +228,6 @@
 /obj/effect/turf_decal/bot,
 /turf/open/floor/plasteel,
 /area/space)
-"aR" = (
-/obj/structure/lattice/catwalk,
-/turf/open/space,
-/area/space)
 "aS" = (
 /obj/machinery/flasher/portable,
 /obj/effect/turf_decal/bot,
@@ -247,20 +243,8 @@
 	},
 /turf/open/floor/plasteel,
 /area/space)
-"aU" = (
-/obj/structure/lattice/catwalk,
-/turf/open/space,
-/area/space)
-"aV" = (
-/obj/structure/lattice/catwalk,
-/turf/open/space,
-/area/space)
 "aW" = (
 /obj/structure/lattice/catwalk,
-/turf/open/space,
-/area/space)
-"aX" = (
-/obj/structure/lattice,
 /turf/open/space,
 /area/space)
 "aY" = (
@@ -6769,11 +6753,11 @@ aa
 aa
 aa
 ac
-aI
+aJ
 aI
 ap
 aI
-aJ
+aI
 aH
 aI
 aI
