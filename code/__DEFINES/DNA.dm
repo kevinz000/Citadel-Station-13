@@ -163,6 +163,7 @@
 #define ORGAN_SLOT_VAGINA "vagina"
 #define ORGAN_SLOT_TESTICLES "testicles"
 #define ORGAN_SLOT_BREASTS "breasts"
+#define ORGAN_SLOT_ROCK "rock"
 
 ////organ defines
 #define STANDARD_ORGAN_THRESHOLD 	100
