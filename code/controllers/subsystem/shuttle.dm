@@ -16,21 +16,8 @@ SUBSYSTEM_DEF(shuttle)
 	var/list/transit_requesters = list()
 	var/list/transit_request_failures = list()
 
-		//emergency shuttle stuff
-	var/obj/docking_port/mobile/emergency/emergency
-	var/obj/docking_port/mobile/arrivals/arrivals
-	var/obj/docking_port/mobile/emergency/backup/backup_shuttle
-	var/emergencyCallTime = 6000	//time taken for emergency shuttle to reach the station when called (in deciseconds)
-	var/emergencyDockTime = 1800	//time taken for emergency shuttle to leave again once it has docked (in deciseconds)
-	var/emergencyEscapeTime = 1200	//time taken for emergency shuttle to reach a safe distance after leaving station (in deciseconds)
-	var/area/emergencyLastCallLoc
-	var/emergencyCallAmount = 0		//how many times the escape shuttle was called
-	var/emergencyNoEscape
-	var/emergencyNoRecall = FALSE
-	var/list/hostileEnvironments = list() //Things blocking escape shuttle from leaving
 	var/list/tradeBlockade = list() //Things blocking cargo from leaving.
 	var/supplyBlocked = FALSE
-	var/emergency_shuttle_stat_text
 
 		//supply shuttle stuff
 	var/obj/docking_port/mobile/supply/supply

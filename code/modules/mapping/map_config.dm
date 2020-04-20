@@ -38,6 +38,9 @@
 
 	var/year_offset = 540 //The offset of ingame year from the actual IRL year. You know you want to make a map that takes place in the 90's. Don't lie.
 
+	/// Map module datum path.
+	var/map_module_path = /datum/map_module
+
 /proc/load_map_config(filename = "data/next_map.json", default_to_box, delete_after, error_if_missing = TRUE)
 	var/datum/map_config/config = new
 	if (default_to_box)
@@ -139,7 +142,7 @@
 
 	if ("minetype" in json)
 		minetype = json["minetype"]
-	
+
 	if ("maptype" in json)
 		maptype = json["maptype"]
 
@@ -147,6 +150,11 @@
 		announcertype = json["announcertype"]
 
 	allow_custom_shuttles = json["allow_custom_shuttles"] != FALSE
+
+	if ("map_module_path" in json)
+		var/path = text2path(json["map_module_path"])
+		if(ispath(path, /datum/map_module))
+			map_module_path = path
 
 	defaulted = FALSE
 	return TRUE

@@ -70,6 +70,61 @@ SUBSYSTEM_DEF(ticker)
 
 	var/station_integrity = 100				// stored at roundend for use in some antag goals
 
+	/// Arrivals type
+	var/arrivals_method = ARRIVALS_METHOD_SHUTTLE
+
+	/// Arrivals shuttle method
+	var/obj/docking_port/mobile/arrivals/arrivals_shuttle
+
+	/// Arrivals gateway method
+	var/obj/machinery/gateway/big/arrivals/arrivals_gateway
+
+	/// Endgame type
+	var/evacuation_method = EVACUATION_METHOD_SHUTTLE
+
+	// Endgame generic
+	/**
+	  * See __DEFINES/subsystems/ticker.dm
+	  * Evacuation happens in 3 stages.
+	  * First stage is EVACUATION_TRANSIT_STATION			- this is the time the shuttle takes to move to the station, for gateways to calibrate, etc
+	  * Second stage is EVACUATION_CHARGING					- this is for the shuttle time to departure, etc.
+	  * Third stage is EVACUATION_TRANSIT_ENDGAME			- evacuation is moving to CC
+	  * After that the mode is set to EVACUATION_COMPLETE	- the round should be ending/over.
+	  *
+	  * Regardless of the method, the currently used map datum will be used to determine the text shown to players.
+	  */
+	var/evacuation_stage = EVACUATION_NOT_IN_PROGRESS
+	/// Amount of time it takes for evacuation to transit to the statino.
+	var/evacuationCallTime = 10 MINUTES
+	/// Amount of time it takes for evacuation to charge when at station
+	var/evacuationChargeTime = 3 MINUTES
+	/// Amount of time it takes for evacuation to reach centcom/endgame
+	var/evacuationEscapeTime = 2 MINUTES
+
+	// Endgame method shuttle
+	/// The emergency shuttle mobile object we're using for evacuation
+	var/obj/docking_port/mobile/emergency/emergency
+	/// If the main shuttle is unusable, use this backup shuttle.
+	var/obj/docking_port/mobile/emergency/backup/backup_shuttle
+
+	// Endgame method gateway
+	/// The gateway we're using for evacuation
+	var/obj/machinery/gateway/big/evacuation/evacuation_gateway
+
+
+	// Misc endgame stuff
+	/// Last area someone recalled/called from.
+	var/area/emergencyLastCallLoc
+	/// How many times evacuation has been called
+	var/emergencyCallAmount = 0
+
+	var/emergencyNoEscape
+	var/emergencyNoRecall = FALSE
+	/// Things preventing evacuation from reaching endgame transit.
+	var/list/hostileEnvironments = list()
+	/// Text for evacuation shown in status panel
+	var/evacuationStatText
+
 /datum/controller/subsystem/ticker/Initialize(timeofday)
 	load_mode()
 
@@ -328,6 +383,7 @@ SUBSYSTEM_DEF(ticker)
 
 /datum/controller/subsystem/ticker/proc/PostSetup()
 	set waitfor = FALSE
+	SSmapping.map_module.on_roundstart()
 	mode.post_setup()
 	GLOB.start_state = new /datum/station_state()
 	GLOB.start_state.count()
