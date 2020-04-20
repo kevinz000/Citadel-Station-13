@@ -77,7 +77,7 @@ SUBSYSTEM_DEF(ticker)
 	var/obj/docking_port/mobile/arrivals/arrivals_shuttle
 
 	/// Arrivals gateway method
-	var/obj/machinery/gateway/big/arrivals/arrivals_gateway
+	var/obj/machinery/gateway/center/big/arrivals/arrivals_gateway
 
 	/// Endgame type
 	var/evacuation_method = EVACUATION_METHOD_SHUTTLE
@@ -109,17 +109,15 @@ SUBSYSTEM_DEF(ticker)
 
 	// Endgame method gateway
 	/// The gateway we're using for evacuation
-	var/obj/machinery/gateway/big/evacuation/evacuation_gateway
-
+	var/obj/machinery/gateway/center/big/evacuation/evacuation_gateway
 
 	// Misc endgame stuff
 	/// Last area someone recalled/called from.
 	var/area/emergencyLastCallLoc
 	/// How many times evacuation has been called
-	var/emergencyCallAmount = 0
-
-	var/emergencyNoEscape
-	var/emergencyNoRecall = FALSE
+	var/evacuationCallAmount = 0
+	/// Should we block evacuation recall attempts?
+	var/evacuationNoRecall = FALSE
 	/// Things preventing evacuation from reaching endgame transit.
 	var/list/hostileEnvironments = list()
 	/// Text for evacuation shown in status panel

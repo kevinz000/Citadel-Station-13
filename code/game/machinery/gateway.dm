@@ -1,13 +1,80 @@
-GLOBAL_DATUM(the_gateway, /obj/machinery/gateway/centerstation)
-
 /obj/machinery/gateway
 	name = "gateway"
 	desc = "A mysterious gateway built by unknown hands, it allows for faster than light travel to far-flung locations."
 	icon = 'icons/obj/machines/gateway.dmi'
 	icon_state = "off"
 	density = TRUE
+	active_power_usage = 0
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
-	var/active = 0
+	/// Our center "parent" gateway.
+	var/obj/structure/gateway/center/parent
+
+/obj/machinery/gateway/center
+	/// Are we active?
+	var/active = FALSE
+	/// "center" teleportation tiles including ourselves
+	var/list/center_pieces
+	/// "side" frame pieces
+	var/list/side_pieces
+	/// "exit" nondense pieces
+	var/list/exit_pieces
+	/// Do we check parts and link or do we autobuild
+	var/init_autobuild = FALSE
+	/// Do we require all parts to be there?
+	var/parts_required = TRUE
+	/// So we don't have to check every time we activate. Do we have all parts? Will perform automatic check if null.
+	var/parts_complete
+
+/obj/machinery/gateway/center/Initialize(mapload)
+	parent = src
+	. = ..()
+	return INITIALIZE_HINT_LATELOAD
+
+/obj/machinery/gateway/center/LateInitialize()
+	init_autobuild? autobuild() : partcheck()
+
+/obj/machinery/gateway/center/proc/autobuild()
+	center_pieces = list(src)
+	side_pieces = list()
+	exit_pieces = list()
+
+/obj/machinery/gateway/center/proc/partcheck()
+	center_pieces = list(src)
+	side_pieces = list()
+	exit_pieces = list()
+
+/obj/machinery/gateway/center/proc/update_structure()
+
+/obj/machinery/gateway/center/proc/get_enclosed_turfS()
+	. = list()
+	for(var/obj/machinery/gateway/piece/center/G in center_pieces)
+		. |= get_turf(G)
+
+/obj/machinery/gateway/center/big/autobuild()
+	. = ..()
+	var/list/turf/two = orange(2, src) - loc
+	for(var/turf/T in two)
+		if(locate(/obj/machinery/gateway) in T)
+			CRASH("Conflicting gateway detected, aborting autobuild.")
+	var/list/turf/one = orange(1, src) - loc
+	for(var/turf/T in two - one)		//outer ring
+
+	for(var/turf/T in one)				//inner ring
+		var/obj/machinery/gateway/piece/center/C = new(T)
+		center_pieces += C
+
+/obj/machinery/gateway/center/big
+
+
+/obj/machinery/gateway/piece/center
+	density = FALSE
+
+
+
+
+
+
+GLOBAL_DATUM(the_gateway, /obj/machinery/gateway/centerstation)
 	var/checkparts = TRUE
 	var/list/obj/effect/landmark/randomspawns = list()
 	var/calibrated = TRUE

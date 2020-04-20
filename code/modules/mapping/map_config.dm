@@ -41,6 +41,23 @@
 	/// Map module datum path.
 	var/map_module_path = /datum/map_module
 
+	/// Evacuation call message
+	var/evacuationCallMessage =
+	/// Evacuation chargeup message
+	var/evacuationChargeMessage =
+	/// Evacuation endgame transit message
+	var/evacuationDepartureMessage =
+	/// Evacuation recall message
+	var/evacuationRecallMessage =
+	/// Evacuation method
+	var/evacuationMethod = EVACUATION_METHOD_SHUTTLE
+	/// Hostile environment abort message
+	var/evacuationNoEscapeMessage =
+	/// Hostile environment resolve message
+	var/evacuationNoEscapeResolveMessage =
+	/// Arrivals method
+	var/arrivalsMethod = ARRIVAL_METHOD_SHUTTLE
+
 /proc/load_map_config(filename = "data/next_map.json", default_to_box, delete_after, error_if_missing = TRUE)
 	var/datum/map_config/config = new
 	if (default_to_box)
