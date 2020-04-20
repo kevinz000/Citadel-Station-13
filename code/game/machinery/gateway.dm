@@ -2,7 +2,7 @@
 	name = "gateway"
 	desc = "A mysterious gateway built by unknown hands, it allows for faster than light travel to far-flung locations."
 	icon = 'icons/obj/machines/gateway.dmi'
-	icon_state = "off"
+	icon_state = "null"
 	density = TRUE
 	active_power_usage = 0
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
@@ -10,6 +10,7 @@
 	var/obj/structure/gateway/center/parent
 
 /obj/machinery/gateway/center
+	icon = 'icons/obj/machines/gateway96x96.dmi'
 	/// Are we active?
 	var/active = FALSE
 	/// "center" teleportation tiles including ourselves
