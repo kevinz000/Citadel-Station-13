@@ -12,6 +12,12 @@
 
 	/// Build queue. design id = number of times to build.
 	var/list/build_queue
+	/// Max items in queue
+	var/max_queue_items = 500
+	/// Timerid for current build operation
+	var/build_timerid
+	/// Are we currently lathing?
+	var/building = FALSE
 
 /**
   * Returns a list of design ids we can print.
@@ -25,10 +31,61 @@
   * @params
   * datum/design - design to add, can also be text ID.
   */
-/obj/machinery/lathe/proc/add_to_queue(datum/design/design)
-	if(istext(design))
-		design = SSresearch.design_by_id(design)
+/obj/machinery/lathe/proc/add_to_queue(datum/design/design, amount = 1, autostart = TRUE)
+	if(istype(design))
+		design = design.id
+	for(var/i in 1 to amount)
+		if(length(build_queue) >= min(max_queue_items, 500))		// safety check.
+			break
+		build_queue += design
+	if(autostart)
+		start_building()
 
+/**
+  * Removes the nth entry of the build queue.
+  */
+/obj/machinery/lathe/proc/remove_queue_index(index)
+	if(!ISINRANGE(index, 1, length(build_queue)))
+		return
+	build_queue.Cut(index, index+1)
+
+/**
+  * Clears the build queue.
+  */
+/obj/machinery/lathe/proc/clear_queue()
+	build_queue = null
+	stop_building()
+
+/**
+  * Stops processing the build queue.
+  */
+/obj/machinery/lathe/proc/stop_building()
+	if(build_timerid)
+		deltimer(build_timerid)
+	building = FALSE
+	update_icon()
+
+/**
+  * Starts processing the build queue.
+  */
+/obj/machinery/lathe/proc/start_building()
+	if(build_timerid)
+		return
+	building = TRUE
+	update_icon()
+	check_queue_next()
+
+/**
+  * Checks the next item in queue. If unable to continue, stop building, else, refresh the build timer.
+  */
+/obj/machinery/lathe/proc/check_queue_next()
+	if(!length(build_queue))
+		stop_building()
+		return
+	if(!check_can_print(build_queue[1], TRUE))
+		stop_building()
+		return
+	var/datum/design/head = build_queue[1]
 
 /obj/machinery/autolathe
 	name = "autolathe"

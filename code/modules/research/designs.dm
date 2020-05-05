@@ -32,7 +32,10 @@ other types of metals and chemistry for reagents).
 	var/list/category = null 			//Primarily used for Mech Fabricators, but can be used for anything
 	var/list/reagents_list = list()			//List of reagents. Format: type = amount.
 	var/maxstack = 1
-	var/lathe_time_factor = 1			//How many times faster than normal is this to build on the protolathe
+
+	/// How long in deciseconds does it take to lathe this without any modifiers.
+	var/base_build_speed = 10
+
 	var/dangerous_construction = FALSE	//notify and log for admin investigations if this is printed.
 	var/departmental_flags = ALL			//bitflags for deplathes.
 	var/list/datum/techweb_node/unlocked_by = list()
