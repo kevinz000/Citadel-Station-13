@@ -87,6 +87,13 @@
 		return
 	var/datum/design/head = build_queue[1]
 
+/**
+  * Get amount of time to build a design.
+  */
+/obj/machinery/lathe/proc/time_to_build(datum/design/D)
+	return D.base_build_speed
+
+
 /obj/machinery/autolathe
 	name = "autolathe"
 	desc = "It produces items using metal and glass."
