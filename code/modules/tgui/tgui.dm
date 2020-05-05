@@ -227,7 +227,7 @@
 		// be tagged, so this is an effective unwrap
 		"ref" = "\ref[src]"
 	)
-	
+
 	if(!isnull(data))
 		json_data["data"] = data
 	if(!isnull(static_data))

@@ -32,6 +32,21 @@
 		return null // We couldn't find a UI.
 
  /**
+  * public
+  *
+  * Grab all tgui datums belonging to a datum
+  *
+  * required src_object datum The datum we're looking at.
+  * required ui_key The UI key we're looking for.
+ **/
+/datum/controller/subsystem/tgui/proc/get_open_uis(datum/src_object, ui_key)
+	var/src_object_key = "[REF(src_object)]"
+	if(!open_uis[src_object_key] || !open_uis[src_object_key][ui_key])
+		return list()
+	var/list/L = open_uis[src_object_key][ui_key]
+	return L.Copy()
+
+ /**
   * private
   *
   * Get a open UI given a user, src_object, and ui_key.

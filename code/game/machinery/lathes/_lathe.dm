@@ -1,6 +1,34 @@
-#define AUTOLATHE_MAIN_MENU       1
-#define AUTOLATHE_CATEGORY_MENU   2
-#define AUTOLATHE_SEARCH_MENU     3
+/**
+  * Lathe machinery.
+  *
+  * Machines that print parts with raw materials and chemicals. Has build queues.
+  */
+/obj/machinery/lathe
+	name = "lathe"
+	desc = "Coders breaking shit again, this shouldn't exist!"
+	density = TRUE
+	icon_state = "autolathe"
+	circuit = /obj/item/circuitboard/machine/lathe
+
+	/// Build queue. design id = number of times to build.
+	var/list/build_queue
+
+/**
+  * Returns a list of design ids we can print.
+  */
+/obj/machinery/lathe/proc/return_designs()
+	return list()
+
+/**
+  * Adds a design to our build queue.
+  *
+  * @params
+  * datum/design - design to add, can also be text ID.
+  */
+/obj/machinery/lathe/proc/add_to_queue(datum/design/design)
+	if(istext(design))
+		design = SSresearch.design_by_id(design)
+
 
 /obj/machinery/autolathe
 	name = "autolathe"
@@ -13,9 +41,11 @@
 	circuit = /obj/item/circuitboard/machine/autolathe
 	layer = BELOW_OBJ_LAYER
 
-	var/operating = FALSE
-	var/list/L = list()
-	var/list/LL = list()
+	/// Build queue. design_id = number_of_times_to_build.
+	var/list/build_queue
+
+
+
 	var/hacked = FALSE
 	var/hackable = TRUE
 	var/disabled = 0

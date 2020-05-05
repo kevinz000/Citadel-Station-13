@@ -95,6 +95,13 @@
 /datum/proc/ui_base_html(html)
 	return html
 
+/**
+  * Force reinitializes all data of open uis.
+  */
+/datum/proc/uis_force_refresh_data(ui_key)
+	for(var/i in SStgui.get_open_uis(src, ui_key))
+		var/datum/tgui/T = i
+		T.reinitialize(null, ui_data(), ui_static_data())
  /**
   * private
   *
