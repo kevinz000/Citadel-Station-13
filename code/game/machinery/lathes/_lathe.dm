@@ -245,7 +245,7 @@
 			matching_designs.Cut()
 
 			for(var/v in stored_research.researched_designs)
-				var/datum/design/D = SSresearch.techweb_design_by_id(v)
+				var/datum/design/D = SSresearch.design_by_id(v)
 				if(findtext(D.name,href_list["to_search"]))
 					matching_designs.Add(D)
 			updateUsrDialog()
@@ -327,7 +327,7 @@
 	dat += materials_printout()
 
 	for(var/v in stored_research.researched_designs)
-		var/datum/design/D = SSresearch.techweb_design_by_id(v)
+		var/datum/design/D = SSresearch.design_by_id(v)
 		if(!(selected_category in D.category))
 			continue
 
@@ -453,7 +453,7 @@
 	if(!hackable && hacked)
 		return
 	for(var/id in SSresearch.techweb_designs)
-		var/datum/design/D = SSresearch.techweb_design_by_id(id)
+		var/datum/design/D = SSresearch.design_by_id(id)
 		if((D.build_type & AUTOLATHE) && ("hacked" in D.category))
 			if(hacked)
 				stored_research.add_design(D)

@@ -352,7 +352,7 @@ SUBSYSTEM_DEF(research)
 /datum/controller/subsystem/research/proc/techweb_node_by_id(id)
 	return techweb_nodes[id] || error_node
 
-/datum/controller/subsystem/research/proc/techweb_design_by_id(id)
+/datum/controller/subsystem/research/proc/design_by_id(id)
 	return techweb_designs[id] || error_design
 
 /datum/controller/subsystem/research/proc/on_design_deletion(datum/design/D)

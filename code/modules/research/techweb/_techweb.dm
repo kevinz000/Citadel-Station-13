@@ -176,7 +176,7 @@
 	return TRUE
 
 /datum/techweb/proc/add_design_by_id(id, custom = FALSE)
-	return add_design(SSresearch.techweb_design_by_id(id), custom)
+	return add_design(SSresearch.design_by_id(id), custom)
 
 /datum/techweb/proc/add_design(datum/design/design, custom = FALSE)
 	if(!istype(design))
@@ -188,7 +188,7 @@
 	return TRUE
 
 /datum/techweb/proc/remove_design_by_id(id, custom = FALSE)
-	return remove_design(SSresearch.techweb_design_by_id(id), custom)
+	return remove_design(SSresearch.design_by_id(id), custom)
 
 /datum/techweb/proc/remove_design(datum/design/design, custom = FALSE)
 	if(!istype(design))
@@ -288,7 +288,7 @@
 	if(researched)
 		researched_nodes[node.id] = TRUE
 		for(var/id in node.design_ids)
-			add_design(SSresearch.techweb_design_by_id(id))
+			add_design(SSresearch.design_by_id(id))
 	else
 		if(available)
 			available_nodes[node.id] = TRUE
@@ -314,7 +314,7 @@
 	return isDesignResearchedID(D.id)
 
 /datum/techweb/proc/isDesignResearchedID(id)
-	return researched_designs[id]? SSresearch.techweb_design_by_id(id) : FALSE
+	return researched_designs[id]? SSresearch.design_by_id(id) : FALSE
 
 /datum/techweb/proc/isNodeResearched(datum/techweb_node/N)
 	return isNodeResearchedID(N.id)
@@ -356,7 +356,7 @@
 	for(var/id in node_autounlock_ids)
 		research_node_id(id, TRUE, FALSE)
 	for(var/id in SSresearch.techweb_designs)
-		var/datum/design/D = SSresearch.techweb_design_by_id(id)
+		var/datum/design/D = SSresearch.design_by_id(id)
 		if(D.build_type & (design_autounlock_buildtypes & allowed_buildtypes) && !(D.build_type & design_autounlock_skip_types))
 			for(var/i in D.category)
 				if(i in design_autounlock_categories)

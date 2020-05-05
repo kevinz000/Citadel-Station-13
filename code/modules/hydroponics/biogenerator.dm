@@ -179,7 +179,7 @@
 			for(var/V in categories)
 				categories[V] = list()
 			for(var/V in stored_research.researched_designs)
-				var/datum/design/D = SSresearch.techweb_design_by_id(V)
+				var/datum/design/D = SSresearch.design_by_id(V)
 				for(var/C in categories)
 					if(C in D.category)
 						categories[C] += D
@@ -324,7 +324,7 @@
 			return
 
 		//Get design by id (or may return error design)
-		var/datum/design/D = SSresearch.techweb_design_by_id(id)
+		var/datum/design/D = SSresearch.design_by_id(id)
 		//Valid design datum, amount and the datum is not the error design, lets proceed
 		if(D && amount && !istype(D, /datum/design/error_design))
 			create_product(D, amount)

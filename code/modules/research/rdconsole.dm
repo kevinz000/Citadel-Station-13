@@ -283,7 +283,7 @@ Nothing else in the console has ID requirements.
 	l += ui_protolathe_header()
 	l += "<div class='statusDisplay'><h3>Browsing [selected_category]:</h3>"
 	for(var/v in stored_research.researched_designs)
-		var/datum/design/D = SSresearch.techweb_design_by_id(v)
+		var/datum/design/D = SSresearch.design_by_id(v)
 		if(!(selected_category in D.category)|| !(D.build_type & PROTOLATHE))
 			continue
 		if(!(isnull(linked_lathe.allowed_department_flags) || (D.departmental_flags & linked_lathe.allowed_department_flags)))
@@ -350,7 +350,7 @@ Nothing else in the console has ID requirements.
 	var/list/l = list()
 	l += ui_protolathe_header()
 	for(var/id in matching_design_ids)
-		var/datum/design/D = SSresearch.techweb_design_by_id(id)
+		var/datum/design/D = SSresearch.design_by_id(id)
 		if(!(isnull(linked_lathe.allowed_department_flags) || (D.departmental_flags & linked_lathe.allowed_department_flags)))
 			continue
 		var/temp_material
@@ -448,7 +448,7 @@ Nothing else in the console has ID requirements.
 	l += "<div class='statusDisplay'><h3>Browsing [selected_category]:</h3>"
 
 	for(var/v in stored_research.researched_designs)
-		var/datum/design/D = SSresearch.techweb_design_by_id(v)
+		var/datum/design/D = SSresearch.design_by_id(v)
 		if(!(selected_category in D.category) || !(D.build_type & IMPRINTER))
 			continue
 		if(!(isnull(linked_imprinter.allowed_department_flags) || (D.departmental_flags & linked_imprinter.allowed_department_flags)))
@@ -482,7 +482,7 @@ Nothing else in the console has ID requirements.
 	l += "<div class='statusDisplay'><h3>Search results:</h3>"
 
 	for(var/id in matching_design_ids)
-		var/datum/design/D = SSresearch.techweb_design_by_id(id)
+		var/datum/design/D = SSresearch.design_by_id(id)
 		if(!(isnull(linked_imprinter.allowed_department_flags) || (D.departmental_flags & linked_imprinter.allowed_department_flags)))
 			continue
 		var/temp_materials
@@ -570,7 +570,7 @@ Nothing else in the console has ID requirements.
 	l += "<A href='?src=[REF(src)];switch_screen=[RDSCREEN_DESIGNDISK];back_screen=[screen]'>Return to Disk Operations</A><div class='statusDisplay'>"
 	l += "<h3>Load Design to Disk:</h3>"
 	for(var/v in stored_research.researched_designs)
-		var/datum/design/D = SSresearch.techweb_design_by_id(v)
+		var/datum/design/D = SSresearch.design_by_id(v)
 		l += "[D.name] "
 		l += "<A href='?src=[REF(src)];copy_design=[disk_slot_selected];copy_design_ID=[D.id]'>Copy to Disk</A>"
 	l += "</div>"
@@ -719,7 +719,7 @@ Nothing else in the console has ID requirements.
 		if(ui_mode == RDCONSOLE_UI_MODE_NORMAL)
 			l += "[node.description]"
 			for(var/i in node.design_ids)
-				var/datum/design/D = SSresearch.techweb_design_by_id(i)
+				var/datum/design/D = SSresearch.design_by_id(i)
 				l += "<span data-tooltip='[D.name]' onclick='location=\"?src=[REF(src)];view_design=[i];back_screen=[screen]\"'>[D.icon_html(usr)]</span>[RDSCREEN_NOBREAK]"
 	l += "</div>[RDSCREEN_NOBREAK]"
 	return l
@@ -758,7 +758,7 @@ Nothing else in the console has ID requirements.
 	return l
 
 /obj/machinery/computer/rdconsole/proc/ui_techweb_designview()		//Legacy code
-	var/datum/design/selected_design = SSresearch.techweb_design_by_id(selected_design_id)
+	var/datum/design/selected_design = SSresearch.design_by_id(selected_design_id)
 	RDSCREEN_UI_SDESIGN_CHECK
 	var/list/l = list()
 	l += "<div><table><tr><td>[selected_design.icon_html(usr)]</td><td><b>[selected_design.name]</b></td></tr></table>[RDSCREEN_NOBREAK]"
@@ -1026,7 +1026,7 @@ Nothing else in the console has ID requirements.
 			say("No Design Disk Inserted!")
 			return
 		var/slot = text2num(ls["copy_design"])
-		var/datum/design/D = SSresearch.techweb_design_by_id(ls["copy_design_ID"])
+		var/datum/design/D = SSresearch.design_by_id(ls["copy_design_ID"])
 		if(D)
 			var/autolathe_friendly = TRUE
 			if(D.reagents_list.len)
@@ -1103,7 +1103,7 @@ Nothing else in the console has ID requirements.
 	else if(searchtype == "imprint")
 		compare = IMPRINTER
 	for(var/v in stored_research.researched_designs)
-		var/datum/design/D = SSresearch.techweb_design_by_id(v)
+		var/datum/design/D = SSresearch.design_by_id(v)
 		if(!(D.build_type & compare))
 			continue
 		if(findtext(D.name,searchstring))

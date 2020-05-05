@@ -75,7 +75,7 @@
 	var/list/data = list()
 	data["programs"] = list()
 	for(var/i in linked_techweb.researched_designs)
-		var/datum/design/nanites/D = SSresearch.techweb_design_by_id(i)
+		var/datum/design/nanites/D = SSresearch.design_by_id(i)
 		if(!istype(D))
 			continue
 		var/cat_name = D.category[1] //just put them in the first category fuck it

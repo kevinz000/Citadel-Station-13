@@ -212,7 +212,7 @@
 
 		data["alloys"] = list()
 		for(var/v in stored_research.researched_designs)
-			var/datum/design/D = SSresearch.techweb_design_by_id(v)
+			var/datum/design/D = SSresearch.design_by_id(v)
 			data["alloys"] += list(list("name" = D.name, "id" = D.id, "amount" = can_smelt_alloy(D)))
 
 	if (!mat_container)

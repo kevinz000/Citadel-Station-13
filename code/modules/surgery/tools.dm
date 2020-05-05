@@ -304,7 +304,7 @@
 		var/datum/design/surgery/prototype = subtype
 		var/id = initial(prototype.id)
 		if(id in linked_techweb.researched_designs)
-			prototype = SSresearch.techweb_design_by_id(id)
+			prototype = SSresearch.design_by_id(id)
 			. |= prototype.surgery
 
 /obj/item/organ_storage //allows medical cyborgs to manipulate organs without hands
