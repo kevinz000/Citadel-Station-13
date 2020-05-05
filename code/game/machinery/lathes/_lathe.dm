@@ -1,3 +1,11 @@
+/datum/lathe_queue_item
+	var/design_id
+	var/user_keyname
+
+/datum/lathe_queue_item/New(design_id, user_keyname)
+	src.design_id = design_id
+	src.user_keyname = user_keyname
+
 /**
   * Lathe machinery.
   *
@@ -19,7 +27,7 @@
 	/// Are we currently lathing?
 	var/building = FALSE
 	/// What are we currently building?
-	var/datum/design/currently_building
+	var/datum/lathe_queue_item/currently_building
 	/// Allowed materials to be inserted and used.
 	var/list/allowed_materials = list(
 		/datum/material/iron,
@@ -54,13 +62,13 @@
   * @params
   * datum/design - design to add, can also be text ID.
   */
-/obj/machinery/lathe/proc/add_to_queue(datum/design/design, amount = 1, autostart = TRUE)
+/obj/machinery/lathe/proc/add_to_queue(datum/design/design, amount = 1, autostart = TRUE, mob/user)
 	if(istype(design))
 		design = design.id
 	for(var/i in 1 to amount)
 		if(length(build_queue) >= min(max_queue_items, 500))		// safety check.
 			break
-		build_queue += design
+		build_queue += new /datum/lathe_queue_item(design, key_name(user))
 	if(autostart)
 		start_building()
 
@@ -103,24 +111,44 @@
 /obj/machinery/lathe/proc/check_queue_next()
 	if(!building)
 		stop_building()
-		return
+		return FALSE
 	if(!length(build_queue))
 		stop_building()
-		return
-	if(!check_can_print(build_queue[1], TRUE))
+		return FALSE
+	var/datum/lathe_queue_item/head_item = build_queue[1]
+	var/datum/design/head = SSresearch.design_by_id(head_item.design_id)
+	if(!check_can_print(head, TRUE))
 		stop_building()
-		return
-	var/datum/design/head = build_queue[1]
-	if(head != currently_building)
+		return FALSE
+	if(head_item != currently_building)
+		currently_building = head_item
 		if(build_timerid)
 			deltimer(build_timerid)
 			build_timerid = null
 		addtimer(CALLBACK(src, .proc/finish_current_item), time_to_build(head))
+	return TRUE
 
 /**
   * Finish building the current item.
   */
 /obj/machinery/lathe/proc/finish_current_item()
+	var/datum/lathe_queue_item/head_item = currently_building
+	var/datum/design/head = SSresearch.design_by_id(head_item.design_id)
+	currently_building = null
+	build_timerid = null
+	if(!check_can_print(, TRUE))
+		investigate_log("Failed finishing design [head.name]([head.id]), queued by [head_item.user_keyname].")
+		stop_building()
+		return
+	investigate_log("Lathed design [head.name]([head.id]), queued by [head_item.user_keyname].")
+
+
+
+
+/**
+  * Get a user friendly readout string of the materials we need to print an item.
+  */
+/obj/machinery/lathe/proc/design_cost_readout_string(datum/design/D)
 
 
 /**
@@ -132,10 +160,13 @@
 /obj/machinery/lathe/ui_static_data(mob/user)
 	. = list()
 	.["categories"] = list()
+	.["designs"] = list()
 	for(var/id in return_designs())
 		var/datum/design/D = SSresearch.design_by_id(id)
 		LAZYINITLIST(.["categories"][D.category])
 		.["categories"][D.category][D.name] = D.id
+		.["designs"][D.id] = list()
+		.["designs"][D.id]["materials"] = design_cost_readout_string(D)
 
 /obj/machinery/lathe/ui_data(mob/user)
 	. = list()
