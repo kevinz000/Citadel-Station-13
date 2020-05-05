@@ -13,11 +13,34 @@
 	/// Build queue. design id = number of times to build.
 	var/list/build_queue
 	/// Max items in queue
-	var/max_queue_items = 500
+	var/max_queue_items = 100
 	/// Timerid for current build operation
 	var/build_timerid
 	/// Are we currently lathing?
 	var/building = FALSE
+	/// What are we currently building?
+	var/datum/design/currently_building
+	/// Allowed materials to be inserted and used.
+	var/list/allowed_materials = list(
+		/datum/material/iron,
+		/datum/material/glass,
+		/datum/material/gold,
+		/datum/material/silver,
+		/datum/material/diamond,
+		/datum/material/uranium,
+		/datum/material/plasma,
+		/datum/material/bluespace,
+		/datum/material/bananium,
+		/datum/material/titanium,
+		/datum/material/runite,
+		/datum/material/plastic,
+		/datum/material/adamantine,
+		/datum/material/mythril
+		)
+
+/obj/machinery/lathe/Initialize(mapload)
+	AddComponent(/datum/component/material_container, allowed_materials, _show_on_examine=TRUE, _after_insert=CALLBACK(src, .proc/AfterMaterialInsert))
+	return ..()
 
 /**
   * Returns a list of design ids we can print.
@@ -62,6 +85,7 @@
 /obj/machinery/lathe/proc/stop_building()
 	if(build_timerid)
 		deltimer(build_timerid)
+		build_timerid = null
 	building = FALSE
 	update_icon()
 
@@ -69,8 +93,6 @@
   * Starts processing the build queue.
   */
 /obj/machinery/lathe/proc/start_building()
-	if(build_timerid)
-		return
 	building = TRUE
 	update_icon()
 	check_queue_next()
@@ -79,6 +101,9 @@
   * Checks the next item in queue. If unable to continue, stop building, else, refresh the build timer.
   */
 /obj/machinery/lathe/proc/check_queue_next()
+	if(!building)
+		stop_building()
+		return
 	if(!length(build_queue))
 		stop_building()
 		return
@@ -86,6 +111,17 @@
 		stop_building()
 		return
 	var/datum/design/head = build_queue[1]
+	if(head != currently_building)
+		if(build_timerid)
+			deltimer(build_timerid)
+			build_timerid = null
+		addtimer(CALLBACK(src, .proc/finish_current_item), time_to_build(head))
+
+/**
+  * Finish building the current item.
+  */
+/obj/machinery/lathe/proc/finish_current_item()
+
 
 /**
   * Get amount of time to build a design.
@@ -93,6 +129,33 @@
 /obj/machinery/lathe/proc/time_to_build(datum/design/D)
 	return D.base_build_speed
 
+/obj/machinery/lathe/ui_static_data(mob/user)
+	. = list()
+	.["categories"] = list()
+	for(var/id in return_designs())
+		var/datum/design/D = SSresearch.design_by_id(id)
+		LAZYINITLIST(.["categories"][D.category])
+		.["categories"][D.category][D.name] = D.id
+
+/obj/machinery/lathe/ui_data(mob/user)
+	. = list()
+	.["queue"] = list()
+	for(var/id in build_queue)
+		var/datum/design/D = SSresearch.design_by_id(id)
+		.["queue"] += D.name
+	.["materials"] = list()
+	var/list/materials = available_materials()
+	for(var/ref in materials)
+		var/datum/material/M = SSmaterials.GetMaterialRef(ref)
+		.["materials"][M.name] = materials[ref]
+	if(.["building"] = building)
+		.["current_item"] = currently_building.name
+
+/obj/machinery/lathe/proc/available_materials()
+	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
+	. = list()
+	for(var/ref in materials.materials)
+		.[ref] = materials.materials[ref]
 
 /obj/machinery/autolathe
 	name = "autolathe"
@@ -127,38 +190,8 @@
 	var/screen = 1
 
 	var/datum/techweb/stored_research = /datum/techweb/specialized/autounlocking/autolathe
-	var/list/categories = list(
-							"Tools",
-							"Electronics",
-							"Construction",
-							"T-Comm",
-							"Security",
-							"Machinery",
-							"Medical",
-							"Misc",
-							"Dinnerware",
-							"Imported"
-							)
-	var/list/allowed_materials = list(
-		/datum/material/iron,
-		/datum/material/glass,
-		/datum/material/gold,
-		/datum/material/silver,
-		/datum/material/diamond,
-		/datum/material/uranium,
-		/datum/material/plasma,
-		/datum/material/bluespace,
-		/datum/material/bananium,
-		/datum/material/titanium,
-		/datum/material/runite,
-		/datum/material/plastic,
-		/datum/material/adamantine,
-		/datum/material/mythril
-		)
 
 /obj/machinery/autolathe/Initialize()
-	AddComponent(/datum/component/material_container, allowed_materials, _show_on_examine=TRUE, _after_insert=CALLBACK(src, .proc/AfterMaterialInsert))
-	. = ..()
 	wires = new /datum/wires/autolathe(src)
 	stored_research = new stored_research
 	matching_designs = list()

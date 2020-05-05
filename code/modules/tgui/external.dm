@@ -96,12 +96,13 @@
 	return html
 
 /**
-  * Force reinitializes all data of open uis.
+  * Force refreshes all data of open uis.
   */
-/datum/proc/uis_force_refresh_data(ui_key)
+/datum/proc/uis_force_refresh_data(ui_key, normal_data = TRUE, static_data = FALSE)
 	for(var/i in SStgui.get_open_uis(src, ui_key))
 		var/datum/tgui/T = i
-		T.reinitialize(null, ui_data(), ui_static_data())
+		T.push_data(normal_data? ui_data() : null, static_data? ui_static_data() : null, TRUE)
+
  /**
   * private
   *
