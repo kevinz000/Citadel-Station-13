@@ -150,7 +150,7 @@
 /turf/open/floor/mineral/titanium/purple,
 /area/ruin/powered/golem_ship)
 "w" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /turf/open/floor/mineral/titanium/purple,
 /area/ruin/powered/golem_ship)
 "x" = (

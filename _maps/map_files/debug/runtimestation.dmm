@@ -711,7 +711,7 @@
 /turf/open/floor/plating,
 /area/hallway/primary/central)
 "ca" = (
-/obj/machinery/autolathe/hacked,
+/obj/machinery/lathe/autolathe/hacked,
 /turf/open/floor/plasteel,
 /area/science)
 "cb" = (

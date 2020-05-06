@@ -262,7 +262,7 @@
 /turf/open/floor/plating/asteroid,
 /area/ruin/powered)
 "bh" = (
-/obj/item/circuitboard/machine/autolathe,
+/obj/item/circuitboard/machine/lathe/autolathe,
 /turf/open/floor/mineral/titanium,
 /area/ruin/powered)
 "bi" = (

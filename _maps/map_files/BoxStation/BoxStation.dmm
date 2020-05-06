@@ -28695,7 +28695,7 @@
 /turf/open/floor/plasteel,
 /area/quartermaster/storage)
 "bqo" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/machinery/light_switch{
 	pixel_x = -27
 	},
@@ -58840,7 +58840,7 @@
 /turf/open/floor/plating,
 /area/space)
 "sRH" = (
-/obj/machinery/autolathe/secure{
+/obj/machinery/lathe/autolathe/secure{
 	name = "public autolathe"
 	},
 /turf/open/floor/plasteel,

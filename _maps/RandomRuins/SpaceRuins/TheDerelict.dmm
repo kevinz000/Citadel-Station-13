@@ -583,7 +583,7 @@
 /area/ruin/space/derelict/bridge/ai_upload)
 "bU" = (
 /obj/structure/rack,
-/obj/item/circuitboard/machine/autolathe,
+/obj/item/circuitboard/machine/lathe/autolathe,
 /obj/item/circuitboard/machine/protolathe{
 	pixel_x = -5;
 	pixel_y = -3

@@ -27438,7 +27438,7 @@
 /turf/open/floor/plasteel,
 /area/hallway/primary/central)
 "aYD" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/machinery/light{
 	dir = 8;
 	light_color = "#e8eaff"

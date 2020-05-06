@@ -553,7 +553,7 @@
 /turf/open/floor/plasteel/showroomfloor,
 /area/awaymission/academy/headmaster)
 "bU" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/structure/cable{
 	icon_state = "0-2"
 	},

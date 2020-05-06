@@ -28656,7 +28656,7 @@
 /turf/open/floor/plasteel,
 /area/quartermaster/sorting)
 "bkk" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/effect/turf_decal/delivery,
 /turf/open/floor/plasteel,
 /area/quartermaster/sorting)
@@ -31213,7 +31213,7 @@
 	dir = 1;
 	pixel_y = -26
 	},
-/obj/machinery/autolathe/secure{
+/obj/machinery/lathe/autolathe/secure{
 	name = "public autolathe"
 	},
 /obj/effect/turf_decal/bot,
@@ -34382,7 +34382,7 @@
 /obj/structure/cable{
 	icon_state = "4-8"
 	},
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /turf/open/floor/plating,
 /area/maintenance/disposal)
 "bwt" = (
@@ -56806,7 +56806,7 @@
 /turf/open/floor/plasteel/dark,
 /area/engine/teg_hot)
 "cqa" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/effect/turf_decal/delivery,
 /obj/machinery/light{
 	dir = 8

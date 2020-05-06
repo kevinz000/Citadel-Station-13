@@ -9724,7 +9724,7 @@
 /turf/open/floor/plasteel,
 /area/hallway/primary/starboard/fore)
 "aqp" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/structure/extinguisher_cabinet{
 	pixel_y = -26
 	},
@@ -39872,7 +39872,7 @@
 	dir = 4
 	},
 /obj/structure/rack,
-/obj/item/circuitboard/machine/autolathe{
+/obj/item/circuitboard/machine/lathe/autolathe{
 	pixel_x = 3;
 	pixel_y = 3
 	},

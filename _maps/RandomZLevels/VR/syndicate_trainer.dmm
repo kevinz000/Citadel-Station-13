@@ -302,7 +302,7 @@
 /turf/open/indestructible,
 /area/awaymission/centcomAway/cafe)
 "bN" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /turf/open/indestructible,
 /area/awaymission/centcomAway/general)
 "bQ" = (

@@ -16752,7 +16752,7 @@
 	},
 /area/centcom/holding)
 "Nf" = (
-/obj/machinery/autolathe/toy,
+/obj/machinery/lathe/autolathe/toy,
 /turf/open/indestructible/hotelwood,
 /area/centcom/holding)
 "Ni" = (
@@ -17160,7 +17160,7 @@
 /turf/open/floor/plating,
 /area/syndicate_mothership)
 "PL" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /turf/open/indestructible/hotelwood,
 /area/centcom/holding)
 "PM" = (

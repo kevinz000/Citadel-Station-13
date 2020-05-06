@@ -3075,7 +3075,7 @@
 /obj/machinery/atmospherics/pipe/simple/scrubbers/visible{
 	dir = 5
 	},
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/structure/sign/warning/radiation{
 	pixel_x = -32
 	},

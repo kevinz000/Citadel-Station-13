@@ -28569,7 +28569,7 @@
 /turf/open/floor/plasteel,
 /area/hallway/primary/fore)
 "baH" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/machinery/airalarm{
 	dir = 1;
 	pixel_y = -22
@@ -35126,7 +35126,7 @@
 /obj/effect/turf_decal/tile/brown{
 	dir = 8
 	},
-/obj/machinery/autolathe/secure{
+/obj/machinery/lathe/autolathe/secure{
 	name = "public autolathe"
 	},
 /turf/open/floor/plasteel,
@@ -126622,7 +126622,7 @@
 	},
 /area/science/circuit)
 "loI" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/machinery/door/window/southleft{
 	name = "Research Lab Desk";
 	req_one_access_txt = "7;29"

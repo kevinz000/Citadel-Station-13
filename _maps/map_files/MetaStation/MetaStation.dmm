@@ -32024,7 +32024,7 @@
 /turf/open/floor/plasteel,
 /area/quartermaster/office)
 "bkr" = (
-/obj/machinery/autolathe,
+/obj/machinery/lathe/autolathe,
 /obj/machinery/newscaster{
 	pixel_x = 28
 	},
@@ -32049,7 +32049,7 @@
 /obj/effect/turf_decal/tile/brown{
 	dir = 8
 	},
-/obj/machinery/autolathe/secure{
+/obj/machinery/lathe/autolathe/secure{
 	name = "public autolathe"
 	},
 /turf/open/floor/plasteel,
@@ -81612,7 +81612,7 @@
 /turf/open/floor/plasteel/dark,
 /area/crew_quarters/cryopod)
 "izu" = (
-/obj/machinery/autolathe{
+/obj/machinery/lathe/autolathe{
 	name = "public autolathe"
 	},
 /obj/machinery/door/window/eastright{
