@@ -22,7 +22,7 @@
 	name = "Machine Design (Autolathe Board)"
 	desc = "The circuit board for an autolathe."
 	id = "autolathe"
-	build_path = /obj/item/circuitboard/machine/autolathe
+	build_path = /obj/item/circuitboard/machine/lathe/autolathe
 	category = list ("Misc. Machinery")
 	departmental_flags = DEPARTMENTAL_FLAG_ALL
 
@@ -30,7 +30,7 @@
 	name = "Machine Design (Secure Autolathe Board)"
 	desc = "The circuit board for an autolathe. This one is programmed to not allow hacking."
 	id = "autolathe_secure"
-	build_path = /obj/item/circuitboard/machine/autolathe/secure
+	build_path = /obj/item/circuitboard/machine/lathe/autolathe/secure
 	category = list ("Misc. Machinery")
 	departmental_flags = DEPARTMENTAL_FLAG_ALL
 
@@ -111,6 +111,6 @@
 	name = "Machine Design (Autoylathe)"
 	desc = "The circuit board for an autoylathe."
 	id = "autoylathe"
-	build_path = /obj/item/circuitboard/machine/autolathe/toy
+	build_path = /obj/item/circuitboard/machine/lathe/autolathe/toy
 	departmental_flags = DEPARTMENTAL_FLAG_ALL
 	category = list("Misc. Machinery")

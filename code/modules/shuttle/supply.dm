@@ -19,7 +19,7 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 		/obj/structure/destructible/clockwork/powered/clockwork_obelisk,
 		/obj/item/warp_cube,
 		/obj/machinery/rnd/production/protolathe, //print tracking beacons, send shuttle
-		/obj/machinery/autolathe, //same
+		/obj/machinery/lathe/autolathe, //same
 		/obj/item/projectile/beam/wormhole,
 		/obj/effect/portal,
 		/obj/item/shared_storage,

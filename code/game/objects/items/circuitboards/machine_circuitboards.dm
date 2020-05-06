@@ -27,17 +27,17 @@
 		/obj/item/stack/cable_coil = 2,
 		/obj/item/stack/sheet/glass = 1)
 
-/obj/item/circuitboard/machine/autolathe
+/obj/item/circuitboard/machine/lathe/autolathe
 	name = "Autolathe (Machine Board)"
-	build_path = /obj/machinery/autolathe
+	build_path = /obj/machinery/lathe/autolathe
 	req_components = list(
 		/obj/item/stock_parts/matter_bin = 3,
 		/obj/item/stock_parts/manipulator = 1,
 		/obj/item/stack/sheet/glass = 1)
 
-/obj/item/circuitboard/machine/autolathe/secure
+/obj/item/circuitboard/machine/lathe/autolathe/secure
 	name = "Secure Autolathe (Machine Board)"
-	build_path = /obj/machinery/autolathe/secure
+	build_path = /obj/machinery/lathe/autolathe/secure
 
 /obj/item/circuitboard/machine/bloodbankgen
 	name = "Blood Bank Generator (Machine Board)"
@@ -1054,9 +1054,9 @@
 	build_path = /obj/machinery/vending/kink
 	req_components = list(/obj/item/vending_refill/kink = 1)
 
-/obj/item/circuitboard/machine/autolathe/toy
+/obj/item/circuitboard/machine/lathe/autolathe/toy
 	name = "Autoylathe (Machine Board)"
-	build_path = /obj/machinery/autolathe/toy
+	build_path = /obj/machinery/lathe/autolathe/toy
 	req_components = list(
 		/obj/item/stock_parts/matter_bin = 3,
 		/obj/item/stock_parts/manipulator = 1,

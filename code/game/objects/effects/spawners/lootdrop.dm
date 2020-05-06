@@ -278,7 +278,7 @@
 	loot = list(
 				/obj/item/circuitboard/computer/arcade/battle,
 				/obj/item/circuitboard/computer/arcade/orion_trail,
-				/obj/item/circuitboard/machine/autolathe,
+				/obj/item/circuitboard/machine/lathe/autolathe,
 				/obj/item/circuitboard/computer/mining,
 				/obj/item/circuitboard/machine/ore_redemption,
 				/obj/item/circuitboard/machine/mining_equipment_vendor,

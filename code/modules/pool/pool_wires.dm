@@ -35,7 +35,7 @@
 			P.temperature_unlocked = FALSE
 		if(WIRE_SHOCK)
 			P.shocked = !P.shocked
-			addtimer(CALLBACK(P, /obj/machinery/autolathe.proc/reset, wire), 60)
+			addtimer(CALLBACK(P, /obj/machinery/lathe/autolathe.proc/reset, wire), 60)
 
 /datum/wires/poolcontroller/on_cut(wire, mend)
 	var/obj/machinery/pool/controller/P = holder
