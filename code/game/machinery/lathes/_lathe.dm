@@ -299,6 +299,8 @@
 			say("Power lost to fabrication system.")
 			stop_building()
 
+
+
 /obj/machinery/lathe/autolathe
 	name = "autolathe"
 	desc = "It produces items using raw materials."
@@ -407,14 +409,6 @@
 	if(..())
 		return
 	if (!busy)
-		if(href_list["menu"])
-			screen = text2num(href_list["menu"])
-			updateUsrDialog()
-
-		if(href_list["category"])
-			selected_category = href_list["category"]
-			updateUsrDialog()
-
 		if(href_list["make"])
 
 			/////////////////
@@ -467,21 +461,6 @@
 			else
 				to_chat(usr, "<span class=\"alert\">Not enough materials for this operation.</span>")
 
-		if(href_list["search"])
-			matching_designs.Cut()
-
-			for(var/v in stored_research.researched_designs)
-				var/datum/design/D = SSresearch.design_by_id(v)
-				if(findtext(D.name,href_list["to_search"]))
-					matching_designs.Add(D)
-			updateUsrDialog()
-	else
-		to_chat(usr, "<span class=\"alert\">The autolathe is busy. Please wait for completion of previous operation.</span>")
-
-	updateUsrDialog()
-
-	return
-
 /obj/machinery/lathe/autolathe/proc/make_item(power, var/list/materials_used, var/list/picked_materials, multiplier, coeff, is_stack)
 	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
 	var/atom/A = drop_location()
@@ -520,123 +499,6 @@
 	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
 	if(in_range(user, src) || isobserver(user))
 		. += "<span class='notice'>The status display reads: Storing up to <b>[materials.max_amount]</b> material units.<br>Material consumption at <b>[prod_coeff*100]%</b>.</span>"
-
-/obj/machinery/lathe/autolathe/proc/main_win(mob/user)
-	var/dat = "<div class='statusDisplay'><h3>Autolathe Menu:</h3><br>"
-	dat += materials_printout()
-
-	dat += "<form name='search' action='?src=[REF(src)]'>\
-	<input type='hidden' name='src' value='[REF(src)]'>\
-	<input type='hidden' name='search' value='to_search'>\
-	<input type='hidden' name='menu' value='[AUTOLATHE_SEARCH_MENU]'>\
-	<input type='text' name='to_search'>\
-	<input type='submit' value='Search'>\
-	</form><hr>"
-
-	var/line_length = 1
-	dat += "<table style='width:100%' align='center'><tr>"
-
-	for(var/C in categories)
-		if(line_length > 2)
-			dat += "</tr><tr>"
-			line_length = 1
-
-		dat += "<td><A href='?src=[REF(src)];category=[C];menu=[AUTOLATHE_CATEGORY_MENU]'>[C]</A></td>"
-		line_length++
-
-	dat += "</tr></table></div>"
-	return dat
-
-/obj/machinery/lathe/autolathe/proc/category_win(mob/user,selected_category)
-	var/dat = "<A href='?src=[REF(src)];menu=[AUTOLATHE_MAIN_MENU]'>Return to main menu</A>"
-	dat += "<div class='statusDisplay'><h3>Browsing [selected_category]:</h3><br>"
-	dat += materials_printout()
-
-	for(var/v in stored_research.researched_designs)
-		var/datum/design/D = SSresearch.design_by_id(v)
-		if(!(selected_category in D.category))
-			continue
-
-		if(disabled || !can_build(D))
-			dat += "<span class='linkOff'>[D.name]</span>"
-		else
-			dat += "<a href='?src=[REF(src)];make=[D.id];multiplier=1'>[D.name]</a>"
-
-		if(ispath(D.build_path, /obj/item/stack))
-			var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
-			var/max_multiplier
-			for(var/datum/material/mat in D.materials)
-				max_multiplier = min(D.maxstack, round(materials.get_material_amount(mat)/D.materials[mat]))
-			if (max_multiplier>10 && !disabled)
-				dat += " <a href='?src=[REF(src)];make=[D.id];multiplier=10'>x10</a>"
-			if (max_multiplier>25 && !disabled)
-				dat += " <a href='?src=[REF(src)];make=[D.id];multiplier=25'>x25</a>"
-			if(max_multiplier > 0 && !disabled)
-				dat += " <a href='?src=[REF(src)];make=[D.id];multiplier=[max_multiplier]'>x[max_multiplier]</a>"
-		else
-			if(!disabled && can_build(D, 5))
-				dat += " <a href='?src=[REF(src)];make=[D.id];multiplier=5'>x5</a>"
-			if(!disabled && can_build(D, 10))
-				dat += " <a href='?src=[REF(src)];make=[D.id];multiplier=10'>x10</a>"
-
-		dat += "[get_design_cost(D)]<br>"
-
-	dat += "</div>"
-	return dat
-
-/obj/machinery/lathe/autolathe/proc/search_win(mob/user)
-	var/dat = "<A href='?src=[REF(src)];menu=[AUTOLATHE_MAIN_MENU]'>Return to main menu</A>"
-	dat += "<div class='statusDisplay'><h3>Search results:</h3><br>"
-	dat += materials_printout()
-
-	for(var/v in matching_designs)
-		var/datum/design/D = v
-		if(disabled || !can_build(D))
-			dat += "<span class='linkOff'>[D.name]</span>"
-		else
-			dat += "<a href='?src=[REF(src)];make=[D.id];multiplier=1'>[D.name]</a>"
-
-		if(ispath(D.build_path, /obj/item/stack))
-			var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
-			var/max_multiplier
-			for(var/datum/material/mat in D.materials)
-				max_multiplier = min(D.maxstack, round(materials.get_material_amount(mat)/D.materials[mat]))
-			if (max_multiplier>10 && !disabled)
-				dat += " <a href='?src=[REF(src)];make=[D.id];multiplier=10'>x10</a>"
-			if (max_multiplier>25 && !disabled)
-				dat += " <a href='?src=[REF(src)];make=[D.id];multiplier=25'>x25</a>"
-			if(max_multiplier > 0 && !disabled)
-				dat += " <a href='?src=[REF(src)];make=[D.id];multiplier=[max_multiplier]'>x[max_multiplier]</a>"
-
-		dat += "[get_design_cost(D)]<br>"
-
-	dat += "</div>"
-	return dat
-
-/obj/machinery/lathe/autolathe/proc/materials_printout()
-	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
-	var/dat = "<b>Total amount:</b> [materials.total_amount] / [materials.max_amount] cm<sup>3</sup><br>"
-	for(var/mat_id in materials.materials)
-		var/datum/material/M = mat_id
-		var/mineral_amount = materials.materials[mat_id]
-		if(mineral_amount > 0)
-			dat += "<b>[M.name] amount:</b> [mineral_amount] cm<sup>3</sup><br>"
-	return dat
-
-/obj/machinery/lathe/autolathe/proc/can_build(datum/design/D, amount = 1)
-	if(D.make_reagents.len)
-		return FALSE
-
-	var/coeff = (ispath(D.build_path, /obj/item/stack) ? 1 : prod_coeff)
-
-	var/list/required_materials = list()
-
-	for(var/i in D.materials)
-		required_materials[i] = D.materials[i] * coeff * amount
-
-	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
-
-	return materials.has_materials(required_materials)
 
 /obj/machinery/lathe/autolathe/proc/get_design_cost(datum/design/D)
 	var/coeff = (ispath(D.build_path, /obj/item/stack) ? 1 : prod_coeff)
@@ -703,18 +565,6 @@
 	circuit = /obj/item/circuitboard/machine/lathe/autolathe/toy
 
 	stored_research = /datum/techweb/specialized/autounlocking/autolathe/toy
-	categories = list(
-					"Toys",
-					"Figurines",
-					"Pistols",
-					"Rifles",
-					"Heavy",
-					"Melee",
-					"Armor",
-					"Adult",
-					"Misc",
-					"Imported"
-					)
 	allowed_materials = list(
 		/datum/material/iron,
 		/datum/material/glass,

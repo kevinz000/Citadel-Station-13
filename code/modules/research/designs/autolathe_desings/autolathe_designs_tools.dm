@@ -124,7 +124,7 @@
 	category = list("initial","Tools")
 
 /datum/design/cable_coil
-	name = "Cable Coil"
+	name = "Cable Coil (full)"
 	id = "cable_coil"
 	build_type = AUTOLATHE
 	materials = list(/datum/material/iron = 10, /datum/material/glass = 5)
