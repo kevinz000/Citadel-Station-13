@@ -327,6 +327,8 @@
 			add_to_queue_front(D)
 		if("eject_material")
 			user_try_eject_material(params["material"], text2num(params["sheets"]))
+		if("purge_reagent")
+			user_try_purge_reagent(params["reagent"], text2num(params["amount"])
 		if("start_building")
 			start_building()
 		if("stop_building")
@@ -540,17 +542,6 @@
 	if(in_range(user, src) || isobserver(user))
 		. += "<span class='notice'>The status display reads: Storing up to <b>[materials.max_amount]</b> material units.<br>Material consumption at <b>[prod_coeff*100]%</b>.</span>"
 
-/obj/machinery/lathe/autolathe/proc/get_design_cost(datum/design/D)
-	var/coeff = (ispath(D.build_path, /obj/item/stack) ? 1 : prod_coeff)
-	var/dat
-	for(var/i in D.materials)
-		if(istext(i)) //Category handling
-			dat += "[D.materials[i] * coeff] [i]"
-		else
-			var/datum/material/M = i
-			dat += "[D.materials[i] * coeff] [M.name] "
-	return dat
-
 /obj/machinery/lathe/autolathe/proc/reset(wire)
 	switch(wire)
 		if(WIRE_HACK)
@@ -603,6 +594,7 @@
 	name = "autoylathe"
 	desc = "It produces toys using plastic, metal and glass."
 	circuit = /obj/item/circuitboard/machine/lathe/autolathe/toy
+	build_types = AUTOYLATHE
 
 	stored_research = /datum/techweb/specialized/autounlocking/autolathe/toy
 	allowed_materials = list(
