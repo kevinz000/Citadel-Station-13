@@ -55,6 +55,8 @@
 	var/lathe_flags = CAN_HANDLE_REAGENTS | CAN_HANDLE_MATERIALS
 	/// Allowed build types
 	var/build_types = NONE
+	/// Allowed queue amounts
+	var/list/allowed_queue_amounts = list(1, 5, 10)
 
 /obj/machinery/lathe/Initialize(mapload)
 	if(lathe_flags & CAN_HANDLE_MATERIALS)
@@ -249,6 +251,7 @@
 	for(var/ref in allowed_materials)
 		var/datum/material/M = SSmaterials.GetMaterialRef(ref)
 		.["materials"] = list("name" = M.name)
+	.["allowed_queue_amounts"] = allowed_queue_amounts
 
 /obj/machinery/lathe/ui_data(mob/user)
 	. = list()
@@ -291,6 +294,43 @@
 
 /obj/machinery/lathe/proc/has_reagents(list/reagents)
 
+/obj/machinery/lathe/ui_act(action, params)
+	if(. = ..())
+		return
+	switch(action)
+		if("remove_queue_item")
+			remove_queue_index(params["index"])
+		if("clear_queue")
+			clear_queue()
+		if("queue")
+			var/datum/design/D = SSresearch.design_by_id(params["id"])
+			if(!D)
+				return
+			var/amount = text2num(params["amount"])
+			if(!(amount in allowed_queue_amounts))
+				message_admins("[usr] attempted to print an invalid amount from [src]([COORD(src)]).")
+				log_admin("[usr] attempted to print an invalid amount from [src]([COORD(src)]).")
+				return
+			if(!check_can_print(D))
+				message_admins("[usr] attempted to print an unavailable design from [src]([COORD(src)]).")
+				log_admin("[usr] attempted to print an unavailable design from [src]([COORD(src)]).")
+				return
+			add_to_queue(D, amount)
+		if("build_now")
+			var/datum/design/D = SSresearch.design_by_id(params["id"])
+			if(!D)
+				return
+			if(!check_can_print(D))
+				message_admins("[usr] attempted to print an unavailable design.")
+				log_admin("[usr] attempted to print an unavailable design.")
+				return
+			add_to_queue_front(D)
+		if("eject_material")
+			user_try_eject_material(params["material"], text2num(params["sheets"]))
+		if("start_building")
+			start_building()
+		if("stop_building")
+			stop_building()
 
 /obj/machinery/lathe/power_change()
 	. = ..()
@@ -299,18 +339,18 @@
 			say("Power lost to fabrication system.")
 			stop_building()
 
-
+/obj/machinery/lathe/ui_interact(mob/user, ui_key = "lathe", datum/tgui/ui = null, force_open = FALSE, datum/tgui/master_ui = null, datum/ui_state/state = GLOB.default_state)
+	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
+	if(!ui)
+		ui = new(user, src, ui_key, "lathe", name, 700, 900, master_ui, state)
+		ui.open()
 
 /obj/machinery/lathe/autolathe
 	name = "autolathe"
 	desc = "It produces items using raw materials."
 	lathe_flags = CAN_HANDLE_MATERIALS
 	circuit = /obj/item/circuitboard/machine/lathe/autolathe
-
-	/// Build queue. design_id = number_of_times_to_build.
-	var/list/build_queue
-
-
+	build_types = AUTOLATHE
 
 	var/hacked = FALSE
 	var/hackable = TRUE
