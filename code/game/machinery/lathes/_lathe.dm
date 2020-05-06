@@ -17,6 +17,10 @@
 	density = TRUE
 	icon_state = "autolathe"
 	circuit = /obj/item/circuitboard/machine/lathe
+	use_power = IDLE_POWER_USE
+	idle_power_usage = 10
+	active_power_usage = 100
+	layer = BELOW_OBJ_LAYER
 
 	/// Build queue. design id = number of times to build.
 	var/list/build_queue
@@ -45,9 +49,18 @@
 		/datum/material/adamantine,
 		/datum/material/mythril
 		)
+	/// Coefficient (multiplier) for material and reagent costs.
+	var/efficiency_coefficient = 1
+	/// Lathe flags
+	var/lathe_flags = CAN_HANDLE_REAGENTS | CAN_HANDLE_MATERIALS
+	/// Allowed build types
+	var/build_types = NONE
 
 /obj/machinery/lathe/Initialize(mapload)
-	AddComponent(/datum/component/material_container, allowed_materials, _show_on_examine=TRUE, _after_insert=CALLBACK(src, .proc/AfterMaterialInsert))
+	if(lathe_flags & CAN_HANDLE_MATERIALS)
+		AddComponent(/datum/component/material_container, allowed_materials, _show_on_examine=TRUE, _after_insert=CALLBACK(src, .proc/AfterMaterialInsert))
+	if(lathe_flags & CAN_HANDLE_REAGENTS)
+		create_reagents(1000)
 	return ..()
 
 /**
@@ -91,6 +104,9 @@
   * Stops processing the build queue.
   */
 /obj/machinery/lathe/proc/stop_building()
+	if(!building)
+		return
+	say("Stopped processing queue.")
 	if(build_timerid)
 		deltimer(build_timerid)
 		build_timerid = null
@@ -101,6 +117,9 @@
   * Starts processing the build queue.
   */
 /obj/machinery/lathe/proc/start_building()
+	if(building)
+		return
+	say("Started processing queue.")
 	building = TRUE
 	update_icon()
 	check_queue_next()
@@ -136,20 +155,76 @@
 	var/datum/design/head = SSresearch.design_by_id(head_item.design_id)
 	currently_building = null
 	build_timerid = null
-	if(!check_can_print(, TRUE))
+	if(!check_can_print(head, TRUE))
 		investigate_log("Failed finishing design [head.name]([head.id]), queued by [head_item.user_keyname].")
 		stop_building()
 		return
 	investigate_log("Lathed design [head.name]([head.id]), queued by [head_item.user_keyname].")
+	#warn build item and use resources here, possibly with a new do_build() proc.
+	check_queue_next()
 
-
-
+/**
+  * Check if we can print a design. Design must be a direct datum reference.
+  */
+/obj/machinery/lathe/proc/check_can_print(datum/design/D, say_error = FALSE)
+	if(!istype(D))
+		if(say_error)
+			say("Encountered an invalid design.")
+		return FALSE
+	if(!(D.id in return_designs()))
+		if(say_error)
+			say("Design datacore error.")
+		return FALSE
+	if(!(D.build_type & build_types))
+		if(say_error)
+			say("Design not compatible with lathe.")
+		return FALSE
+	var/list/req_mat = get_material_cost(D)
+	var/list/req_reag = get_reagent_cost(D)
+	if(!has_materials(req_mat))
+		if(say_error)
+			say("Insufficient materials to continue construction.")
+		return FALSE
+	if(!has_reagents(req_reag))
+		if(say_error)
+			say("Insufficient reagents to continue construction.")
+		return FALSE
+	return TRUE
 
 /**
   * Get a user friendly readout string of the materials we need to print an item.
   */
 /obj/machinery/lathe/proc/design_cost_readout_string(datum/design/D)
+	return resources_to_string(D.materials, D.reagents)s
 
+/**
+  * Process a list of materials/reagents.
+  */
+/obj/machinery/lathe/proc/resources_to_string(list/materials, list/reagents)
+	. = list()
+	for(var/ref in materials)
+		var/datum/material/M = SSmaterials.GetMaterialRef(ref)
+		. += "[materials[ref]] cm<sup>3</sup> of [M.name]"
+	for(var/path in reagents)
+		var/datum/reagent/R = path
+		. += "[materials[path]] units of [initial(R.name)]"
+	return english_list(.)
+
+/**
+  * Gets the reagents needed to print a design, taking into account efficiency_coefficient. Returns list(reagent typepath = value).
+  */
+/obj/machinery/lathe/proc/get_reagent_cost(datum/design/D)
+	. = list()
+	for(var/reagent in D.reagents)
+		.[reagent] = D.reagents[reagent] * efficiency_coefficieny
+
+/**
+  * Gets the materials needed to print a design, taking into account efficiency_coefficient. Returns list(material ref = value).
+  */
+/obj/machinery/lathe/proc/get_material_cost(datum/design/D)
+	. = list()
+	for(var/ref in D.materials)
+		.[ref] = D.materials[ref] * efficiency_coefficient
 
 /**
   * Get amount of time to build a design.
@@ -164,23 +239,35 @@
 	for(var/id in return_designs())
 		var/datum/design/D = SSresearch.design_by_id(id)
 		LAZYINITLIST(.["categories"][D.category])
-		.["categories"][D.category][D.name] = D.id
-		.["designs"][D.id] = list()
-		.["designs"][D.id]["materials"] = design_cost_readout_string(D)
+		.["categories"][D.category] += D.id
+		var/list/design_reagents = list()		//we have to do this since we can't send every reagent by name as static data.
+		for(var/path in D.reagents)
+			var/datum/reagent/R = path
+			design_reagents[initial(R.name)] = D.reagents[path]
+		.["designs"][D.id] = list("materials" = D.materials, "name" = D.name)
+	.["materials"] = list()
+	for(var/ref in allowed_materials)
+		var/datum/material/M = SSmaterials.GetMaterialRef(ref)
+		.["materials"] = list("name" = M.name)
 
 /obj/machinery/lathe/ui_data(mob/user)
 	. = list()
 	.["queue"] = list()
 	for(var/id in build_queue)
 		var/datum/design/D = SSresearch.design_by_id(id)
-		.["queue"] += D.name
-	.["materials"] = list()
+		.["queue"] += D.id
+	.["available_materials"] = list()
 	var/list/materials = available_materials()
 	for(var/ref in materials)
-		var/datum/material/M = SSmaterials.GetMaterialRef(ref)
-		.["materials"][M.name] = materials[ref]
+		.["available_materials"][ref] = materials[ref]
+	var/list/materials = available_reagents()
+	.["available_reagents"] = list()
+	for(var/path in reagents)
+		var/datum/reagent/R = path
+		.["available_reagents"][initial(R.name)] = reagents[path]
 	if(.["building"] = building)
-		.["current_item"] = currently_building.name
+		.["current_item"] = currently_building.id
+		.["time_left"] = timeleft(build_timerid)
 
 /obj/machinery/lathe/proc/available_materials()
 	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
@@ -188,16 +275,35 @@
 	for(var/ref in materials.materials)
 		.[ref] = materials.materials[ref]
 
-/obj/machinery/autolathe
+/obj/machinery/lathe/proc/use_materials(list/materials)
+	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
+	return materials.use_materials(materials)
+
+/obj/machinery/lathe/proc/has_materials(list/materials)
+	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
+	return materials.has_materials(materials)
+
+/obj/machinery/lathe/proc/available_reagents()
+
+
+/obj/machinery/lathe/proc/use_reagents(list/reagents)
+
+
+/obj/machinery/lathe/proc/has_reagents(list/reagents)
+
+
+/obj/machinery/lathe/power_change()
+	. = ..()
+	if(stat & NOPOWER)
+		if(building)
+			say("Power lost to fabrication system.")
+			stop_building()
+
+/obj/machinery/lathe/autolathe
 	name = "autolathe"
-	desc = "It produces items using metal and glass."
-	icon_state = "autolathe"
-	density = TRUE
-	use_power = IDLE_POWER_USE
-	idle_power_usage = 10
-	active_power_usage = 100
-	circuit = /obj/item/circuitboard/machine/autolathe
-	layer = BELOW_OBJ_LAYER
+	desc = "It produces items using raw materials."
+	lathe_flags = CAN_HANDLE_MATERIALS
+	circuit = /obj/item/circuitboard/machine/lathe/autolathe
 
 	/// Build queue. design_id = number_of_times_to_build.
 	var/list/build_queue
@@ -211,14 +317,6 @@
 	var/hack_wire
 	var/disable_wire
 	var/shock_wire
-
-	var/busy = FALSE
-	var/prod_coeff = 1
-
-	var/datum/design/being_built
-	var/list/datum/design/matching_designs
-	var/selected_category
-	var/screen = 1
 
 	var/datum/techweb/stored_research = /datum/techweb/specialized/autounlocking/autolathe
 
