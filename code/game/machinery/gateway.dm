@@ -3,74 +3,149 @@
 	desc = "A mysterious gateway built by unknown hands, it allows for faster than light travel to far-flung locations."
 	icon = 'icons/obj/machines/gateway.dmi'
 	icon_state = "null"
-	density = TRUE
+	density = FALSE
 	active_power_usage = 0
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
-	/// Our center "parent" gateway.
-	var/obj/structure/gateway/center/parent
 
 /obj/machinery/gateway/center
 	icon = 'icons/obj/machines/gateway96x96.dmi'
+	appearance_flags = KEEP_TOGETHER | PIXEL_SCALE
 	/// Are we active?
-	var/active = FALSE
-	/// "center" teleportation tiles including ourselves
-	var/list/center_pieces
-	/// "side" frame pieces
-	var/list/side_pieces
-	/// "exit" nondense pieces
-	var/list/exit_pieces
-	/// Do we check parts and link or do we autobuild
-	var/init_autobuild = FALSE
-	/// Do we require all parts to be there?
-	var/parts_required = TRUE
-	/// So we don't have to check every time we activate. Do we have all parts? Will perform automatic check if null.
-	var/parts_complete
+	var/state = GATEWAY_OFF
+	/// Outer ring pieces, including receivers.
+	var/list/obj/machinery/gateway/ring/ring_pieces = list()
+	/// Receiving teleporting pieces
+	var/list/obj/machinery/gateway/ring/receiver/ring_receivers = list()
+	/// The size of our center, as radius. 1 is 1x1, 2 is 3x3, 3 is 5x5, so on.
+	var/center_size
 
 /obj/machinery/gateway/center/Initialize(mapload)
-	parent = src
+	build()
 	. = ..()
 	return INITIALIZE_HINT_LATELOAD
 
 /obj/machinery/gateway/center/LateInitialize()
 	init_autobuild? autobuild() : partcheck()
 
-/obj/machinery/gateway/center/proc/autobuild()
-	center_pieces = list(src)
-	side_pieces = list()
-	exit_pieces = list()
+/obj/machinery/gateway/center/Destroy()
+	cleanup()
+	return ..()
 
-/obj/machinery/gateway/center/proc/partcheck()
-	center_pieces = list(src)
-	side_pieces = list()
-	exit_pieces = list()
+/obj/machinery/gateway/center/proc/cleanup()
+	QDEL_LIST(ring_pieces)
+	ring_receivers = list()
 
-/obj/machinery/gateway/center/proc/update_structure()
-
-/obj/machinery/gateway/center/proc/get_enclosed_turfS()
+/obj/machinery/gateway/center/proc/get_receiving_turfs()
 	. = list()
-	for(var/obj/machinery/gateway/piece/center/G in center_pieces)
-		. |= get_turf(G)
+	for(var/i in ring_receivers)
+		var/obj/machinery/gateway/ring/receiver/R = i
+		if(R.loc)
+			. += R.loc
 
-/obj/machinery/gateway/center/big/autobuild()
-	. = ..()
-	var/list/turf/two = orange(2, src) - loc
-	for(var/turf/T in two)
+#define CHECK_TURF(turf) \
+	if(!turf){ \
+		cleanup(); \
+		CRASH("Invalid turf or out of bounds of world, autobuild proc stopped."); \
+	} \
+	else if(locate(/obj/machinery/gateway) in T){ \
+		cleanup(); \
+		CRASH("Gateway location conflicting, autobuild proc stopped."); \
+	}
+/obj/machinery/gateway/center/proc/build()
+	set_bound_size()
+	cleanup()		//just in case
+	ring_pieces = list()
+	ring_receivers = list()
+	// Check all turfs
+	for(var/turf/T in range(src, center_size))
 		if(locate(/obj/machinery/gateway) in T)
-			CRASH("Conflicting gateway detected, aborting autobuild.")
-	var/list/turf/one = orange(1, src) - loc
-	for(var/turf/T in two - one)		//outer ring
+			CRASH("Gateway location conflicting, autobuild proc stopped.")
+	var/list/turfs_ring = list()
+	var/list/turfs_entrance = list()
+	var/radius = center_size - 1
+	var/turf/T
+	for(var/xcrd in x - radius to x + radius)
+		turfs_entrance += (T = locate(xcrd, y - center_size, z))
+		CHECK_TURF(T)
+	for(var/xcrd in x - center_size to x + center_size)
+		turfs_ring += (T = locate(xcrd, y + center_size, z))
+		CHECK_TURF(T)
+	for(var/ycrd in y - radius to y + radius)
+		turfs_ring += (T = locate(x - center_size, ycrd, z))
+		CHECK_TURF(T)
+		turfs_ring += (T = locate(x + center_size, ycrd, z))
+		CHECK_TURF(T)
+	var/obj/machinery/gateway/ring/R
+	for(var/i in turfs_ring)
+		R = new /obj/machinery/gateway/ring(i)
+		ring_pieces += R
+		R.parent = src
+	for(var/i in turfs_entrance)
+		R = new /obj/machinery/gateway/ring/receiver(i)
+		ring_pieces += R
+		ring_receivers += R
+		R.parent = src
+#undef CHECK_TURF
 
-	for(var/turf/T in one)				//inner ring
-		var/obj/machinery/gateway/piece/center/C = new(T)
-		center_pieces += C
+/obj/machinery/gateway/center/proc/set_state(new_state)
+	state = new_state
+	update_icon()
+
+/obj/machinery/gateway/center/update_icon_state()
+	switch(state)
+		if(GATEWAY_OFF)
+			icon_state = "off"
+		if(GATEWAY_ON)
+			icon_state = "on"
+
+/obj/machinery/gateway/center/proc/set_bound_size()
+	bound_width = bound_height = (((center_size - 1) * 2) + 1) * world.icon_size + world.icon_size * 2
+	bound_x = bound_y = (center_size - 1) * world.icon_size
 
 /obj/machinery/gateway/center/big
+	center_size = 2
 
+/obj/machinery/gateway/center/big/arrivals
+	name = "Arrivals Gateway"
+	var/arrivals_shutoff_timerid
 
-/obj/machinery/gateway/piece/center
+/obj/machinery/gateway/center/big/arrivals/Initialize(mapload)
+	if(mapload)
+		if(!SSticker.arrivals_gateway)
+			SSticker.arrivals_gateway = src
+		else
+			stack_trace("Arrivals gateway conflicted.")
+	return ..()
+
+/obj/machinery/gateway/center/big/arrivals/proc/on_arrive(mob/living/carbon/human/H)
+	if(arrivals_shutoff_timerid)
+		deltimer(arrivals_shutoff_timerid)
+	set_state(GATEWAY_STATE_ON)
+	arrivals_shutoff_timerid = addtimer(CALLBACK(src, .proc/set_state, GATEWAY_STATE_OFF), 10 SECONDS, flags = TIMER_STOPPABLE)
+
+/obj/machinery/gateway/center/big/departures
+	name = "Departures Gateway"
+
+/obj/machinery/gateway/center/big/departures/Initialize(mapload)
+	if(mapload)
+		if(!SSticker.departures_gateway)
+			SSticker.departures_gateway = src
+		else
+			stack_trace("Departures gateway conflicted.")
+	return ..()
+
+/obj/machinery/gateway/ring
+	density = TRUE
+	/// Our center "parent" gateway.
+	var/obj/structure/gateway/center/parent
+
+/obj/machinery/gateway/ring/receiver
 	density = FALSE
 
-
+/obj/machinery/gateway/ring/Destroy()
+	parent.ring_piece_deleted(src)
+	parent = null
+	return ..()
 
 
 
