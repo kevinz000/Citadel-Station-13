@@ -22,6 +22,7 @@
 	var/traits = null
 	var/space_ruin_levels = 2
 	var/space_empty_levels = 1
+	var/station_ruin_budget = -1 // can be set to manually override the station ruins budget on maps that don't support station ruins, stopping the error from being unable to place the ruins.
 
 	var/minetype = "lavaland"
 
@@ -57,6 +58,9 @@
 	var/evacuationNoEscapeResolveMessage =
 	/// Arrivals method
 	var/arrivalsMethod = ARRIVAL_METHOD_SHUTTLE
+	// "fun things"
+	/// Orientation to load in by default.
+	var/orientation = SOUTH		//byond defaults to placing everyting SOUTH.
 
 /proc/load_map_config(filename = "data/next_map.json", default_to_box, delete_after, error_if_missing = TRUE)
 	var/datum/map_config/config = new
@@ -150,6 +154,9 @@
 		log_world("map_config space_empty_levels is not a number!")
 		return
 
+	if("station_ruin_budget" in json)
+		station_ruin_budget = json["station_ruin_budget"]
+
 	temp = json["year_offset"]
 	if (isnum(temp))
 		year_offset = temp
@@ -165,6 +172,11 @@
 
 	if ("announcertype" in json)
 		announcertype = json["announcertype"]
+
+	if ("orientation" in json)
+		orientation = json["orientation"]
+		if(!(orientation in GLOB.cardinals))
+			orientation = SOUTH
 
 	allow_custom_shuttles = json["allow_custom_shuttles"] != FALSE
 
@@ -186,3 +198,23 @@
 
 /datum/map_config/proc/MakeNextMap()
 	return config_filename == "data/next_map.json" || fcopy(config_filename, "data/next_map.json")
+
+/// badmin moments. Keep up to date with LoadConfig()!
+/datum/map_config/proc/WriteNextMap()
+	var/list/jsonlist = list()
+	jsonlist["map_name"] = map_name
+	jsonlist["map_path"] = map_path
+	jsonlist["map_file"] = map_file
+	jsonlist["shuttles"] = shuttles
+	jsonlist["traits"] = traits
+	jsonlist["space_ruin_levels"] = space_ruin_levels
+	jsonlist["year_offset"] = year_offset
+	jsonlist["minetype"] = minetype
+	jsonlist["maptype"] = maptype
+	jsonlist["announcertype"] = announcertype
+	jsonlist["orientation"] = orientation
+	jsonlist["allow_custom_shuttles"] = allow_custom_shuttles
+	if(fexists("data/next_map.json"))
+		fdel("data/next_map.json")
+	var/F = file("data/next_map.json")
+	WRITE_FILE(F, json_encode(jsonlist))
