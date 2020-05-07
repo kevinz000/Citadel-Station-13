@@ -7,6 +7,15 @@
 	active_power_usage = 0
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
 
+/obj/machinery/gateway/throw_at()
+	return
+
+/obj/machinery/gateway/forceMove(atom/destination)
+	cleanup()
+	. = ..()
+	if(!build())
+		CRASH("Hey some idiot forceMove'd [src] and it was unable to rebuild in the new location, this will cause problems!")
+
 /obj/machinery/gateway/center
 	icon = 'icons/obj/machines/gateway96x96.dmi'
 	appearance_flags = KEEP_TOGETHER | PIXEL_SCALE
@@ -17,7 +26,7 @@
 	/// Receiving teleporting pieces
 	var/list/obj/machinery/gateway/ring/receiver/ring_receivers = list()
 	/// The size of our center, as radius. 1 is 1x1, 2 is 3x3, 3 is 5x5, so on.
-	var/center_size
+	var/center_size = 1
 
 /obj/machinery/gateway/center/Initialize(mapload)
 	build()
@@ -52,7 +61,6 @@
 		CRASH("Gateway location conflicting, autobuild proc stopped."); \
 	}
 /obj/machinery/gateway/center/proc/build()
-	set_bound_size()
 	cleanup()		//just in case
 	ring_pieces = list()
 	ring_receivers = list()
@@ -85,6 +93,8 @@
 		ring_pieces += R
 		ring_receivers += R
 		R.parent = src
+	set_bound_size()
+	update_transform()
 #undef CHECK_TURF
 
 /obj/machinery/gateway/center/proc/set_state(new_state)
@@ -100,39 +110,72 @@
 
 /obj/machinery/gateway/center/proc/set_bound_size()
 	bound_width = bound_height = (((center_size - 1) * 2) + 1) * world.icon_size + world.icon_size * 2
-	bound_x = bound_y = (center_size - 1) * world.icon_size
+	bound_x = bound_y = -((center_size - 1) * world.icon_size)
+
+/obj/machinery/gateway/center/proc/update_transform()
+	pixel_x = pixel_y = -((center_size - 1) * world.icon_size)
+	var/factor = ((((center_size - 1) * 2) + 1) * world.icon_size + world.icon_size * 2) / 96		// 96 is our .dmi icon size
+	transform = matrix(factor, 0, 0, 0, factor, 0)
+
+/obj/machinery/gateway/center/Bumped(atom/movable/AM)
+	. = ..()
+	try_teleport(AM)
+
+/obj/machinery/gateway/center/proc/try_teleport(atom/movable/AM)
+	var/obj/machinery/gateway/center/C = get_destination_gateway(AM)
+	if(!C)
+		return
+	return teleport_sequence(AM, C)
+
+/obj/machinery/gateway/center/proc/get_destination_gateway(atom/movable/AM)
+	return
+
+/obj/machinery/gateway/center/proc/after_teleport_receive(atom/movable/AM)
+	return
+
+/obj/machinery/gateway/center/proc/can_teleport_receive(atom/movable/AM)
+	return TRUE
+
+/obj/machinery/gateway/center/proc/can_teleport_send(atom/movable/AM)
+	return TRUE
+
+/obj/machinery/gateway/center/proc/before_teleport_send(atom/movable/AM)
+	return
+
+/obj/machinery/gateway/center/proc/before_teleport_receive(atom/movable/AM)
+	return
+
+/obj/machinery/gateway/center/proc/after_teleport_send(atom/movable/AM)
+	return
+
+/obj/machinery/gateway/center/proc/teleport_sequence(atom/movable/AM, obj/machinery/gateway/center/other)
+	if(!other)
+		return FALSE
+	. = other.can_teleport_receive(AM)
+	if(!.)
+		return
+	// before moving
+	before_teleport_send(AM)
+	other.before_teleport_receive(AM)
+	// move them
+	var/list/turf/valid = other.get_receiving_turfs()
+	var/turf/T = SAFEPICK(valid)
+	if(!T)
+		. = FALSE
+		CRASH("[src] was unable to send [AM] to [other] due to no receiving turfs being returned by the destination! This is bad!")
+	AM.forceMove(T)
+	after_teleport_send(AM)
+	other.after_teleport_receive(AM)
+
+/**
+  * Handles ring piece deletion. Really shouldn't happen outside of singularity memes.
+  */
+/obj/machinery/gateway/center/proc/handle_ring_deletion(obj/machinery/gateway/ring/R)
+	ring_pieces -= R
+	ring_receivers -= R
 
 /obj/machinery/gateway/center/big
 	center_size = 2
-
-/obj/machinery/gateway/center/big/arrivals
-	name = "Arrivals Gateway"
-	var/arrivals_shutoff_timerid
-
-/obj/machinery/gateway/center/big/arrivals/Initialize(mapload)
-	if(mapload)
-		if(!SSticker.arrivals_gateway)
-			SSticker.arrivals_gateway = src
-		else
-			stack_trace("Arrivals gateway conflicted.")
-	return ..()
-
-/obj/machinery/gateway/center/big/arrivals/proc/on_arrive(mob/living/carbon/human/H)
-	if(arrivals_shutoff_timerid)
-		deltimer(arrivals_shutoff_timerid)
-	set_state(GATEWAY_STATE_ON)
-	arrivals_shutoff_timerid = addtimer(CALLBACK(src, .proc/set_state, GATEWAY_STATE_OFF), 10 SECONDS, flags = TIMER_STOPPABLE)
-
-/obj/machinery/gateway/center/big/departures
-	name = "Departures Gateway"
-
-/obj/machinery/gateway/center/big/departures/Initialize(mapload)
-	if(mapload)
-		if(!SSticker.departures_gateway)
-			SSticker.departures_gateway = src
-		else
-			stack_trace("Departures gateway conflicted.")
-	return ..()
 
 /obj/machinery/gateway/ring
 	density = TRUE
@@ -147,57 +190,52 @@
 	parent = null
 	return ..()
 
+/**
+  * Actual away mission station/away gates.
+  */
+/obj/machinery/gateway/center/away_mission
+
+
+GLOBAL_DATUM(the_station_gateway, /obj/machinery/gateway/center/away_mission/station)
+/obj/machinery/gateway/center/away_mission/station
+	/// The gateway on the away misison
+	var/obj/machinery/gateway/center/away_mission/away/awaygate
+	/// world.time at which we can be activated by players
+	var/activation_lockout_until = 0
+
+/obj/machinery/gateway/center/away_mission/station/Initialize(mapload)
+	if(!GLOB.the_station_gateway)
+		GLOB.the_station_gateway = src
+	awaygate = locate()
+	activation_lockout_until = SSticker.round_start_time + CONFIG_GET(number/gateway_delay)
+	return ..()
+
+/obj/machinery/gateway/center/away_mission/away
+	/// Is this calibrated? If so new adventurers will go to this gate instead of being strewn around the map.
+	var/calibrated = FALSE
+	/// Random spawns for noncalibrated mode.
+	var/list/obj/effect/landmark/randomspawns
+
+/obj/machinery/gateway/center/away_mission/away/Initialize(mapload)
+	randomspawns = GLOB.awaydestinations
+	return ..()
+
+/obj/machinery/gateway/center/away_mission/away/get_destination_gateway(atom/movable/AM)
+	return GLOB.the_station_gateway
+
+/obj/machinery/gateway/center/away_mission/away/get_receiving_turfs()
+	if(!length(randomspawns))
+		return ..()
+	. = list()
+	for(var/i in randomspawns)
+		. += get_turf(i)
 
 
 
 GLOBAL_DATUM(the_gateway, /obj/machinery/gateway/centerstation)
-	var/checkparts = TRUE
 	var/list/obj/effect/landmark/randomspawns = list()
 	var/calibrated = TRUE
-	var/list/linked = list()
-	var/can_link = FALSE	//Is this the centerpiece?
 
-/obj/machinery/gateway/Initialize()
-	randomspawns = GLOB.awaydestinations
-	update_icon()
-	if(!istype(src, /obj/machinery/gateway/centerstation) && !istype(src, /obj/machinery/gateway/centeraway))
-		switch(dir)
-			if(SOUTH,SOUTHEAST,SOUTHWEST)
-				density = FALSE
-	return ..()
-
-/obj/machinery/gateway/proc/toggleoff()
-	for(var/obj/machinery/gateway/G in linked)
-		G.active = 0
-		G.update_icon()
-	active = 0
-	update_icon()
-
-/obj/machinery/gateway/proc/detect()
-	if(!can_link)
-		return FALSE
-	linked = list()	//clear the list
-	var/turf/T = loc
-	var/ready = FALSE
-
-	for(var/i in GLOB.alldirs)
-		T = get_step(loc, i)
-		var/obj/machinery/gateway/G = locate(/obj/machinery/gateway) in T
-		if(G)
-			linked.Add(G)
-			continue
-
-		//this is only done if we fail to find a part
-		ready = FALSE
-		toggleoff()
-		break
-
-	if((linked.len == 8) || !checkparts)
-		ready = TRUE
-	return ready
-
-/obj/machinery/gateway/update_icon_state()
-	icon_state = active ? "on" : "off"
 
 /obj/machinery/gateway/attack_hand(mob/user)
 	. = ..()
@@ -212,17 +250,6 @@ GLOBAL_DATUM(the_gateway, /obj/machinery/gateway/centerstation)
 
 /obj/machinery/gateway/proc/toggleon(mob/user)
 	return FALSE
-
-/obj/machinery/gateway/safe_throw_at()
-	return
-
-/obj/machinery/gateway/centerstation/Initialize()
-	. = ..()
-	if(!GLOB.the_gateway)
-		GLOB.the_gateway = src
-	update_icon()
-	wait = world.time + CONFIG_GET(number/gateway_delay)	//+ thirty minutes default
-	awaygate = locate(/obj/machinery/gateway/centeraway)
 
 /obj/machinery/gateway/centerstation/Destroy()
 	if(GLOB.the_gateway == src)
@@ -331,12 +358,6 @@ GLOBAL_DATUM(the_gateway, /obj/machinery/gateway/centerstation)
 	if(!stationgate)
 		to_chat(user, "<span class='notice'>Error: No destination found.</span>")
 		return
-
-	for(var/obj/machinery/gateway/G in linked)
-		G.active = 1
-		G.update_icon()
-	active = 1
-	update_icon()
 
 /obj/machinery/gateway/centeraway/proc/check_exile_implant(mob/living/L)
 	for(var/obj/item/implant/exile/E in L.implants)//Checking that there is an exile implant

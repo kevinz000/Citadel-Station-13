@@ -60,7 +60,9 @@ SUBSYSTEM_DEF(ticker)
 
 	var/roundend_check_paused = FALSE
 
-	var/round_start_time = 0
+	/// world.time that the round started at
+	var/static/round_start_time = 0
+
 	var/list/round_start_events
 	var/list/round_end_events
 	var/mode_result = "undefined"
@@ -593,7 +595,6 @@ SUBSYSTEM_DEF(ticker)
 	queue_delay = SSticker.queue_delay
 	queued_players = SSticker.queued_players
 	maprotatechecked = SSticker.maprotatechecked
-	round_start_time = SSticker.round_start_time
 
 	queue_delay = SSticker.queue_delay
 	queued_players = SSticker.queued_players
