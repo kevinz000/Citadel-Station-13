@@ -146,7 +146,7 @@
 		if(build_timerid)
 			deltimer(build_timerid)
 			build_timerid = null
-		addtimer(CALLBACK(src, .proc/finish_current_item), time_to_build(head))
+		build_timerid = addtimer(CALLBACK(src, .proc/finish_current_item), time_to_build(head), TIMER_STOPPABLE)
 	return TRUE
 
 /**
