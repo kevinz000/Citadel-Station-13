@@ -263,11 +263,20 @@
 	var/can_move_docking_ports = FALSE //if this shuttle can move docking ports other than the one it is docked at
 	var/list/hidden_turfs = list()
 
+	/// Our shuttle holder object, if we made one
+	var/obj/structure/shuttle_holder/movable_holder
+
 /obj/docking_port/mobile/proc/register()
 	SSshuttle.mobile += src
 
+/obj/docking_port/mobile/proc/create_movable_holder(atom/create_at, rotation_degrees = 0)
+	if(!movable_holder)
+		movable_holder = new(null, src)
+	movable_holder.set_position(create_at, rotation_degrees)
+
 /obj/docking_port/mobile/Destroy(force)
 	if(force)
+		QDEL_NULL(movable_holder)
 		SSshuttle.mobile -= src
 		destination = null
 		previous = null
