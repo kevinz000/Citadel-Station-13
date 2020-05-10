@@ -265,14 +265,27 @@
 
 	/// Our shuttle holder object, if we made one
 	var/obj/structure/shuttle_holder/movable_holder
+	/// The temporary dock we're at if we moved to our movable holder
+	var/obj/docking_port/stationary/temporary_movable_holder_dock
 
 /obj/docking_port/mobile/proc/register()
 	SSshuttle.mobile += src
 
-/obj/docking_port/mobile/proc/create_movable_holder(atom/create_at, rotation_degrees = 0)
+/obj/docking_port/mobile/proc/create_movable_holder(atom/create_at)
 	if(!movable_holder)
 		movable_holder = new(null, src)
-	movable_holder.set_position(create_at, rotation_degrees)
+	movable_holder.set_position(create_at)
+	return movable_holder
+
+/obj/docking_port/mobile/proc/crashing_this_shuttle_with_no_survivors(atom/location, vector_angle = 0, vector_speed = 32)
+	create_movable_holder(location)
+	movable_holder.enable_collisions()
+	movable_holder.set_rotation(vector_angle)
+	movable_holder.set_velocity(vector_angle, vector_speed)
+
+/obj/docking_port/mobile/proc/move_to_movable_holder_immediate()
+	ASSERT(movable_holder)
+	//
 
 /obj/docking_port/mobile/Destroy(force)
 	if(force)
