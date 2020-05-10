@@ -82,7 +82,7 @@
   */
 /obj/structure/shuttle_holder/proc/updateTransform()
 	var/matrix/M = matrix()
-	M.Turn(rotation)
+	M.Turn(dir2angle(rotation))
 	transform = M
 
 /obj/structure/shuttle_holder/process(wait)
@@ -116,7 +116,24 @@
 	var/dy = cos(velocity_angle) * pixels
 	var/npx = pixel_x + dx
 	var/npy = pixel_y + dy
-	var/turf/T = locate(FLOOR(npx, world.icon_size), FLOOR(npy, world.icon_size), z)
+	var/turf/T
+	var/tx = loc.x
+	var/ty = loc.y
+	while(npx > (world.icon_size / 2))
+		tx++
+		npx -= world.icon_size
+	while(npx < -(world.icon_size / 2))
+		tx--
+		npx += world.icon_size
+	while(npy > (world.icon_size / 2))
+		ty++
+		npy -= world.icon_size
+	while(npy < (world.icon_size / 2))
+		ty--
+		npy += world.icon_size
+	T = locate(tx, ty, z)
+	if(!T)
+		return PROCESS_KILL
 	var/px = (x - T.x) + pixel_x
 	var/py = (y - T.y) + pixel_y
 	var/safety = 10
