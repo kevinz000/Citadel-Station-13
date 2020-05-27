@@ -1,3 +1,28 @@
+// Inventory by slot system.
+
+
+/**
+  * Returns null or the item in an inventory slot.
+  */
+/mob/proc/item_in_inventory_slot(slot)
+	return inventory_slots && inventory_slots[slot]
+
+/**
+  * Checks if can equip an item into a particular inventory slot.
+  */
+/mob/proc/can_equip_into_inventory_slot(obj/item/I, slot)
+
+
+/**
+  * Checks if we have a particular inventory slot.
+  */
+/mob/proc/has_inventory_slot(slot)
+
+
+
+
+
+
 //These procs handle putting s tuff in your hands
 //as they handle all relevant stuff like adding it to the player's screen and updating their overlays.
 

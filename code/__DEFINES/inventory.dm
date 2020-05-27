@@ -24,32 +24,52 @@
 #define ITEM_SLOT_BACKPACK		(1<<15)
 #define ITEM_SLOT_SUITSTORE		(1<<16)
 
-//SLOTS
-#define SLOT_BACK			1
-#define SLOT_WEAR_MASK		2
-#define SLOT_HANDCUFFED		3
-#define SLOT_HANDS			4 //wherever you provide a slot for hands you provide SLOT_HANDS
-								//SLOT_HANDS as a slot will pick ANY available hand
-#define SLOT_BELT			5
-#define SLOT_WEAR_ID		6
-#define SLOT_EARS			7
-#define SLOT_GLASSES		8
-#define SLOT_GLOVES			9
-#define SLOT_NECK			10
-#define SLOT_HEAD			11
-#define SLOT_SHOES			12
-#define SLOT_WEAR_SUIT		13
-#define SLOT_W_UNIFORM		14
-#define SLOT_L_STORE		15
-#define SLOT_R_STORE		16
-#define SLOT_S_STORE		17
-#define SLOT_IN_BACKPACK	18
-#define SLOT_LEGCUFFED		19
-#define SLOT_GENERC_DEXTROUS_STORAGE	20
 
+// Slots. These are used as associative keys for mob/var/list/inventory_slots.
+/// Backpacks, etc
+#define INVENTORY_SLOT_BACK					"back"
+/// Masks
+#define INVENTORY_SLOT_MASK					"mask"
+/// What someone is handcuffed with
+#define INVENTORY_SLOT_HANDCUFFS			"handcuffs"
+/// What someone is legcuffed with
+#define INVENTORY_SLOT_LEGCUFFS				"legcuffs"
+/// Belts
+#define INVENTORY_SLOT_BELT					"belt"
+/// Ids, pdas, tablets, badges, etc
+#define INVENTORY_SLOT_ID					"id"
+/// Headsets, earmuffs, etc.
+#define INVENTORY_SLOT_EARS					"ears"
+/// Glasses, etc
+#define INVENTORY_SLOT_EYES					"eyes"
+/// Gloves, etc
+#define INVENTORY_SLOT_GLOVES				"hands"
+/// ties, collars, etc
+#define INVENTORY_SLOT_NECK					"neck"
+/// Hats, etc
+#define INVENTORY_SLOT_HEAD					"head"
+/// Suit storage/clipped to outerwear "suit"
+#define INVENTORY_SLOT_SUIT_STORAGE			"suit_storage"
+/// Left "pocket" or otherwise storage
+#define INVENTORY_SLOT_LEFT_POCKET			"left_pocket"
+/// Right "pocket" or otherwise storage
+#define INVENTORY_SLOT_RIGHT_POCKET			"right_pocket"
+/// Generic dextrous storage for certain mobs like holoparasites
+#define INVENTORY_SLOT_DEXTROYS_STORAGE		"generic_dextrous"
+/// Jumpsuits, pants, etc, considered inner uniform wear
+#define INVENTORY_SLOT_UNIFORM				"uniform"
+/// Outerwear like hardsuits and things
+#define INVENTORY_SLOT_SUIT					"suit"
+/// Shoes
+#define INVENTORY_SLOT_SHOES				"shoes"
 
-#define SLOTS_AMT			20 // Keep this up to date!
+// Special handling slots, not "worn" in said slot exactly rather than used by the system to handle items that require it.
+/// This means held by/put into ANY hand.
+#define INVENTORY_SPECIAL_HELD				"!HELD_INHAND"
+/// Put into backapck
+#define INVENTORY_SPECIAL_IN_BACKPACK		"!IN_BACKPACK"
 
+#warn fix the below
 //I hate that this has to exist
 /proc/slotdefine2slotbit(slotdefine) //Keep this up to date with the value of SLOT BITMASKS and SLOTS (the two define sections above)
 	. = 0
