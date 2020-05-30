@@ -132,6 +132,15 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	var/list/grind_results //A reagent list containing the reagents this item produces when ground up in a grinder - this can be an empty list to allow for reagent transferring only
 	var/list/juice_results //A reagent list containing blah blah... but when JUICED in a grinder!
 
+	///Skills vars
+	//list of skill PATHS exercised when using this item. An associated bitfield can be set to indicate additional ways the skill is used by this specific item.
+	var/list/datum/skill/used_skills
+	var/skill_difficulty = THRESHOLD_UNTRAINED //how difficult it's to use this item in general.
+	var/skill_gain = DEF_SKILL_GAIN //base skill value gain from using this item.
+
+	var/canMouseDown = FALSE
+
+
 /obj/item/Initialize()
 
 	if (attack_verb)
@@ -414,14 +423,12 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 		return usr.client.Click(src, src_location, src_control, params)
 	var/list/directaccess = usr.DirectAccess()	//This, specifically, is what requires the copypaste. If this were after the adjacency check, then it'd be impossible to use items in your inventory, among other things.
 												//If this were before the above checks, then trying to click on items would act a little funky and signal overrides wouldn't work.
-	if(iscarbon(usr))
-		var/mob/living/carbon/C = usr
-		if((C.combat_flags & COMBAT_FLAG_COMBAT_ACTIVE) && ((C.CanReach(src) || (src in directaccess)) && (C.CanReach(over) || (over in directaccess))))
-			if(!C.get_active_held_item())
-				C.UnarmedAttack(src, TRUE)
-				if(C.get_active_held_item() == src)
-					melee_attack_chain(C, over)
-				return TRUE //returning TRUE as a "is this overridden?" flag
+	if(SEND_SIGNAL(usr, COMSIG_COMBAT_MODE_CHECK, COMBAT_MODE_ACTIVE) && ((usr.CanReach(src) || (src in directaccess)) && (usr.CanReach(over) || (over in directaccess))))
+		if(!usr.get_active_held_item())
+			usr.UnarmedAttack(src, TRUE)
+			if(usr.get_active_held_item() == src)
+				melee_attack_chain(usr, over)
+			return TRUE //returning TRUE as a "is this overridden?" flag
 	if(!Adjacent(usr) || !over.Adjacent(usr))
 		return // should stop you from dragging through windows
 
@@ -776,14 +783,17 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 		var/user = usr
 		tip_timer = addtimer(CALLBACK(src, .proc/openTip, location, control, params, user), timedelay, TIMER_STOPPABLE)//timer takes delay in deciseconds, but the pref is in milliseconds. dividing by 100 converts it.
 
-/obj/item/MouseExited()
+/obj/item/MouseExited(location,control,params)
+	SEND_SIGNAL(src, COMSIG_ITEM_MOUSE_EXIT, location, control, params)
 	deltimer(tip_timer)//delete any in-progress timer if the mouse is moved off the item before it finishes
 	closeToolTip(usr)
 
+/obj/item/MouseEntered(location,control,params)
+	SEND_SIGNAL(src, COMSIG_ITEM_MOUSE_ENTER, location, control, params)
 
 // Called when a mob tries to use the item as a tool.
 // Handles most checks.
-/obj/item/proc/use_tool(atom/target, mob/living/user, delay, amount=0, volume=0, datum/callback/extra_checks)
+/obj/item/proc/use_tool(atom/target, mob/living/user, delay, amount=0, volume=0, datum/callback/extra_checks, skill_gain_mult = 1, max_level = INFINITY)
 	// No delay means there is no start message, and no reason to call tool_start_check before use_tool.
 	// Run the start check here so we wouldn't have to call it manually.
 	if(!delay && !tool_start_check(user, amount))
@@ -795,6 +805,9 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	play_tool_sound(target, volume)
 
 	if(delay)
+		if(user.mind && used_skills)
+			delay = user.mind.item_action_skills_mod(src, delay, skill_difficulty, SKILL_USE_TOOL, null, FALSE)
+
 		// Create a callback with checks that would be called every tick by do_after.
 		var/datum/callback/tool_check = CALLBACK(src, .proc/tool_check_callback, user, amount, extra_checks)
 
@@ -818,6 +831,14 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	// but only if the delay between the beginning and the end is not too small
 	if(delay >= MIN_TOOL_SOUND_DELAY)
 		play_tool_sound(target, volume)
+
+
+	if(user.mind && used_skills && skill_gain_mult)
+		var/gain = skill_gain + delay/SKILL_GAIN_DELAY_DIVISOR
+		for(var/skill in used_skills)
+			if(!(SKILL_TRAINING_TOOL in used_skills[skill]))
+				continue
+			user.mind.auto_gain_experience(skill, gain*skill_gain_mult, GET_STANDARD_LVL(max_level))
 
 	return TRUE
 
