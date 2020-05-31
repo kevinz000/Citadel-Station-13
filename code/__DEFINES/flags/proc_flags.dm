@@ -1,0 +1,10 @@
+// /proc/zap_act zap_flags
+#define ZAP_MACHINE_EXPLOSIVE		(1<<0)
+#define ZAP_ALLOW_DUPLICATES		(1<<1)
+#define ZAP_OBJ_DAMAGE			(1<<2)
+#define ZAP_MOB_DAMAGE			(1<<3)
+#define ZAP_MOB_STUN			(1<<4)
+
+#define ZAP_DEFAULT_FLAGS ALL
+#define ZAP_FUSION_FLAGS ZAP_OBJ_DAMAGE | ZAP_MOB_DAMAGE | ZAP_MOB_STUN
+#define ZAP_SUPERMATTER_FLAGS NONE
