@@ -38,6 +38,30 @@
 	if(make_typecache && length(viable_mobtypes))
 		viable_mobtypes = typecacheof(viable_mobtypes)
 
+/datum/disease/proc/
+
+/datum/disease/proc/IsSame(datum/disease/D)
+	if(istype(src, D.type))
+		return TRUE
+	return FALSE
+
+/datum/disease/proc/Copy()
+	//note that stage is not copied over - the copy starts over at stage 1
+	var/static/list/copy_vars = list("name", "visibility_flags", "disease_flags", "spread_flags", "form", "desc", "agent", "spread_text",
+									"cure_text", "max_stages", "stage_prob", "viable_mobtypes", "cures", "infectivity", "cure_chance",
+									"bypasses_immunity", "permeability_mod", "severity", "required_organs", "needs_all_cures", "strain_data",
+									"infectable_biotypes", "process_dead")
+
+	var/datum/disease/D = copy_type ? new copy_type() : new type()
+	for(var/V in copy_vars)
+		var/val = vars[V]
+		if(islist(val))
+			var/list/L = val
+			val = L.Copy()
+		D.vars[V] = val
+	return D
+
+
 /datum/disease/Destroy()
 	. = ..()
 	if(affected_mob)
@@ -139,28 +163,6 @@
 		if(add_resistance && (disease_flags & CAN_RESIST))
 			affected_mob.disease_resistances |= GetDiseaseID()
 	qdel(src)
-
-/datum/disease/proc/IsSame(datum/disease/D)
-	if(istype(src, D.type))
-		return TRUE
-	return FALSE
-
-
-/datum/disease/proc/Copy()
-	//note that stage is not copied over - the copy starts over at stage 1
-	var/static/list/copy_vars = list("name", "visibility_flags", "disease_flags", "spread_flags", "form", "desc", "agent", "spread_text",
-									"cure_text", "max_stages", "stage_prob", "viable_mobtypes", "cures", "infectivity", "cure_chance",
-									"bypasses_immunity", "permeability_mod", "severity", "required_organs", "needs_all_cures", "strain_data",
-									"infectable_biotypes", "process_dead")
-
-	var/datum/disease/D = copy_type ? new copy_type() : new type()
-	for(var/V in copy_vars)
-		var/val = vars[V]
-		if(islist(val))
-			var/list/L = val
-			val = L.Copy()
-		D.vars[V] = val
-	return D
 
 /datum/disease/proc/after_add()
 	return
