@@ -1887,6 +1887,7 @@
 #include "code\modules\error_handler\error_viewer.dm"
 #include "code\modules\eval\interpreter.dm"
 #include "code\modules\eval\parser.dm"
+#include "code\modules\eval\scanner.dm"
 #include "code\modules\eval\interpreter\procmap.dm"
 #include "code\modules\eval\interpreter\procs\byond_builtin_wrappers.dm"
 #include "code\modules\events\_event.dm"
