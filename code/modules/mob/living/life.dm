@@ -1,6 +1,10 @@
-/mob/living/proc/Life(seconds, times_fired)
+/mob/living/proc/Life(seconds, times_fired, in_stasis)
 	set waitfor = FALSE
-	set invisibility = 0
+	
+	/* Until Life() is refactored to not require so many overrides and whatnot, this lives in [code/controllers/subsystems/mobs.dm]
+	if(SEND_SIGNAL(src, COMSIG_LIVING_ON_LIFE, seconds, times_fired) & COMPONENT_INTERRUPT_LIFE)
+		return
+	*/
 
 	if(digitalinvis)
 		handle_diginvis() //AI becomes unable to see mob

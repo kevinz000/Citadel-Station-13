@@ -34,7 +34,7 @@ SUBSYSTEM_DEF(mobs)
 	while(currentrun.len)
 		var/mob/living/L = currentrun[currentrun.len]
 		currentrun.len--
-		if(L)
+		if(L && !(SEND_SIGNAL(L, COMSIG_LIVING_ON_LIFE) & COMPONENT_INTERRUPT_LIFE))		// snowflake comsig hook to not have to change how Life works.
 			L.Life(seconds, times_fired)
 		else
 			GLOB.mob_living_list.Remove(L)

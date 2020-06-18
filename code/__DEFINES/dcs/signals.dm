@@ -232,6 +232,9 @@
 #define COMSIG_LIVING_STATUS_STAGGER "living_stagger"			//from base of mob/living/Stagger() (amount, update, ignore)
 	#define COMPONENT_NO_STUN 1			//For all of them
 
+#define COMSIG_LIVING_ON_LIFE "mob_life"							//SNOWFLAKE HOOKED: From SSmobs/fire()! ~~from base of /mob/living/Life()~~: (wait_in_seconds, times_fired)
+	#define COMPONENT_INTERRUPT_LIFE 1				// prevents the rest of Life from executing.
+
 // /mob/living/carbon signals
 #define COMSIG_CARBON_SOUNDBANG "carbon_soundbang"					//from base of mob/living/carbon/soundbang_act(): (list(intensity))
 #define COMSIG_CARBON_IDENTITY_TRANSFERRED_TO "carbon_id_transferred_to" //from datum/dna/transfer_identity(): (datum/dna, transfer_SE)
