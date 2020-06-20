@@ -367,7 +367,7 @@
 		transfer = min(transfer, S.max_amount - S.amount)
 	if(pulledby)
 		pulledby.start_pulling(S)
-	S.copy_evidences(src)
+	S.merge_evidence(src)
 	use(transfer, TRUE)
 	S.add(transfer)
 	return transfer
@@ -440,6 +440,22 @@
 		fingerprints = from.fingerprints.Copy()
 	if(from.fingerprintshidden)
 		fingerprintshidden = from.fingerprintshidden.Copy()
+	if(from.fingerprintslast)
+		fingerprintslast = from.fingerprintslast
+
+/obj/item/stack/proc/merge_evidence(obj/item/stack/from)
+	if(from.blood_DNA)
+		if(!blood_DNA)
+			blood_DNA = list()
+		blood_DNA |= from.blood_DNA
+	if(from.fingerprints)
+		if(!fingerprints)
+			fingerprints = list()
+		fingerprints |= from.fingerprints
+	if(from.fingerprintshidden)
+		if(!fingerprintshidden)
+			fingerprintshidden = list()
+		fingerprintshidden |= from.fingerprintshidden
 	if(from.fingerprintslast)
 		fingerprintslast = from.fingerprintslast
 
