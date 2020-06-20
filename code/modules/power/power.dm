@@ -11,14 +11,23 @@
 	icon = 'icons/obj/power.dmi'
 	anchored = TRUE
 	obj_flags = CAN_BE_HIT | ON_BLUEPRINTS
-	var/datum/powernet/powernet = null
 	use_power = NO_POWER_USE
 	idle_power_usage = 0
 	active_power_usage = 0
 
+	/// The powernet we're connected to.
+	var/datum/powernet/powernet
+
 /obj/machinery/power/Destroy()
 	disconnect_from_network()
 	return ..()
+
+/**
+  * Called directly from /datum/powernet as it takes us in.
+  * We do not get a choice in the matter.
+  */
+/obj/machinery/power/proc/(datum/powernet/new_network)
+	powernet = new_network
 
 ///////////////////////////////
 // General procedures
@@ -147,59 +156,6 @@
 		coil.place_turf(T, user)
 	else
 		return ..()
-
-
-///////////////////////////////////////////
-// Powernet handling helpers
-//////////////////////////////////////////
-
-//returns all the cables WITHOUT a powernet in neighbors turfs,
-//pointing towards the turf the machine is located at
-/obj/machinery/power/proc/get_connections()
-
-	. = list()
-
-	var/cdir
-	var/turf/T
-
-	for(var/card in GLOB.cardinals)
-		T = get_step(loc,card)
-		cdir = get_dir(T,loc)
-
-		for(var/obj/structure/cable/C in T)
-			if(C.powernet)
-				continue
-			if(C.d1 == cdir || C.d2 == cdir)
-				. += C
-	return .
-
-//returns all the cables in neighbors turfs,
-//pointing towards the turf the machine is located at
-/obj/machinery/power/proc/get_marked_connections()
-
-	. = list()
-
-	var/cdir
-	var/turf/T
-
-	for(var/card in GLOB.cardinals)
-		T = get_step(loc,card)
-		cdir = get_dir(T,loc)
-
-		for(var/obj/structure/cable/C in T)
-			if(C.d1 == cdir || C.d2 == cdir)
-				. += C
-	return .
-
-//returns all the NODES (O-X) cables WITHOUT a powernet in the turf the machine is located at
-/obj/machinery/power/proc/get_indirect_connections()
-	. = list()
-	for(var/obj/structure/cable/C in loc)
-		if(C.powernet)
-			continue
-		if(C.d1 == 0) // the cable is a node cable
-			. += C
-	return .
 
 ///////////////////////////////////////////
 // GLOBAL PROCS for powernets handling

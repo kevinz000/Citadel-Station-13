@@ -1,3 +1,40 @@
+/**
+  * Powernet datums
+  * Contains tables and nodes.
+  * Nodes are /obj/machinery/power.
+  * Nodes can either add or use power.
+  *
+  * On the note of rebuilds:
+  * Powernet rebuilds are coordinated by a central subsystem, before machine processing happens.
+  * In the case of a powernet being invalid, it stays on the cable.
+  * Cables must NEVER have a null powernet! It is better to have machines or anything else reading phantom data for all of a whole second at worst
+  * than to runtime - we simply do not have the code right now to gracefully handle null powernets. Maybe in the future it could 
+  * be rolled into a system where sensors "malfunction" in that case to ICly convey the idea of being mid-rebuild, or something.
+  */
+/datum/powernet
+	/// All cables we consist of.
+	var/list/obj/structure/cable/cables = list()
+	/// All machinery connected to us
+	var/list/obj/machinery/power/nodes = list()
+
+/**
+  * Merges a powernet into us, and then disposes of them.
+  */
+/datum/powernet/proc/merge(datum/powernet/other)
+	if(length(cables) < length(other.cables))		// more efficient. added bonus of runtiming if someone passes in something invalid.
+		return other.merge(src)
+	for(var/i in other.cables)
+		var/obj/structure/cable/C = i
+		C.powernet = src
+	for(var/i in other.nodes)
+		var/obj/machinery/power/P = i
+		P.powernet = src
+	cables |= other.cables
+	nodes |= other.nodes
+	other.cables.len = 0
+	other.nodes.len = 0
+	qdel(other)
+
 ////////////////////////////////////////////
 // POWERNET DATUM
 // each contiguous network of cables & nodes

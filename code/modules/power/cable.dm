@@ -45,6 +45,7 @@ By design, d1 is the smallest direction and d2 is the highest
 	obj_flags = CAN_BE_HIT | ON_BLUEPRINTS
 	var/d1 = 0   // cable direction 1 (see above)
 	var/d2 = 1   // cable direction 2 (see above)
+	/// The powernet we're part of.
 	var/datum/powernet/powernet
 	var/obj/item/stack/cable_coil/stored
 
@@ -384,43 +385,6 @@ By design, d1 is the smallest direction and d2 is the highest
 // Powernets handling helpers
 //////////////////////////////////////////////
 
-//if powernetless_only = 1, will only get connections without powernet
-/obj/structure/cable/proc/get_connections(powernetless_only = 0)
-	. = list()	// this will be a list of all connected power objects
-	var/turf/T
-
-	//get matching cables from the first direction
-	if(d1) //if not a node cable
-		T = get_step(src, d1)
-		if(T)
-			. += power_list(T, src, turn(d1, 180), powernetless_only) //get adjacents matching cables
-
-	if(d1&(d1-1)) //diagonal direction, must check the 4 possibles adjacents tiles
-		T = get_step(src,d1&3) // go north/south
-		if(T)
-			. += power_list(T, src, d1 ^ 3, powernetless_only) //get diagonally matching cables
-		T = get_step(src,d1&12) // go east/west
-		if(T)
-			. += power_list(T, src, d1 ^ 12, powernetless_only) //get diagonally matching cables
-
-	. += power_list(loc, src, d1, powernetless_only) //get on turf matching cables
-
-	//do the same on the second direction (which can't be 0)
-	T = get_step(src, d2)
-	if(T)
-		. += power_list(T, src, turn(d2, 180), powernetless_only) //get adjacents matching cables
-
-	if(d2&(d2-1)) //diagonal direction, must check the 4 possibles adjacents tiles
-		T = get_step(src,d2&3) // go north/south
-		if(T)
-			. += power_list(T, src, d2 ^ 3, powernetless_only) //get diagonally matching cables
-		T = get_step(src,d2&12) // go east/west
-		if(T)
-			. += power_list(T, src, d2 ^ 12, powernetless_only) //get diagonally matching cables
-	. += power_list(loc, src, d2, powernetless_only) //get on turf matching cables
-
-	return .
-
 //should be called after placing a cable which extends another cable, creating a "smooth" cable that no longer terminates in the centre of a turf.
 //needed as this can, unlike other placements, disconnect cables
 /obj/structure/cable/proc/denode()
@@ -440,6 +404,60 @@ By design, d1 is the smallest direction and d2 is the highest
 	if(O && !QDELETED(O))
 		var/datum/powernet/newPN = new()// creates a new powernet...
 		propagate_network(O, newPN)//... and propagates it to the other side of the cable
+
+/**
+  * (Re)builds our power network.
+  */
+/obj/structure/cable/proc/Rebuild(datum/powernet/old)
+	if(powernet != old)		// someone/something already rebuilt us
+		return
+	var/datum/powernet/new_powernet = new
+	net_powernet.build_network(src)
+
+/**
+  * Queues ourselves for rebuild on the next server tick.
+  */
+/obj/structure/cable/proc/QueueRebuild()
+	addtimer(CALLBACK(src, .proc/Rebuild, powernet), 0)		// We WOULD do TIMER_UNIQUE here, but the "hashing" function for it is uh, quite expensive.
+
+/**
+  * Returns all cables we are connected to.
+  */
+/obj/structure/cable/proc/network_expansion()
+	. = list()
+	var/node = is_node()
+	for(var/obj/structure/cable/C in loc)
+		if((C.d1 == d1) || (C.d2 == d2))
+			. += C
+	// easy stuff ontop is done, hard part.
+	var/turf/other
+	var/turned
+	if(d1) // sometimes, d1 doesn't exist/we are a node/knot
+		other = get_step(src, d1)
+		if(other)
+			turned = turn(d1, 180)
+			for(var/obj/structure/cable/C in other)
+				if((C.d1 == turned) || (C.d2 == turned))
+					. += C
+	// we always have d2
+	other = get_step(src, d2)
+	if(!other)	// edge of map
+		return
+	turned = turn(d2, 180)
+	for(var/obj/structure/cable/C in other)
+		if((C.d1 == turned) || (C.d2 == turned))
+			. += C
+
+/**
+  * Returns all nodes/machinery that can connect to us.
+  */
+/obj/structure/cable/proc/connectable_nodes()
+	if(d1)	// we are not a node/knot
+		return list()
+	. = list()
+	for(var/obj/machinery/power/potential in loc)
+		. += potential
+
 
 // cut the cable's powernet at this cable and updates the powergrid
 /obj/structure/cable/proc/cut_cable_from_powernet(remove=TRUE)
