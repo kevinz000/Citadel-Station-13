@@ -61,6 +61,8 @@
 #define COMBAT_FLAG_ACTIVE_BLOCKING			(1<<11)
 /// This mob is currently starting an active block
 #define COMBAT_FLAG_ACTIVE_BLOCK_STARTING	(1<<12)
+/// This mob is affected by aim instability
+#define COMBAT_FLAG_AIM_INSTABILITY			(1<<13)
 
 // Helpers for getting someone's stamcrit state. Cast to living.
 #define NOT_STAMCRIT 0

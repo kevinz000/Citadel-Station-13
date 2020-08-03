@@ -159,3 +159,11 @@
 	var/sprint_buffer_regen_last = 0		//last world.time this was regen'd for math.
 	var/sprint_stamina_cost = 0.70			//stamina loss per tile while insufficient sprint buffer.
 	//---End
+
+	// Aim Instability
+	/// Current aim instability
+	var/aim_instability = 0
+	/// Last world.time of aim instability decay
+	var/aim_instability_last = 0
+	/// Aim instability modifier
+	var/aim_instability_mod = 1
