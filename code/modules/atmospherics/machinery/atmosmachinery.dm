@@ -201,7 +201,7 @@
 /**
   * Joins connected nodes. This proc should tell them we connected.
   */
-/obj/machinery/atmospherics/proc/join_nodes(subsystem_init = FALSe)
+/obj/machinery/atmospherics/proc/join_nodes(subsystem_init = FALSE)
 	for(var/i in nodes)
 		var/obj/machinery/atmospherics/A = i
 		if(!A)
