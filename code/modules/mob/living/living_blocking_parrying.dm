@@ -21,6 +21,12 @@ GLOBAL_LIST_EMPTY(block_parry_data)
 /datum/block_parry_data
 	/////////// BLOCKING ////////////
 
+	// BASICS
+	/// Can this block
+	var/can_active_block = FALSE
+	/// Can this parry
+	var/can_active_parry = FALSE
+
 	/// NOTE: FOR ATTACK_TYPE_DEFINE, you MUST wrap it in "[DEFINE_HERE]"! The defines are bitflags, and therefore, NUMBERS!
 
 	/// See defines. Point of reference is someone facing north.

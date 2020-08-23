@@ -136,7 +136,8 @@
   * Returns if we can actively block.
   */
 /obj/item/proc/can_active_block()
-	return block_parry_data && (item_flags & ITEM_CAN_BLOCK)
+	var/datum/block_parry_data/data = get_block_parry_data()
+	return data?.can_active_block? TRUE : FALSE
 
 /**
   * Calculates FINAL ATTACK DAMAGE after mitigation

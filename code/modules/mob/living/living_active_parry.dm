@@ -3,7 +3,8 @@
   * Determines if we can actively parry.
   */
 /obj/item/proc/can_active_parry()
-	return block_parry_data && (item_flags & ITEM_CAN_PARRY)
+	var/datum/block_parry_data/data = get_block_parry_data()
+	return data?.can_active_parry? TRUE : FALSE
 
 /**
   * Called from keybindings.

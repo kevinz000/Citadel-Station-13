@@ -24,10 +24,6 @@
 #define NO_UNIFORM_REQUIRED					(1<<11)
 ///Damage when attacking people is not affected by combat mode.
 #define NO_COMBAT_MODE_FORCE_MODIFIER		(1<<12)
-/// This item can be used to parry. Only a basic check used to determine if we should proceed with parry chain at all.
-#define ITEM_CAN_PARRY						(1<<13)
-/// This item can be used in the directional blocking system. Only a basic check used to determine if we should proceed with directional block handling at all.
-#define ITEM_CAN_BLOCK						(1<<14)
 
 // Flags for the clothing_flags var on /obj/item/clothing
 
