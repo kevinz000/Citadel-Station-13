@@ -10,7 +10,7 @@ export const ClientStatBrowser = (props, context) => {
       <Window.Content>
         <Tabs>
           <Tabs.Tab
-            selected={tab == "Status"}
+            selected={tab === "Status"}
             onClick={() => setTab("Status")}>
             Status
           </Tabs.Tab>
@@ -28,27 +28,27 @@ export const ClientStatBrowser = (props, context) => {
         )}
       </Window.Content>
     </Window>
-  )
-}
+  );
+};
 
 const StatusPanel = (props, context) => {
   const { act, data } = useBackend(context);
   return (
-/*
-    <Section title="Ping">
-      <ProgressBar
-        ranges={{
-          good: [0, 250],
-          average: [250, 450],
-          bad: [450, Infinity]
-        }}
-        minValue={0}
-        maxValue={Infinity}
-        value={data.ping}
-        children={"" + data.ping + " ms (Avg " + data.avgping + " ms)"}
-        />
-    </Section>
-*/
+  /*
+      <Section title="Ping">
+        <ProgressBar
+          ranges={{
+            good: [0, 250],
+            average: [250, 450],
+            bad: [450, Infinity]
+          }}
+          minValue={0}
+          maxValue={Infinity}
+          value={data.ping}
+          children={"" + data.ping + " ms (Avg " + data.avgping + " ms)"}
+          />
+      </Section>
+  */
     <LabeledList>
       <LabeledList.Item label="Ping">
         {data.ping} ms (Avg: {data.ping_avg} ms)
@@ -61,7 +61,7 @@ const StatusPanel = (props, context) => {
       </LabeledList.Item>
       <LabeledList.Item label="Server Time">
         {data.servertime}
-      </LabeledList.Item>"
+      </LabeledList.Item>
       <LabeledList.Item label="Round Time">
         {data.roundtime}
       </LabeledList.Item>
@@ -72,21 +72,22 @@ const StatusPanel = (props, context) => {
         {data.emergency_shuttle}
       </LabeledList.Item>
       <LabeledList.Item label="Time Dilation">
-        {data.time_dilation[1]}% AVG: ({data.time_dilation[2]}, {data.time_dilation[3]}, {data.time_dilation[4]})
+        {data.time_dilation[1]}%
+        AVG: ({data.time_dilation[2]}, {data.time_dilation[3]},
+        {data.time_dilation[4]})
       </LabeledList.Item>
     </LabeledList>
-/*
-    <Section title="Time Dilation">
+  /*
+      <Section title="Time Dilation">
 
-    </Section>
-*/
-  )
-}
+      </Section>
+  */
+  );
+};
 
 const VotePanel = (props, context) => {
   const { act, data } = useBackend(context);
-
   return (
     "Not Implemented"
-  )
-}
+  );
+};

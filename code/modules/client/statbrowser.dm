@@ -20,7 +20,7 @@
 
 /client/proc/setup_statbrowser()
 	if(!stat_tgui_window)
-		stat_tgui_window = new(src, "statbrowser", FALSE, "statbrowser_window.statbrowser", "")
+		stat_tgui_window = new(src, "statbrowser", FALSE, "statbrowser_window.statbrowser", "file=statbrowser.html")
 		// jank ass
 		tgui_windows["statbrowser"] = stat_tgui_window
 	if(!stat_tgui)
