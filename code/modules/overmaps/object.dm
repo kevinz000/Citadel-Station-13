@@ -127,15 +127,21 @@
 /**
   * Sets our x coordinate in units
   */
-/datum/overmap_object/proc/set_x()
+/datum/overmap_object/proc/set_x(new_x, host_initiated)
 	OVERMAP_EXTOOLS_HOOK_CHECK
+	if(host_initiated)
+		x = new_x
+		return
 	host?.
 
 /**
   * Sets our y coordinate in units
   */
-/datum/overmap_object/proc/set_y()
+/datum/overmap_object/proc/set_y(new_y, host_initiated)
 	OVERMAP_EXTOOLS_HOOK_CHECK
+	if(host_initiated)
+		y = new_y
+		return
 	host?.
 
 /**
