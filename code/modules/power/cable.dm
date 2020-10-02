@@ -263,7 +263,7 @@ By design, d1 is the smallest direction and d2 is the highest
 		// else, get rid of our powernet
 		QDEL_NULL(powernet)
 	var/datum/powernet/new_powernet = new
-	net_powernet.build_network(src)
+	net_powernet.propagate(src)
 
 /**
   * Queues ourselves for rebuild on the next server tick.

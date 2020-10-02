@@ -21,8 +21,6 @@
   * Merges a powernet into us, and then disposes of them.
   */
 /datum/powernet/proc/merge(datum/powernet/other)
-	if(length(cables) < length(other.cables))		// more efficient. added bonus of runtiming if someone passes in something invalid.
-		return other.merge(src)
 	for(var/i in other.cables)
 		var/obj/structure/cable/C = i
 		C.powernet = src
@@ -35,14 +33,17 @@
 	other.nodes.len = 0
 	qdel(other)
 
+/**
+  * Builds our network from a cable, expanding along any cable it's connected to until we have taken in everything it's connected to.
+  */
+/datum/powernet/proc/propagate(obj/structure/cable/C)
+
+
 ////////////////////////////////////////////
 // POWERNET DATUM
 // each contiguous network of cables & nodes
 /////////////////////////////////////
 /datum/powernet
-	var/number					// unique id
-	var/list/cables = list()	// all cables & junctions
-	var/list/nodes = list()		// all connected machines
 
 	var/load = 0				// the current load on the powernet, increased by each machine at processing
 	var/newavail = 0			// what available power was gathered last tick, then becomes...
