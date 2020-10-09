@@ -254,6 +254,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	var/hide_ckey = FALSE //pref for hiding if your ckey shows round-end or not
 
+	/// Use mouse angle to aim projectiles instead of angle to where you clicked
+	var/projectile_aim_from_character = FALSE
+
 /datum/preferences/New(client/C)
 	parent = C
 
@@ -654,6 +657,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "<b>Show Runechat Chat Bubbles:</b> <a href='?_src_=prefs;preference=chat_on_map'>[chat_on_map ? "Enabled" : "Disabled"]</a><br>"
 			dat += "<b>Runechat message char limit:</b> <a href='?_src_=prefs;preference=max_chat_length;task=input'>[max_chat_length]</a><br>"
 			dat += "<b>See Runechat for non-mobs:</b> <a href='?_src_=prefs;preference=see_chat_non_mob'>[see_chat_non_mob ? "Enabled" : "Disabled"]</a><br>"
+			dat += "<b>Projectile aiming:</b> <a href='_src_=prefs;preference=projectile_aiming_angle_mode'>[projectile_aim_from_character? "From Character" : "At clicked object"]</a><br>"
 			dat += "<br>"
 			dat += "<b>Action Buttons:</b> <a href='?_src_=prefs;preference=action_buttons'>[(buttons_locked) ? "Locked In Place" : "Unlocked"]</a><br>"
 			dat += "<br>"
@@ -2351,6 +2355,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					chat_on_map = !chat_on_map
 				if("see_chat_non_mob")
 					see_chat_non_mob = !see_chat_non_mob
+				if("projectile_aiming_angle_mode")
+					projectile_aim_from_character = !projectile_aim_from_character
 				if("action_buttons")
 					buttons_locked = !buttons_locked
 				if("tgui_fancy")

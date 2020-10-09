@@ -262,6 +262,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["buttons_locked"]		>> buttons_locked
 	S["windowflash"]		>> windowflashing
 	S["be_special"] 		>> be_special
+	S["projectile_aim_from_character"]		 >> projectile_aim_from_character
 
 
 	S["default_slot"]		>> default_slot
@@ -323,6 +324,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	chat_on_map		= sanitize_integer(chat_on_map, 0, 1, initial(chat_on_map))
 	max_chat_length = sanitize_integer(max_chat_length, 1, CHAT_MESSAGE_MAX_LENGTH, initial(max_chat_length))
 	see_chat_non_mob	= sanitize_integer(see_chat_non_mob, 0, 1, initial(see_chat_non_mob))
+	projectile_aim_from_character = sanitize_integer(projectile_aim_from_character, 0, 1, initial(projectile_aim_from_character))
 	tgui_fancy		= sanitize_integer(tgui_fancy, 0, 1, initial(tgui_fancy))
 	tgui_lock		= sanitize_integer(tgui_lock, 0, 1, initial(tgui_lock))
 	buttons_locked	= sanitize_integer(buttons_locked, 0, 1, initial(buttons_locked))
@@ -417,6 +419,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["chat_on_map"], chat_on_map)
 	WRITE_FILE(S["max_chat_length"], max_chat_length)
 	WRITE_FILE(S["see_chat_non_mob"], see_chat_non_mob)
+	WRITE_FILE(S["projectile_aim_from_character"], projectile_aim_from_character)
 	WRITE_FILE(S["tgui_fancy"], tgui_fancy)
 	WRITE_FILE(S["tgui_lock"], tgui_lock)
 	WRITE_FILE(S["buttons_locked"], buttons_locked)

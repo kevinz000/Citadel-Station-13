@@ -715,7 +715,8 @@
 		setAngle(get_projectile_angle(src, targloc) + spread)
 
 	if(isliving(source) && params)
-		var/list/calculated = calculate_projectile_angle_and_pixel_offsets(source, params)
+		var/mob/living/L = source
+		var/list/calculated = calculate_projectile_angle_and_pixel_offsets(source, params, L.client?.prefs?.projectile_aim_from_character || FALSE)
 		p_x = calculated[2]
 		p_y = calculated[3]
 
@@ -728,7 +729,10 @@
 		stack_trace("WARNING: Projectile [type] fired without either mouse parameters, or a target atom to aim at!")
 		qdel(src)
 
-/proc/calculate_projectile_angle_and_pixel_offsets(mob/user, params)
+/**
+  * from_character - if FALSE, aims at thing clicked rather than using angle of mouse click
+  */
+/proc/calculate_projectile_angle_and_pixel_offsets(mob/user, params, from_character = FALSE)
 	var/list/mouse_control = params2list(params)
 	var/p_x = 0
 	var/p_y = 0
