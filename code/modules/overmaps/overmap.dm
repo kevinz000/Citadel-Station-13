@@ -7,21 +7,17 @@
   */
 /datum/overmap
 	/// Are we initialized?
-	PRIVATE_VAR(initialized) = FALSE
+	VAR_PRIVATE/initialized = FALSE
 	/// Our objects
-	PRIVATE_VAR(list/overmap_object/objects)
+	VAR_PRIVATE/list/overmap_object/objects
 	/// Our size in x
-	PRIVATE_VAR(size_x)
+	VAR_PRIVATE/size_x
 	/// Our size in y
-	PRIVATE_VAR(size_y)
-	/// Our grid distance multiplier factor. Higher values reduce memory usage but make collision detections more costly.
-	PRIVATE_VAR(grid_multiplier)
-	/// Our array grid size in x
-	PRIVATE_VAR(array_size_x)
-	/// Our array grid size in y
-	PRIVATE_VAR(array_size_y)
-	/// Our grid. 2 dimensional list[x][y] = lazylist(elements) OR singular element
-	PRIVATE_VAR(grid)
+	VAR_PRIVATE/size_y
+	/// Our array grid array size
+	VAR_PRIVATE/array_size
+	/// Our grid. sparse grid system, [index] = lazylist(elements) OR singular element OR null. index is calculated using OVERMAP_INDEX(x, y, sizex, sizey)
+	VAR_PRIVATE/grid
 
 /**
   * Initializes the overmap to a certain size.

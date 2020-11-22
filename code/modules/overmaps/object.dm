@@ -8,20 +8,20 @@
 /datum/overmap_object
 	// Location
 	/// What overmap we're on
-	PRIVATE_VAR(datum/overmap/host)
-	PRIVATE_VAR(x)
-	PRIVATE_VAR(y)
+	VAR_PRIVATE/datum/overmap/host
+	VAR_PRIVATE/x
+	VAR_PRIVATE/y
 
 	// Physics
 	/// Per second
-	PRIVATE_VAR(speed)
+	VAR_PRIVATE/speed
 	/// Counterclockwise from north
-	PRIVATE_VAR(angle)
+	VAR_PRIVATE/angle
 	// These two are centered on ourselves
 	/// x hitbox
-	PRIVATE_VAR(bound_x) = 1
+	VAR_PRIVATE/bound_x = 1
 	/// y hitbox
-	PRIVATE_VAR(bound_y) = 1
+	VAR_PRIVATE/bound_y = 1
 
 /datum/overmap_object/New(datum/overmap/host, x, y, bound_x, bound_y)
 	ASSERT(istype(host))
