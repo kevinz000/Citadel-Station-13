@@ -2,13 +2,17 @@
  * Rigsuit control module a la baystation
  * Holds most of the data for rigsuits.
  * Pieces are attached via /datum/component/rig_piece
+ *
+ * Rig zones:
+ * Zones consist of head, chest, left/right arms/legs, for a total of 6 zones.
+ * They have no correlation to the actual rig pieces.
  */
 /obj/item/rig
 	name = "blank rigsuit control module"
 	desc = "Coders fucked up, if you can see this."
-	/// list of all attached components
+	/// list of all attached components. Can be at init, a list of typepaths to spawn, or null.
 	var/list/obj/item/rig_component/all_components
-	/// list of all permanent components (cannot be detached)
+	/// list of all permanent components (cannot be detached). Can be at init, a list of typepaths to spawn, or null.
 	var/list/obj/item/rig_component/permanent_components
 	/// Current weight - updated by component attach/detach
 	var/weight = 0
@@ -18,82 +22,68 @@
 	var/obj/item/rig_component/pressure_shielding/installed_pressure_shielding
 	/// Installed thermal protection.
 	var/obj/item/rig_component/thermal_shielding/installed_thermal_shielding
+	/// Suit types bitflag. Used for module can attach checks.
+	var/suit_types = NONE
+	/// List of components to generate at init. If set to = TRUE associative value, it'll be permanent.
+	var/list/initial_components = list()
+	/// Helmet. Typepath for init spawn.
+	var/obj/item/clothing/head/rig/helmet = /obj/item/clothing/head/rig
+	/// Chestpiece. Typepath for init spawn.
+	var/obj/item/clothing/suit/rig/chestpiece = /obj/item/clothing/suit/rig
+	/// Gauntlets. Typepath for init spawn.
+	var/obj/item/clothing/gloves/rig/gauntlets = /obj/item/clothing/gloves/rig
+	/// Boots. Typepath for init spawn.
+	var/obj/item/clothing/shoes/rig/boots = /obj/item/clothing/shoes/rig
 
 /obj/item/rig/Initialize(mapload)
 	. = ..()
+	generate_pieces()
+	generate_components()
+	initial_components = null
+	update_weight()
+	sync_all_pieces()
 
 /obj/item/rig/Destroy()
+	wipe_components()
 	for(var/i in all_components)
 		var/obj/item/rig_component/C = i
 		detach_component(C, TRUE, TRUE)
 	return ..()
 
 /**
- * Attachs a component.
- * Will forceMove said component to ourselves regardless of their location.
- *
- * @params
- * C - component to attach
- * force - ignore all can attach safety checks
- * del_conflicting - if forcing attach, conflicting modules will be deleted instead of dropped
- * unremovable - force component to be permanent/internal.
- * default_module - TRUE if it's being attached as part of rig control module Initialize()
+ * Generates all default pieces on a rigsuit.
  */
-/obj/item/rig/proc/attach_component(obj/item/rig_component/C, force = FALSE, del_conflicting = TRUE, unremovable = FALSE, default_module = FALSE)
-	var/list/obj/item/rig_component/conflicting = check_module_conflicts(C)
-	if(!force && !C.can_attach(src) || conflicting.len)
-		return FALSE
-	all_components += C
-	if(unremovable || C.internal)
-		permanent_components += C
-	C.on_attach(src, default_module)
-	for(var/i in conflicting)
-		var/obj/item/rig_component/C = i
-		detach_component(C, TRUE, del_conflicting)
+/obj/item/rig/proc/generate_pieces()
+	if(ispath(helmet))
+		helmet = new helmet(src, src)
+	if(ispath(chestpiece))
+		chestpiece = new chestpiece(src, src)
+	if(ispath(gauntlets))
+		gauntlets = new gauntlets(src, src)
+	if(ispath(boots))
+		boots = new boots(src, src)
 
 /**
- * Detaches a component.
- *
- * @params
- * C - component to detach
- * force - ignore all can_detach safety checks on the module
- * delete - delete detached module instead of dropping
+ * Returns a list of all installed rigsuit pieces.
  */
-/obj/item/rig/proc/detach_component(obj/item/rig_component/C, force = FALSE, delete = FALSE)
-	if(!force && !C.can_detach(src))
-		return FALSE
-	all_components -= C
-	permanent_components -= C
-	C.on_detach(src)
-	if(delete)
-		qdel(C)
-	else
-		C.forceMove(drop_location())
-
-/**
- * Checks for any modules that are conflicting on the current suit with one about to be attached.
- *
- * @return A list of all modules that conflict. Empty if none.
- */
-/obj/item/rig/proc/check_module_conflicts(obj/item/rig_component/C)
+/obj/item/rig/proc/all_pieces()
 	. = list()
-	var/theirs = C.conflicts_with
-	for(var/i in all_components)
-		var/obj/item/rig_component/C = i
-		if(theirs & C.conflicts_with)
-			. += C
+	if(helmet)
+		. += helmet
+	if(chestpiece)
+		. += chestpiece
+	if(gauntlets)
+		. += gauntlets
+	if(boots)
+		. += boots
 
 /**
- * Updates rig installed armor.
+ * Syncs up all pieces with the installed armor/thermal/pressure modules
  */
-/obj/item/rig/proc/update_armor_module()
+/obj/item/rig/proc/sync_all_pieces()
+	for(var/i in all_pieces())
+		sync_piece(i)
 
 /**
- * Updates rig installed pressure module.
+ * Syncs a specific piece with the installed armor/thermal/pressure modules
  */
-/obj/item/rig/proc/update_pressure_module()
-
-/**
- * Updates rig installed thermal module.
- */
-/obj/item/rig/proc/update_thermal_module()

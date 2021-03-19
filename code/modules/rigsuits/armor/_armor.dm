@@ -26,7 +26,7 @@
 	if(!rig_protection)
 		rig_protection = user_protection
 
-/obj/item/rig_component/armor/on_attach(obj/item/rig/rig, rig_creation = fALSE)
+/obj/item/rig_component/thermal_shielding/on_attach(obj/item/rig/rig, rig_creation = fALSE)
 	rig.update_armor_module()
 
 /**

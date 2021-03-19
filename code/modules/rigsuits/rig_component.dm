@@ -2,6 +2,8 @@
  * Base type of rig components.
  */
 /obj/item/rig_component
+	/// Currently attached rig. Set by rig attach/detach procs.
+	var/obj/item/rig/host
 	/// Weight of this component
 	var/weight = RIGSUIT_WEIGHT_NONE
 	/// Allowed suit types, flags.
@@ -37,8 +39,8 @@
  * * rig_creation - Being created and attached as part of default modules.
  */
 /obj/item/rig_component/proc/on_attach(obj/item/rig/rig, rig_creation = FALSE)
-	rig.weight += weight
-	return
+	if(!rig_creation)
+		rig.update_weight()
 
 /**
  * Called when detached from a suit.
@@ -47,5 +49,5 @@
  * * rig - The control module being attached into
  */
 /obj/item/rig_component/proc/on_detach(obj/item/rig/rig)
-	rig.weight -= weight
-	return
+	if(!rig_creation)
+		rig.update_weight()
