@@ -7,7 +7,7 @@
 
 	use_skintones = USE_SKINTONES_GRAYSCALE_CUSTOM
 #warn todo: exotic blood
-	exotic_blood =
+	exotic_blood = "NOT A BLOOD"
 #warn todo: exotic bloodtype
 	exotic_bloodtype = "NANITE"
 	exotic_blood_color = BLOOD_COLOR_OIL
@@ -26,7 +26,7 @@
 	toxic_food = NONE
 	inert_mutation = null
 #warn todo: outfit
-	outfit_important_for_life =
+	// outfit_important_for_life =
 	damage_overlay_type = "synth"
 
 #warn todo: species traits, need more?
@@ -41,58 +41,54 @@
 
 	/// Our nanite component
 	var/datum/component/nanites/permanent/protean/nanite_component
+	/// The protean ui holder
+	var/datum/protean_holder/control_holder
+
+	// ass_image = 'icons/ass/assmachine.png' shh
 
 
 
 
 
+	// var/skinned_type
+	// //Breathing!
+	// var/obj/item/organ/lungs/mutantlungs = null
+	// var/breathid = "o2"
 
+	// var/obj/item/organ/brain/mutant_brain = /obj/item/organ/brain
+	// var/obj/item/organ/heart/mutant_heart = /obj/item/organ/heart
+	// var/obj/item/organ/eyes/mutanteyes = /obj/item/organ/eyes
+	// var/obj/item/organ/ears/mutantears = /obj/item/organ/ears
+	// var/obj/item/mutanthands
+	// var/obj/item/organ/tongue/mutanttongue = /obj/item/organ/tongue
+	// var/obj/item/organ/tail/mutanttail = null
 
+	// var/obj/item/organ/liver/mutantliver
+	// var/obj/item/organ/stomach/mutantstomach
 
-
-
-
-
-	var/skinned_type
-	//Breathing!
-	var/obj/item/organ/lungs/mutantlungs = null
-	var/breathid = "o2"
-
-	var/obj/item/organ/brain/mutant_brain = /obj/item/organ/brain
-	var/obj/item/organ/heart/mutant_heart = /obj/item/organ/heart
-	var/obj/item/organ/eyes/mutanteyes = /obj/item/organ/eyes
-	var/obj/item/organ/ears/mutantears = /obj/item/organ/ears
-	var/obj/item/mutanthands
-	var/obj/item/organ/tongue/mutanttongue = /obj/item/organ/tongue
-	var/obj/item/organ/tail/mutanttail = null
-
-	var/obj/item/organ/liver/mutantliver
-	var/obj/item/organ/stomach/mutantstomach
-
-	var/icon_limbs //Overrides the icon used for the limbs of this species. Mainly for downstream, and also because hardcoded icons disgust me. Implemented and maintained as a favor in return for a downstream's implementation of synths.
-	var/species_category
+	// var/icon_limbs //Overrides the icon used for the limbs of this species. Mainly for downstream, and also because hardcoded icons disgust me. Implemented and maintained as a favor in return for a downstream's implementation of synths.
+	// var/species_category
 
 	//the ids you can use for your species, if empty, it means default only and not changeable
-	var/list/allowed_limb_ids
+	// var/list/allowed_limb_ids
 
 	//override for the icon path used when setting bodypart overlays. Intended for species that don't fit in the standard 32x32 files.
-	var/override_bp_icon
+	// var/override_bp_icon
 
 ///////////
 // PROCS //
 ///////////
 
-/datum/species/New()
-
-	if(!limbs_id)	//if we havent set a limbs id to use, just use our own id
-		mutant_bodyparts["limbs_id"] = id //done this way to be non-intrusive to the existing system
-	else
-		mutant_bodyparts["limbs_id"] = limbs_id
+/datum/species/protean/New()
 	..()
 
-	//update our mutant bodyparts to include unlocked ones
-	mutant_bodyparts += GLOB.unlocked_mutant_parts
+/datum/species/protean/on_species_gain(mob/living/carbon/C, datum/species/old_species, pref_load)
+	// init our holder
+	control_holder = new (C)
+	// also give them verbs to open this (maybe interactable button on the top-right, those things?)
+	return ..()
 
+/*
 /proc/generate_selectable_species(clear = FALSE)
 	if(clear)
 		GLOB.roundstart_races = list()
@@ -1614,3 +1610,4 @@
 				mutant_bodyparts["spines"] = mutant_bodyparts["waggingspines"]
 				mutant_bodyparts -= "waggingspines"
 			H.update_body()
+*/
