@@ -10,13 +10,31 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/path
 	var/vr_path
 	var/default_slot = 1				//Holder so it doesn't default to slot 1, rather the last one used
-	var/max_save_slots = 16
+	var/max_save_slots = 24
 
-	//non-preference stuff
-	var/muted = 0
+	// Intra-round persistence begin
+	/// Flags for admin mutes
+	var/muted = NONE
+	/// Last IP the person was seen on
 	var/last_ip
+	/// Last CID the person was seen on
 	var/last_id
+	/// Do we log their clicks to disk?
 	var/log_clicks = FALSE
+	/// Characters they have joined the round under - Lazylist of names
+	var/list/characters_joined_as
+	/// Slots they have joined the round under - Lazylist of numbers
+	var/list/slots_joined_as
+	/// Are we currently subject to respawn restrictions? Usually set by us using the "respawn" verb, but can be lifted by admins.
+	var/respawn_restrictions_active = FALSE
+	/// time of death we consider for respawns
+	var/respawn_time_of_death = -INFINITY
+	/// did they DNR? used to prevent respawns.
+	var/dnr_triggered = FALSE
+	/// did they cryo on their last ghost?
+	var/respawn_did_cryo = FALSE
+
+	// Intra-round persistence end
 
 	var/icon/custom_holoform_icon
 	var/list/cached_holoform_icons
@@ -36,7 +54,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/tip_delay = 500 //tip delay in milliseconds
 
 	//Antag preferences
-	var/list/be_special = list()		//Special role selection
+	var/list/be_special = list()		//Special role selection. ROLE_SYNDICATE being missing means they will never be antag!
 	var/tmp/old_be_special = 0			//Bitflag version of be_special, used to update old savefiles and nothing more
 										//If it's 0, that's good, if it's anything but 0, the owner of this prefs file's antag choices were,
 										//autocorrected this round, not that you'd need to check that.
@@ -44,15 +62,20 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/UI_style = null
 	var/buttons_locked = FALSE
 	var/hotkeys = FALSE
+
+	///Runechat preference. If true, certain messages will be displayed on the map, not ust on the chat area. Boolean.
 	var/chat_on_map = TRUE
+	///Limit preference on the size of the message. Requires chat_on_map to have effect.
 	var/max_chat_length = CHAT_MESSAGE_MAX_LENGTH
+	///Whether non-mob messages will be displayed, such as machine vendor announcements. Requires chat_on_map to have effect. Boolean.
 	var/see_chat_non_mob = TRUE
+	///Whether emotes will be displayed on runechat. Requires chat_on_map to have effect. Boolean.
+	var/see_rc_emotes = TRUE
 
 	/// Custom Keybindings
 	var/list/key_bindings = list()
 	/// List with a key string associated to a list of keybindings. Unlike key_bindings, this one operates on raw key, allowing for binding a key that triggers regardless of if a modifier is depressed as long as the raw key is sent.
 	var/list/modless_key_bindings = list()
-
 
 	var/tgui_fancy = TRUE
 	var/tgui_lock = TRUE
@@ -105,6 +128,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	var/custom_speech_verb = "default" //if your say_mod is to be something other than your races
 	var/custom_tongue = "default" //if your tongue is to be something other than your races
+	var/additional_language = "None" //additional language your character has
 	var/modified_limbs = list() //prosthetic/amputated limbs
 	var/chosen_limb_id //body sprite selected to load for the users limbs, null means default, is sanitized when loaded
 
@@ -124,11 +148,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	//Job preferences 2.0 - indexed by job title , no key or value implies never
 	var/list/job_preferences = list()
 
-		// Want randomjob if preferences already filled - Donkie
+	// Want randomjob if preferences already filled - Donkie
 	var/joblessrole = BERANDOMJOB  //defaults to 1 for fewer assistants
 
 	// 0 = character settings, 1 = game preferences
-	var/current_tab = 0
+	var/current_tab = SETTINGS_TAB
 
 	var/unlock_content = 0
 
@@ -143,13 +167,13 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/auto_fit_viewport = FALSE
 	///Should we be in the widescreen mode set by the config?
 	var/widescreenpref = TRUE
-
 	///What size should pixels be displayed as? 0 is strech to fit
 	var/pixel_size = 0
 	///What scaling method should we use?
 	var/scaling_method = "normal"
-
 	var/uplink_spawn_loc = UPLINK_PDA
+	///The playtime_reward_cloak variable can be set to TRUE from the prefs menu only once the user has gained over 5K playtime hours. If true, it allows the user to get a cool looking roundstart cloak.
+	var/playtime_reward_cloak = FALSE
 
 	var/hud_toggle_flash = TRUE
 	var/hud_toggle_color = "#ffffff"
@@ -180,7 +204,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	///loadout stuff
 	var/gear_points = 10
 	var/list/gear_categories
-	var/list/chosen_gear = list()
+	var/list/loadout_data = list()
+	var/list/unlockable_loadout_data = list()
+	var/loadout_slot = 1 //goes from 1 to MAXIMUM_LOADOUT_SAVES
 	var/gear_category
 	var/gear_subcategory
 
@@ -190,14 +216,26 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/autostand = TRUE
 	var/auto_ooc = FALSE
 
+	///This var stores the amount of points the owner will get for making it out alive.
+	var/hardcore_survival_score = 0
+
+	///Someone thought we were nice! We get a little heart in OOC until we join the server past the below time (we can keep it until the end of the round otherwise)
+	var/hearted
+	///If we have a hearted commendations, we honor it every time the player loads preferences until this time has been passed
+	var/hearted_until
 	/// If we have persistent scars enabled
 	var/persistent_scars = TRUE
+	///If we want to broadcast deadchat connect/disconnect messages
+	var/broadcast_login_logout = TRUE
 	/// We have 5 slots for persistent scars, if enabled we pick a random one to load (empty by default) and scars at the end of the shift if we survived as our original person
 	var/list/scars_list = list("1" = "", "2" = "", "3" = "", "4" = "", "5" = "")
 	/// Which of the 5 persistent scar slots we randomly roll to load for this round, if enabled. Actually rolled in [/datum/preferences/proc/load_character(slot)]
 	var/scars_index = 1
 
 	var/hide_ckey = FALSE //pref for hiding if your ckey shows round-end or not
+
+	var/list/tcg_cards = list()
+	var/list/tcg_decks = list()
 
 /datum/preferences/New(client/C)
 	parent = C
@@ -211,7 +249,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			load_path(C.ckey)
 			unlock_content = C.IsByondMember()
 			if(unlock_content)
-				max_save_slots = 24
+				max_save_slots = 32
 	var/loaded_preferences_successfully = load_preferences()
 	if(loaded_preferences_successfully)
 		if(load_character())
@@ -219,7 +257,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	//we couldn't load character data so just randomize the character appearance + name
 	random_character()		//let's create a random character then - rather than a fat, bald and naked man.
 	key_bindings = deepCopyList(GLOB.hotkey_keybinding_list_by_key) // give them default keybinds and update their movement keys
-	C?.update_movement_keys(src)
+	C?.ensure_keys_set(src)
 	real_name = pref_species.random_name(gender,1)
 	if(!loaded_preferences_successfully)
 		save_preferences()
@@ -236,12 +274,13 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	update_preview_icon(current_tab)
 	var/list/dat = list("<center>")
 
-	dat += "<a href='?_src_=prefs;preference=tab;tab=0' [current_tab == 0 ? "class='linkOn'" : ""]>Character Settings</a>"
-	dat += "<a href='?_src_=prefs;preference=tab;tab=2' [current_tab == 2 ? "class='linkOn'" : ""]>Character Appearance</a>"
-	dat += "<a href='?_src_=prefs;preference=tab;tab=3' [current_tab == 3 ? "class='linkOn'" : ""]>Loadout</a>"
-	dat += "<a href='?_src_=prefs;preference=tab;tab=1' [current_tab == 1 ? "class='linkOn'" : ""]>Game Preferences</a>"
-	dat += "<a href='?_src_=prefs;preference=tab;tab=4' [current_tab == 4 ? "class='linkOn'" : ""]>Content Preferences</a>"
-	dat += "<a href='?_src_=prefs;preference=tab;tab=5' [current_tab == 5 ? "class='linkOn'" : ""]>Keybindings</a>"
+	dat += "<a href='?_src_=prefs;preference=tab;tab=[SETTINGS_TAB]' [current_tab == SETTINGS_TAB ? "class='linkOn'" : ""]>Character Settings</a>"
+	dat += "<a href='?_src_=prefs;preference=tab;tab=[APPEARANCE_TAB]' [current_tab == APPEARANCE_TAB ? "class='linkOn'" : ""]>Character Appearance</a>"
+	dat += "<a href='?_src_=prefs;preference=tab;tab=[SPEECH_TAB]' [current_tab == SPEECH_TAB ? "class='linkOn'" : ""]>Character Speech</a>"
+	dat += "<a href='?_src_=prefs;preference=tab;tab=[LOADOUT_TAB]' [current_tab == LOADOUT_TAB ? "class='linkOn'" : ""]>Loadout</a>"
+	dat += "<a href='?_src_=prefs;preference=tab;tab=[GAME_PREFERENCES_TAB]' [current_tab == GAME_PREFERENCES_TAB ? "class='linkOn'" : ""]>Game Preferences</a>"
+	dat += "<a href='?_src_=prefs;preference=tab;tab=[CONTENT_PREFERENCES_TAB]' [current_tab == CONTENT_PREFERENCES_TAB ? "class='linkOn'" : ""]>Content Preferences</a>"
+	dat += "<a href='?_src_=prefs;preference=tab;tab=[KEYBINDINGS_TAB]' [current_tab == KEYBINDINGS_TAB ? "class='linkOn'" : ""]>Keybindings</a>"
 
 	if(!path)
 		dat += "<div class='notice'>Please create an account to save your preferences</div>"
@@ -251,7 +290,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	dat += "<HR>"
 
 	switch(current_tab)
-		if (0) // Character Settings#
+		if(SETTINGS_TAB) // Character Settings#
 			if(path)
 				var/savefile/S = new /savefile(path)
 				if(S)
@@ -327,7 +366,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "</tr></table>"
 
 		//Character Appearance
-		if(2)
+		if(APPEARANCE_TAB)
 			if(path)
 				var/savefile/S = new /savefile(path)
 				if(S)
@@ -444,13 +483,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						dat += "</td>"
 				else if(use_skintones || mutant_colors)
 					dat += "</td>"
-
-			dat += APPEARANCE_CATEGORY_COLUMN
-			dat += "<h2>Speech preferences</h2>"
-			dat += "<b>Custom Speech Verb:</b><BR>"
-			dat += "</b><a style='display:block;width:100px' href='?_src_=prefs;preference=speech_verb;task=input'>[custom_speech_verb]</a><BR>"
-			dat += "<b>Custom Tongue:</b><BR>"
-			dat += "</b><a style='display:block;width:100px' href='?_src_=prefs;preference=tongue;task=input'>[custom_tongue]</a><BR>"
 
 			if(HAIR in pref_species.species_traits)
 
@@ -638,7 +670,37 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "</td>"
 			dat += "</tr></table>"
 
-		if (1) // Game Preferences
+		if(SPEECH_TAB)
+			if(path)
+				var/savefile/S = new /savefile(path)
+				if(S)
+					dat += "<center>"
+					var/name
+					var/unspaced_slots = 0
+					for(var/i=1, i<=max_save_slots, i++)
+						unspaced_slots++
+						if(unspaced_slots > 4)
+							dat += "<br>"
+							unspaced_slots = 0
+						S.cd = "/character[i]"
+						S["real_name"] >> name
+						if(!name)
+							name = "Character[i]"
+						dat += "<a style='white-space:nowrap;' href='?_src_=prefs;preference=changeslot;num=[i];' [i == default_slot ? "class='linkOn'" : ""]>[name]</a> "
+					dat += "</center>"
+
+			dat += "<table><tr><td width='340px' height='300px' valign='top'>"
+			dat += "<h2>Speech preferences</h2>"
+			dat += "<b>Custom Speech Verb:</b><BR>"
+			dat += "</b><a style='display:block;width:100px' href='?_src_=prefs;preference=speech_verb;task=input'>[custom_speech_verb]</a><BR>"
+			dat += "<b>Custom Tongue:</b><BR>"
+			dat += "</b><a style='display:block;width:100px' href='?_src_=prefs;preference=tongue;task=input'>[custom_tongue]</a><BR>"
+			dat += "<b>Additional Language</b><BR>"
+			dat += "</b><a style='display:block;width:100px' href='?_src_=prefs;preference=language;task=input'>[additional_language]</a><BR>"
+			dat += "</td>"
+			dat += "</tr></table>"
+
+		if(GAME_PREFERENCES_TAB) // Game Preferences
 			dat += "<table><tr><td width='340px' height='300px' valign='top'>"
 			dat += "<h2>General Settings</h2>"
 			dat += "<b>UI Style:</b> <a href='?_src_=prefs;task=input;preference=ui'>[UI_style]</a><br>"
@@ -789,6 +851,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 
 			for (var/i in GLOB.special_roles)
+				if(i == ROLE_NO_ANTAGONISM)
+					dat += "<b>DISABLE ALL ANTAGONISM</b> <a href='?_src_=prefs;preference=be_special;be_special_type=[i]'>[(i in be_special) ? "YES" : "NO"]</a><br>"
+					continue
 				if(jobban_isbanned(user, i))
 					dat += "<b>Be [capitalize(i)]:</b> <a href='?_src_=prefs;jobbancheck=[i]'>BANNED</a><br>"
 				else
@@ -806,7 +871,20 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 			dat += "<br>"
 
-		if(3)
+		if(LOADOUT_TAB)
+			//calculate your gear points from the chosen item
+			gear_points = CONFIG_GET(number/initial_gear_points)
+			var/list/chosen_gear = loadout_data["SAVE_[loadout_slot]"]
+			if(chosen_gear)
+				for(var/loadout_item in chosen_gear)
+					var/loadout_item_path = loadout_item[LOADOUT_ITEM]
+					if(loadout_item_path)
+						var/datum/gear/loadout_gear = text2path(loadout_item_path)
+						if(loadout_gear)
+							gear_points -= initial(loadout_gear.cost)
+			else
+				chosen_gear = list()
+
 			dat += "<table align='center' width='100%'>"
 			dat += "<tr><td colspan=4><center><b><font color='[gear_points == 0 ? "#E62100" : "#CCDDFF"]'>[gear_points]</font> loadout points remaining.</b> \[<a href='?_src_=prefs;preference=gear;clear_loadout=1'>Clear Loadout</a>\]</center></td></tr>"
 			dat += "<tr><td colspan=4><center>You can only choose one item per category, unless it's an item that spawns in your backpack or hands.</center></td></tr>"
@@ -862,15 +940,33 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						if(donoritem && !gear.donator_ckey_check(user.ckey))
 							continue
 						var/class_link = ""
-						if(gear.type in chosen_gear)
+						var/list/loadout_item = has_loadout_gear(loadout_slot, "[gear.type]")
+						var/extra_loadout_data = ""
+						if(loadout_item)
 							class_link = "style='white-space:normal;' class='linkOn' href='?_src_=prefs;preference=gear;toggle_gear_path=[html_encode(name)];toggle_gear=0'"
-						else if(gear_points <= 0)
+							if(gear.loadout_flags & LOADOUT_CAN_COLOR_POLYCHROMIC)
+								extra_loadout_data += "<BR><a href='?_src_=prefs;preference=gear;loadout_color_polychromic=1;loadout_gear_name=[html_encode(gear.name)];'>Color</a>"
+								for(var/loadout_color in loadout_item[LOADOUT_COLOR])
+									extra_loadout_data += "<span style='border: 1px solid #161616; background-color: [loadout_color];'>&nbsp;&nbsp;&nbsp;</span>"
+							else
+								var/loadout_color_non_poly = "#FFFFFF"
+								if(length(loadout_item[LOADOUT_COLOR]))
+									loadout_color_non_poly = loadout_item[LOADOUT_COLOR][1]
+								extra_loadout_data += "<BR><a href='?_src_=prefs;preference=gear;loadout_color=1;loadout_gear_name=[html_encode(gear.name)];'>Color</a>"
+								extra_loadout_data += "<span style='border: 1px solid #161616; background-color: [loadout_color_non_poly];'>&nbsp;&nbsp;&nbsp;</span>"
+							if(gear.loadout_flags & LOADOUT_CAN_NAME)
+								extra_loadout_data += "<BR><a href='?_src_=prefs;preference=gear;loadout_rename=1;loadout_gear_name=[html_encode(gear.name)];'>Name</a> [loadout_item[LOADOUT_CUSTOM_NAME] ? loadout_item[LOADOUT_CUSTOM_NAME] : "N/A"]"
+							if(gear.loadout_flags & LOADOUT_CAN_DESCRIPTION)
+								extra_loadout_data += "<BR><a href='?_src_=prefs;preference=gear;loadout_redescribe=1;loadout_gear_name=[html_encode(gear.name)];'>Description</a>"
+						else if((gear_points - gear.cost) < 0)
 							class_link = "style='white-space:normal;' class='linkOff'"
 						else if(donoritem)
 							class_link = "style='white-space:normal;background:#ebc42e;' href='?_src_=prefs;preference=gear;toggle_gear_path=[html_encode(name)];toggle_gear=1'"
-						else
+						else if(!istype(gear, /datum/gear/unlockable) || can_use_unlockable(gear))
 							class_link = "style='white-space:normal;' href='?_src_=prefs;preference=gear;toggle_gear_path=[html_encode(name)];toggle_gear=1'"
-						dat += "<tr style='vertical-align:top;'><td width=15%><a [class_link]>[name]</a></td>"
+						else
+							class_link = "style='white-space:normal;background:#eb2e2e;' class='linkOff'"
+						dat += "<tr style='vertical-align:top;'><td width=15%><a [class_link]>[name]</a>[extra_loadout_data]</td>"
 						dat += "<td width = 5% style='vertical-align:top'>[gear.cost]</td><td>"
 						if(islist(gear.restricted_roles))
 							if(gear.restricted_roles.len)
@@ -882,9 +978,19 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 									dat += "<font size=2>"
 									dat += gear.restricted_roles.Join(";")
 									dat += "</font>"
-						dat += "</td><td><font size=2><i>[gear.description]</i></font></td></tr>"
+						if(!istype(gear, /datum/gear/unlockable))
+							// the below line essentially means "if the loadout item is picked by the user and has a custom description, give it the custom description, otherwise give it the default description"
+							dat += "</td><td><font size=2><i>[loadout_item ? (loadout_item[LOADOUT_CUSTOM_DESCRIPTION] ? loadout_item[LOADOUT_CUSTOM_DESCRIPTION] : gear.description) : gear.description]</i></font></td></tr>"
+						else
+							//we add the user's progress to the description assuming they have progress
+							var/datum/gear/unlockable/unlockable = gear
+							var/progress_made = unlockable_loadout_data[unlockable.progress_key]
+							if(!progress_made)
+								progress_made = 0
+							dat += "</td><td><font size=2><i>[loadout_item ? (loadout_item[LOADOUT_CUSTOM_DESCRIPTION] ? loadout_item[LOADOUT_CUSTOM_DESCRIPTION] : gear.description) : gear.description] Progress: [min(progress_made, unlockable.progress_required)]/[unlockable.progress_required]</i></font></td></tr>"
+
 					dat += "</table>"
-		if(4) // Content preferences
+		if(CONTENT_PREFERENCES_TAB) // Content preferences
 			dat += "<table><tr><td width='340px' height='300px' valign='top'>"
 			dat += "<h2>Fetish content prefs</h2>"
 			dat += "<b>Arousal:</b><a href='?_src_=prefs;preference=arousable'>[arousable == TRUE ? "Enabled" : "Disabled"]</a><BR>"
@@ -903,11 +1009,12 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "<b>Breast Enlargement:</b> <a href='?_src_=prefs;preference=breast_enlargement'>[(cit_toggles & BREAST_ENLARGEMENT) ? "Allowed" : "Disallowed"]</a><br>"
 			dat += "<b>Penis Enlargement:</b> <a href='?_src_=prefs;preference=penis_enlargement'>[(cit_toggles & PENIS_ENLARGEMENT) ? "Allowed" : "Disallowed"]</a><br>"
 			dat += "<b>Hypno:</b> <a href='?_src_=prefs;preference=never_hypno'>[(cit_toggles & NEVER_HYPNO) ? "Disallowed" : "Allowed"]</a><br>"
+			dat += "<b>Aphrodisiacs:</b> <a href='?_src_=prefs;preference=aphro'>[(cit_toggles & NO_APHRO) ? "Disallowed" : "Allowed"]</a><br>"
 			dat += "<b>Ass Slapping:</b> <a href='?_src_=prefs;preference=ass_slap'>[(cit_toggles & NO_ASS_SLAP) ? "Disallowed" : "Allowed"]</a><br>"
 			dat += "<b>Automatic Wagging:</b> <a href='?_src_=prefs;preference=auto_wag'>[(cit_toggles & NO_AUTO_WAG) ? "Disabled" : "Enabled"]</a><br>"
 			dat += "</tr></table>"
 			dat += "<br>"
-		if(5) // Custom keybindings
+		if(KEYBINDINGS_TAB) // Custom keybindings
 			dat += "<b>Keybindings:</b> <a href='?_src_=prefs;preference=hotkeys'>[(hotkeys) ? "Hotkeys" : "Input"]</a><br>"
 			dat += "Keybindings mode controls how the game behaves with tab and map/input focus.<br>If it is on <b>Hotkeys</b>, the game will always attempt to force you to map focus, meaning keypresses are sent \
 			directly to the map instead of the input. You will still be able to use the command bar, but you need to tab to do it every time you click on the game map.<br>\
@@ -952,7 +1059,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						var/list/default_keys = hotkeys ? kb.hotkey_keys : kb.classic_keys
 						if(LAZYLEN(default_keys))
 							dat += "| Default: [default_keys.Join(", ")]"
-						dat += "</span><span class='independent'>Independent Binding: <a href='?_src_=prefs;preference=keybindings_capture;keybinding=[kb.name];old_key=[current_independent_binding];independent=1'>[current_independent_binding]</a></span>"
+						dat += "</span>"
+						if(!kb.special && !kb.clientside)
+							dat += "<span class='independent'>Independent Binding: <a href='?_src_=prefs;preference=keybindings_capture;keybinding=[kb.name];old_key=[current_independent_binding];independent=1'>[current_independent_binding]</a></span>"
 						dat += "<br>"
 					else
 						var/bound_key = user_binds[kb.name][1]
@@ -965,7 +1074,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						var/list/default_keys = hotkeys ? kb.classic_keys : kb.hotkey_keys
 						if(LAZYLEN(default_keys))
 							dat += "| Default: [default_keys.Join(", ")]"
-						dat += "</span><span class='independent'>Independent Binding: <a href='?_src_=prefs;preference=keybindings_capture;keybinding=[kb.name];old_key=[current_independent_binding];independent=1'>[current_independent_binding]</a></span>"
+						dat += "</span>"
+						if(!kb.special && !kb.clientside)
+							dat += "<span class='independent'>Independent Binding: <a href='?_src_=prefs;preference=keybindings_capture;keybinding=[kb.name];old_key=[current_independent_binding];independent=1'>[current_independent_binding]</a></span>"
 						dat += "<br>"
 
 			dat += "<br><br>"
@@ -991,7 +1102,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 #undef APPEARANCE_CATEGORY_COLUMN
 #undef MAX_MUTANT_ROWS
 
-/datum/preferences/proc/CaptureKeybinding(mob/user, datum/keybinding/kb, old_key, independent = FALSE)
+/datum/preferences/proc/CaptureKeybinding(mob/user, datum/keybinding/kb, old_key, independent = FALSE, special = FALSE)
 	var/HTML = {"
 	<div id='focus' style="outline: 0;" tabindex=0>Keybinding: [kb.full_name]<br>[kb.description]<br><br><b>Press any key to change<br>Press ESC to clear</b></div>
 	<script>
@@ -1003,7 +1114,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		var shift = e.shiftKey ? 1 : 0;
 		var numpad = (95 < e.keyCode && e.keyCode < 112) ? 1 : 0;
 		var escPressed = e.keyCode == 27 ? 1 : 0;
-		var url = 'byond://?_src_=prefs;preference=keybindings_set;keybinding=[kb.name];old_key=[old_key];[independent?"independent=1":""];clear_key='+escPressed+';key='+e.key+';alt='+alt+';ctrl='+ctrl+';shift='+shift+';numpad='+numpad+';key_code='+e.keyCode;
+		var url = 'byond://?_src_=prefs;preference=keybindings_set;keybinding=[kb.name];old_key=[old_key];[independent?"independent=1;":""][special?"special=1;":""]clear_key='+escPressed+';key='+e.key+';alt='+alt+';ctrl='+ctrl+';shift='+shift+';numpad='+numpad+';key_code='+e.keyCode;
 		window.location=url;
 		deedDone = true;
 	}
@@ -1284,9 +1395,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 /datum/preferences/proc/process_link(mob/user, list/href_list)
 	if(href_list["jobbancheck"])
-		var/job = sanitizeSQL(href_list["jobbancheck"])
-		var/sql_ckey = sanitizeSQL(user.ckey)
-		var/datum/DBQuery/query_get_jobban = SSdbcore.NewQuery("SELECT reason, bantime, duration, expiration_time, IFNULL((SELECT byond_key FROM [format_table_name("player")] WHERE [format_table_name("player")].ckey = [format_table_name("ban")].a_ckey), a_ckey) FROM [format_table_name("ban")] WHERE ckey = '[sql_ckey]' AND (bantype = 'JOB_PERMABAN'  OR (bantype = 'JOB_TEMPBAN' AND expiration_time > Now())) AND isnull(unbanned) AND job = '[job]'")
+		var/job = href_list["jobbancheck"]
+		var/datum/db_query/query_get_jobban = SSdbcore.NewQuery({"
+			SELECT reason, bantime, duration, expiration_time, IFNULL((SELECT byond_key FROM [format_table_name("player")] WHERE [format_table_name("player")].ckey = [format_table_name("ban")].a_ckey), a_ckey)
+			FROM [format_table_name("ban")] WHERE ckey = :ckey AND (bantype = 'JOB_PERMABAN'  OR (bantype = 'JOB_TEMPBAN' AND expiration_time > Now())) AND isnull(unbanned) AND job = :job
+			"}, list("ckey" = user.ckey, "job" = job))
 		if(!query_get_jobban.warn_execute())
 			qdel(query_get_jobban)
 			return
@@ -1301,7 +1414,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			if(text2num(duration) > 0)
 				text += ". The ban is for [duration] minutes and expires on [expiration_time] (server time)"
 			text += ".</span>"
-			to_chat(user, text)
+			to_chat(user, text, confidential = TRUE)
 		qdel(query_get_jobban)
 		return
 
@@ -1538,7 +1651,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 									for(var/modified_limb in modified_limbs)
 										if(modified_limbs[modified_limb][1] == LOADOUT_LIMB_PROSTHETIC && modified_limb != limb_type)
 											number_of_prosthetics += 1
-									if(number_of_prosthetics > MAXIMUM_LOADOUT_PROSTHETICS)
+									if(number_of_prosthetics == MAXIMUM_LOADOUT_PROSTHETICS)
 										to_chat(user, "<span class='danger'>You can only have up to two prosthetic limbs!</span>")
 									else
 										//save the actual prosthetic data
@@ -2260,10 +2373,16 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					var/selected_custom_tongue = input(user, "Choose your desired tongue (none means your species tongue)", "Character Preference") as null|anything in GLOB.roundstart_tongues
 					if(selected_custom_tongue)
 						custom_tongue = selected_custom_tongue
+
 				if("speech_verb")
 					var/selected_custom_speech_verb = input(user, "Choose your desired speech verb (none means your species speech verb)", "Character Preference") as null|anything in GLOB.speech_verbs
 					if(selected_custom_speech_verb)
 						custom_speech_verb = selected_custom_speech_verb
+
+				if("language")
+					var/selected_language = input(user, "Choose your desired additional language", "Character Preference") as null|anything in GLOB.roundstart_languages
+					if(selected_language)
+						additional_language = selected_language
 
 				if("bodysprite")
 					var/selected_body_sprite = input(user, "Choose your desired body sprite", "Character Preference") as null|anything in pref_species.allowed_limb_ids
@@ -2354,11 +2473,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 				if("hotkeys")
 					hotkeys = !hotkeys
-					user.client.set_macros()
+					user.client.ensure_keys_set(src)
 
 				if("keybindings_capture")
 					var/datum/keybinding/kb = GLOB.keybindings_by_name[href_list["keybinding"]]
-					CaptureKeybinding(user, kb, href_list["old_key"], text2num(href_list["independent"]))
+					CaptureKeybinding(user, kb, href_list["old_key"], text2num(href_list["independent"]), kb.special || kb.clientside)
 					return
 
 				if("keybindings_set")
@@ -2378,9 +2497,12 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						else
 							if(key_bindings[old_key])
 								key_bindings[old_key] -= kb_name
+								LAZYADD(key_bindings["Unbound"], kb_name)
 								if(!length(key_bindings[old_key]))
 									key_bindings -= old_key
 						user << browse(null, "window=capturekeypress")
+						if(href_list["special"])		// special keys need a full reset
+							user.client.ensure_keys_set(src)
 						save_preferences()
 						ShowChoices(user)
 						return
@@ -2415,7 +2537,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 								key_bindings -= old_key
 						key_bindings[full_key] += list(kb_name)
 						key_bindings[full_key] = sortList(key_bindings[full_key])
-					user.client.update_movement_keys()
+					if(href_list["special"])		// special keys need a full reset
+						user.client.ensure_keys_set(src)
 					user << browse(null, "window=capturekeypress")
 					save_preferences()
 
@@ -2427,7 +2550,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					hotkeys = (choice == "Hotkey")
 					key_bindings = (hotkeys) ? deepCopyList(GLOB.hotkey_keybinding_list_by_key) : deepCopyList(GLOB.classic_keybinding_list_by_key)
 					modless_key_bindings = list()
-					user.client.update_movement_keys()
+					user.client.ensure_keys_set(src)
 
 				if("chat_on_map")
 					chat_on_map = !chat_on_map
@@ -2598,12 +2721,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						save_character()
 
 				if("tab")
-					if (href_list["tab"])
+					if(href_list["tab"])
 						current_tab = text2num(href_list["tab"])
 	if(href_list["preference"] == "gear")
 		if(href_list["clear_loadout"])
-			chosen_gear = list()
-			gear_points = CONFIG_GET(number/initial_gear_points)
+			loadout_data["SAVE_[loadout_slot]"] = list()
 			save_preferences()
 		if(href_list["select_category"])
 			gear_category = html_decode(href_list["select_category"])
@@ -2616,19 +2738,76 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			if(!G)
 				return
 			var/toggle = text2num(href_list["toggle_gear"])
-			if(!toggle && (G.type in chosen_gear))//toggling off and the item effectively is in chosen gear)
-				chosen_gear -= G.type
-				gear_points += initial(G.cost)
-			else if(toggle && (!(is_type_in_ref_list(G, chosen_gear))))
+			if(!toggle && has_loadout_gear(loadout_slot, "[G.type]"))//toggling off and the item effectively is in chosen gear)
+				remove_gear_from_loadout(loadout_slot, "[G.type]")
+			else if(toggle && !(has_loadout_gear(loadout_slot, "[G.type]")))
 				if(!is_loadout_slot_available(G.category))
 					to_chat(user, "<span class='danger'>You cannot take this loadout, as you've already chosen too many of the same category!</span>")
 					return
 				if(G.donoritem && !G.donator_ckey_check(user.ckey))
 					to_chat(user, "<span class='danger'>This is an item intended for donator use only. You are not authorized to use this item.</span>")
 					return
+				if(istype(G, /datum/gear/unlockable) && !can_use_unlockable(G))
+					to_chat(user, "<span class='danger'>To use this item, you need to meet the defined requirements!</span>")
+					return
 				if(gear_points >= initial(G.cost))
-					chosen_gear += G.type
-					gear_points -= initial(G.cost)
+					var/list/new_loadout_data = list(LOADOUT_ITEM = "[G.type]")
+					if(length(G.loadout_initial_colors))
+						new_loadout_data[LOADOUT_COLOR] = G.loadout_initial_colors
+					else
+						new_loadout_data[LOADOUT_COLOR] = list("#FFFFFF")
+					if(loadout_data["SAVE_[loadout_slot]"])
+						loadout_data["SAVE_[loadout_slot]"] += list(new_loadout_data) //double packed because it does the union of the CONTENTS of the lists
+					else
+						loadout_data["SAVE_[loadout_slot]"] = list(new_loadout_data) //double packed because you somehow had no save slot in your loadout?
+
+		if(href_list["loadout_color"] || href_list["loadout_color_polychromic"] || href_list["loadout_rename"] || href_list["loadout_redescribe"])
+			//if the gear doesn't exist, or they don't have it, ignore the request
+			var/name = html_decode(href_list["loadout_gear_name"])
+			var/datum/gear/G = GLOB.loadout_items[gear_category][gear_subcategory][name]
+			if(!G)
+				return
+			var/user_gear = has_loadout_gear(loadout_slot, "[G.type]")
+			if(!user_gear)
+				return
+
+			//possible requests: recolor, recolor (polychromic), rename, redescribe
+			//always make sure the gear allows said request before proceeding
+
+			//non-poly coloring can only be done by non-poly items
+			if(href_list["loadout_color"] && !(G.loadout_flags & LOADOUT_CAN_COLOR_POLYCHROMIC))
+				if(!length(user_gear[LOADOUT_COLOR]))
+					user_gear[LOADOUT_COLOR] = list("#FFFFFF")
+				var/current_color = user_gear[LOADOUT_COLOR][1]
+				var/new_color = input(user, "Polychromic options", "Choose Color", current_color) as color|null
+				user_gear[LOADOUT_COLOR][1] = sanitize_hexcolor(new_color, 6, TRUE, current_color)
+
+			//poly coloring can only be done by poly items
+			if(href_list["loadout_color_polychromic"] && (G.loadout_flags & LOADOUT_CAN_COLOR_POLYCHROMIC))
+				var/list/color_options = list()
+				for(var/i=1, i<=length(G.loadout_initial_colors), i++)
+					color_options += "Color [i]"
+				var/color_to_change = input(user, "Polychromic options", "Recolor [name]") as null|anything in color_options
+				if(color_to_change)
+					var/color_index = text2num(copytext(color_to_change, 7))
+					var/current_color = user_gear[LOADOUT_COLOR][color_index]
+					var/new_color = input(user, "Polychromic options", "Choose [color_to_change] Color", current_color) as color|null
+					if(new_color)
+						user_gear[LOADOUT_COLOR][color_index] = sanitize_hexcolor(new_color, 6, TRUE, current_color)
+
+			//both renaming and redescribing strip the input to stop html injection
+
+			//renaming is only allowed if it has the flag for it
+			if(href_list["loadout_rename"] && (G.loadout_flags & LOADOUT_CAN_NAME))
+				var/new_name = stripped_input(user, "Enter new name for item. Maximum [MAX_NAME_LEN] characters.", "Loadout Item Naming", null,  MAX_NAME_LEN)
+				if(new_name)
+					user_gear[LOADOUT_CUSTOM_NAME] = new_name
+
+			//redescribing is only allowed if it has the flag for it
+			if(href_list["loadout_redescribe"] && (G.loadout_flags & LOADOUT_CAN_DESCRIPTION)) //redescribe isnt a real word but i can't think of the right term to use
+				var/new_description = stripped_input(user, "Enter new description for item. Maximum 500 characters.", "Loadout Item Redescribing", null, 500)
+				if(new_description)
+					user_gear[LOADOUT_CUSTOM_DESCRIPTION] = new_description
 
 	ShowChoices(user)
 	return 1
@@ -2739,6 +2918,10 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			new_custom_tongue.Insert(character)
 	if(custom_speech_verb != "default")
 		character.dna.species.say_mod = custom_speech_verb
+	if(additional_language && additional_language != "None")
+		var/language_entry = GLOB.roundstart_languages[additional_language]
+		if(language_entry)
+			character.grant_language(language_entry, TRUE, TRUE)
 
 	//limb stuff, only done when initially spawning in
 	if(initial_spawn)
@@ -2827,23 +3010,27 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		cached_holoform_icons[filter_type] = process_holoform_icon_filter(custom_holoform_icon, filter_type)
 	return cached_holoform_icons[filter_type]
 
-//Used in savefile update 32, can be removed once that is no longer relevant.
+/// Resets the client's keybindings. Asks them for which
 /datum/preferences/proc/force_reset_keybindings()
 	var/choice = tgalert(parent.mob, "Your basic keybindings need to be reset, emotes will remain as before. Would you prefer 'hotkey' or 'classic' mode?", "Reset keybindings", "Hotkey", "Classic")
 	hotkeys = (choice != "Classic")
+	force_reset_keybindings_direct(hotkeys)
+
+/// Does the actual reset
+/datum/preferences/proc/force_reset_keybindings_direct(hotkeys = TRUE)
 	var/list/oldkeys = key_bindings
 	key_bindings = (hotkeys) ? deepCopyList(GLOB.hotkey_keybinding_list_by_key) : deepCopyList(GLOB.classic_keybinding_list_by_key)
 
 	for(var/key in oldkeys)
 		if(!key_bindings[key])
 			key_bindings[key] = oldkeys[key]
-	parent.update_movement_keys()
+	parent?.ensure_keys_set(src)
 
 /datum/preferences/proc/is_loadout_slot_available(slot)
 	var/list/L
 	LAZYINITLIST(L)
-	for(var/i in chosen_gear)
-		var/datum/gear/G = i
+	for(var/i in loadout_data["SAVE_[loadout_slot]"])
+		var/datum/gear/G = i[LOADOUT_ITEM]
 		var/occupied_slots = L[initial(G.category)] ? L[initial(G.category)] + 1 : 1
 		LAZYSET(L, initial(G.category), occupied_slots)
 	switch(slot)
@@ -2856,6 +3043,23 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		else
 			if(L[slot] < DEFAULT_SLOT_AMT)
 				return TRUE
+
+/datum/preferences/proc/has_loadout_gear(save_slot, gear_type)
+	var/list/gear_list = loadout_data["SAVE_[save_slot]"]
+	for(var/loadout_gear in gear_list)
+		if(loadout_gear[LOADOUT_ITEM] == gear_type)
+			return loadout_gear
+	return FALSE
+
+/datum/preferences/proc/remove_gear_from_loadout(save_slot, gear_type)
+	var/find_gear = has_loadout_gear(save_slot, gear_type)
+	if(find_gear)
+		loadout_data["SAVE_[save_slot]"] -= list(find_gear)
+
+/datum/preferences/proc/can_use_unlockable(datum/gear/unlockable/unlockable_gear)
+	if(unlockable_loadout_data[unlockable_gear.progress_key] >= unlockable_gear.progress_required)
+		return TRUE
+	return FALSE
 
 #undef DEFAULT_SLOT_AMT
 #undef HANDS_SLOT_AMT

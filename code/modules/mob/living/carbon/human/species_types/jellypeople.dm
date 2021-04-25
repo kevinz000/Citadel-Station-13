@@ -7,7 +7,10 @@
 	species_traits = list(MUTCOLORS,EYECOLOR,HAIR,FACEHAIR,WINGCOLOR,HAS_FLESH)
 	mutantlungs = /obj/item/organ/lungs/slime
 	mutant_heart = /obj/item/organ/heart/slime
-	mutant_bodyparts = list("mcolor" = "FFFFFF", "mam_tail" = "None", "mam_ears" = "None", "mam_snouts" = "None", "taur" = "None", "deco_wings" = "None")
+	mutantstomach = /obj/item/organ/stomach/slime
+	mutantliver = /obj/item/organ/liver/slime
+	mutant_brain = /obj/item/organ/brain/slime
+	mutant_bodyparts = list("mcolor" = "FFFFFF", "mam_tail" = "None", "mam_ears" = "None", "mam_snouts" = "None", "taur" = "None", "deco_wings" = "None", "legs" = "Plantigrade")
 	inherent_traits = list(TRAIT_TOXINLOVER)
 	meat = /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/slime
 	gib_types = list(/obj/effect/gibspawner/slime, /obj/effect/gibspawner/slime/bodypartless)
@@ -22,16 +25,11 @@
 	heatmod = 0.5 // = 1/4x heat damage
 	burnmod = 0.5 // = 1/2x generic burn damage
 	species_language_holder = /datum/language_holder/jelly
-	mutant_brain = /obj/item/organ/brain/jelly
 
 	tail_type = "mam_tail"
 	wagging_type = "mam_waggingtail"
 	species_category = SPECIES_CATEGORY_JELLY
-
-/obj/item/organ/brain/jelly
-	name = "slime nucleus"
-	desc = "A slimey membranous mass from a slime person"
-	icon_state = "brain-slime"
+	ass_image = 'icons/ass/assslime.png'
 
 /datum/species/jelly/on_species_loss(mob/living/carbon/C)
 	C.faction -= "slime"
@@ -94,7 +92,7 @@
 	name = "Xenobiological Slime Entity"
 	id = SPECIES_SLIME
 	default_color = "00FFFF"
-	species_traits = list(MUTCOLORS,EYECOLOR,HAIR,FACEHAIR)
+	species_traits = list(MUTCOLORS,EYECOLOR,HAIR,FACEHAIR,HAS_FLESH)
 	say_mod = "says"
 	hair_color = "mutcolor"
 	hair_alpha = 150
@@ -404,9 +402,9 @@
 	id = SPECIES_SLIME_HYBRID
 	limbs_id = SPECIES_SLIME
 	default_color = "00FFFF"
-	species_traits = list(MUTCOLORS,EYECOLOR,HAIR,FACEHAIR)
+	species_traits = list(MUTCOLORS,EYECOLOR,HAIR,FACEHAIR,HAS_FLESH)
 	inherent_traits = list(TRAIT_TOXINLOVER)
-	mutant_bodyparts = list("mcolor" = "FFFFFF", "mcolor2" = "FFFFFF","mcolor3" = "FFFFFF", "mam_tail" = "None", "mam_ears" = "None", "mam_body_markings" = "Plain", "mam_snouts" = "None", "taur" = "None")
+	mutant_bodyparts = list("mcolor" = "FFFFFF", "mcolor2" = "FFFFFF","mcolor3" = "FFFFFF", "mam_tail" = "None", "mam_ears" = "None", "mam_body_markings" = "Plain", "mam_snouts" = "None", "taur" = "None", "legs" = "Plantigrade")
 	say_mod = "says"
 	hair_color = "mutcolor"
 	hair_alpha = 160 //a notch brighter so it blends better.
