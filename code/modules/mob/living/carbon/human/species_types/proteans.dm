@@ -43,11 +43,10 @@
 	var/datum/component/nanites/permanent/protean/nanite_component
 	/// The protean ui holder
 	var/datum/protean_holder/control_holder
+	/// The button for it
+	var/datum/action/innate/protean_panel/control_button
 
 	// ass_image = 'icons/ass/assmachine.png' shh
-
-
-
 
 
 	// var/skinned_type
@@ -83,10 +82,39 @@
 	..()
 
 /datum/species/protean/on_species_gain(mob/living/carbon/C, datum/species/old_species, pref_load)
-	// init our holder
-	control_holder = new (C)
-	// also give them verbs to open this (maybe interactable button on the top-right, those things?)
-	return ..()
+	..()
+	control_button = new
+	control_button.Grant(C)
+
+	if(ishuman(C))
+		var/mob/living/carbon/human/H = C
+		// init our holder
+		control_holder = new (H)
+		// also give them verbs to open this (maybe interactable button on the top-right, those things?)
+		H.grant_ability_from_source(list(INNATE_ABILITY_SLIME_BLOBFORM), ABILITY_SOURCE_SPECIES)
+		// H.set_ability_property(INNATE_ABILITY_LIMB_REGROWTH) //regrowth using blood
+
+/datum/species/protean/on_species_loss(mob/living/carbon/C)
+	if(ishuman(C))
+		var/mob/living/carbon/human/H = C
+		// remove their transform verbs
+		H.remove_ability_from_source(list(INNATE_ABILITY_SLIME_BLOBFORM), ABILITY_SOURCE_SPECIES)
+
+	if(control_button)
+		control_button.Remove(C)
+	..()
+
+/datum/action/innate/protean_panel // the panel thing
+	name = "Protean Control Panel"
+	check_flags = AB_CHECK_CONSCIOUS
+
+/datum/action/innate/protean_panel/Activate()
+	var/mob/living/carbon/human/H = owner
+	if(!is_species(H, /datum/species/protean))
+		return
+	CHECK_DNA_AND_SPECIES(H)
+	var/datum/species/protean/P = H.dna.species
+	P.control_holder.show_ui() // well, i could just pass this on the new()... should i?
 
 /*
 /proc/generate_selectable_species(clear = FALSE)

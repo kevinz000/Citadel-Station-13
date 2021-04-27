@@ -12,6 +12,9 @@
 		CRASH("Protean holder initialized with an invalid type! Object passed [nyanite].") //fuck you
 	protean = nyanite
 
+/datum/protean_holder/proc/show_ui()
+	return ui_interact(protean)
+
 /datum/protean_holder/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if (!ui)
