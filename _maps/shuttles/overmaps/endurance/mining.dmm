@@ -1,0 +1,30 @@
+"a" = (/obj/structure/shuttle/engine/large{dir = 8; name = "PLACEHOLDER - LARGE OMAP OMNI"},/turf/open/space/basic,/area/space)
+"d" = (/obj/machinery/door/airlock/titanium{name = "mining shuttle airlock"},/turf/open/floor/plating,/area/space)
+"e" = (/obj/structure/cable/green{icon_state = "4-8"},/obj/structure/ore_box,/obj/effect/turf_decal/stripes/line,/turf/open/floor/plasteel/dark,/area/space)
+"g" = (/obj/structure/cable/green{icon_state = "2-8"},/obj/effect/turf_decal/stripes/line,/turf/open/floor/plasteel/dark,/area/space)
+"j" = (/obj/structure/window/shuttle,/turf/open/floor/plating,/area/space)
+"p" = (/obj/effect/turf_decal/stripes/line{dir = 1},/obj/effect/turf_decal/stripes/line{dir = 4},/turf/open/floor/plasteel/dark,/area/space)
+"q" = (/obj/machinery/power/terminal{dir = 1},/obj/structure/cable/green{icon_state = "0-2"},/obj/effect/turf_decal/stripes/line{dir = 8},/turf/open/floor/plasteel/dark,/area/space)
+"t" = (/obj/effect/turf_decal/stripes/line{dir = 1},/turf/open/floor/plasteel/dark,/area/space)
+"v" = (/turf/closed/wall/mineral/titanium,/area/space)
+"x" = (/obj/structure/cable{icon_state = "4-8"},/obj/effect/turf_decal/stripes/line{dir = 1},/turf/open/floor/plasteel/dark,/area/space)
+"y" = (/obj/machinery/door/airlock/titanium{name = "mining shuttle airlock"},/obj/structure/cable/green{icon_state = "1-2"},/turf/open/floor/plating,/area/space)
+"z" = (/obj/machinery/modular_computer/console{dir = 8; name = "PLACEHOLDER - OMAP PRIMARY FLIGHT"},/turf/open/floor/plasteel/dark,/area/space)
+"B" = (/obj/structure/cable/green{icon_state = "1-4"},/obj/structure/cable/green,/obj/machinery/power/port_gen/pacman,/obj/effect/turf_decal/stripes/line,/obj/effect/turf_decal/stripes/line{dir = 8},/turf/open/floor/plasteel/dark,/area/space)
+"C" = (/obj/structure/chair{dir = 4},/turf/open/floor/plasteel/dark,/area/space)
+"F" = (/obj/structure/cable/green{icon_state = "4-8"},/obj/machinery/recharge_station,/obj/effect/turf_decal/stripes/line,/turf/open/floor/plasteel/dark,/area/space)
+"G" = (/obj/machinery/power/smes,/obj/structure/cable{icon_state = "0-4"},/obj/effect/turf_decal/stripes/line{dir = 1},/obj/effect/turf_decal/stripes/line{dir = 8},/turf/open/floor/plasteel/dark,/area/space)
+"J" = (/obj/effect/turf_decal/stripes/line,/obj/effect/turf_decal/stripes/line{dir = 4},/turf/open/floor/plasteel/dark,/area/space)
+"O" = (/turf/open/floor/plasteel/dark,/area/space)
+"S" = (/obj/structure/window/shuttle,/turf/open/space/basic,/area/space)
+"T" = (/obj/structure/cable{icon_state = "0-8"},/obj/machinery/power/apc/auto_name/north,/obj/effect/turf_decal/stripes/line{dir = 1},/turf/open/floor/plasteel/dark,/area/space)
+"V" = (/obj/effect/turf_decal/stripes/line,/turf/open/floor/plasteel/dark,/area/space)
+"Y" = (/turf/open/space/basic,/area/space)
+
+(1,1,1) = {"
+YvvjvjdjvjY
+avGxTtttpjj
+YvqOOOOOCzj
+YvBFeFgVJSj
+avvjvjyjvSY
+"}
