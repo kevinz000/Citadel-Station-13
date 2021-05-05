@@ -1,4 +1,10 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"ag" = (
+/obj/effect/turf_decal/stripes/corner{
+	dir = 1
+	},
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "aj" = (
 /obj/effect/spawner/structure/window/reinforced,
 /turf/open/floor/plating,
@@ -17,6 +23,15 @@
 /obj/machinery/holopad,
 /turf/open/floor/plasteel,
 /area/cargo/miningstorage)
+"dS" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
+/obj/effect/turf_decal/stripes/corner{
+	dir = 1
+	},
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "eg" = (
 /obj/effect/turf_decal/delivery,
 /turf/open/floor/plasteel,
@@ -48,6 +63,12 @@
 "iN" = (
 /turf/open/floor/plasteel,
 /area/cargo/miningstorage)
+"jG" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 10
+	},
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "jM" = (
 /obj/effect/turf_decal/bot,
 /obj/machinery/holopad/secure,
@@ -74,6 +95,10 @@
 /obj/effect/turf_decal/bot,
 /turf/open/floor/plasteel,
 /area/cargo/storage)
+"lA" = (
+/obj/structure/table/reinforced,
+/turf/open/floor/plasteel,
+/area/cargo/sorting)
 "lQ" = (
 /obj/effect/turf_decal/loading_area{
 	dir = 4
@@ -99,6 +124,13 @@
 /obj/structure/table/reinforced,
 /turf/open/floor/plating,
 /area/space)
+"pB" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 6
+	},
+/obj/effect/turf_decal/stripes/end,
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "qy" = (
 /turf/open/floor/plasteel,
 /area/cargo/warehouse)
@@ -116,13 +148,27 @@
 	},
 /turf/open/floor/plasteel,
 /area/cargo/storage)
+"qU" = (
+/obj/effect/turf_decal/stripes/corner,
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "qX" = (
+/turf/open/floor/carpet,
+/area/space)
+"rh" = (
+/obj/structure/table/wood,
 /turf/open/floor/carpet,
 /area/space)
 "sn" = (
 /obj/structure/lattice/catwalk,
 /turf/open/openspace,
 /area/cargo/storage)
+"sp" = (
+/obj/machinery/computer/cargo{
+	dir = 8
+	},
+/turf/open/floor/plasteel,
+/area/cargo/sorting)
 "ss" = (
 /turf/open/openspace,
 /area/cargo/storage)
@@ -130,6 +176,12 @@
 /obj/effect/spawner/structure/window/reinforced,
 /turf/open/floor/plating,
 /area/space)
+"uU" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 9
+	},
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "va" = (
 /obj/structure/table/reinforced,
 /obj/item/paper_bin/carbon{
@@ -163,6 +215,10 @@
 /obj/effect/spawner/structure/window/reinforced,
 /turf/open/floor/plating,
 /area/cargo/qm/private)
+"vP" = (
+/obj/structure/filingcabinet/chestdrawer,
+/turf/open/floor/plasteel,
+/area/cargo/sorting)
 "vV" = (
 /obj/effect/turf_decal/bot,
 /obj/machinery/holopad,
@@ -201,6 +257,9 @@
 	},
 /turf/open/floor/plasteel,
 /area/space)
+"zi" = (
+/turf/open/floor/carpet/orange,
+/area/cargo/qm/private)
 "zj" = (
 /turf/open/openspace,
 /area/space)
@@ -249,6 +308,10 @@
 	},
 /turf/closed/wall,
 /area/cargo/warehouse)
+"Fs" = (
+/obj/structure/table,
+/turf/open/floor/plasteel,
+/area/cargo/office)
 "Fx" = (
 /obj/effect/turf_decal/loading_area,
 /turf/open/floor/plasteel,
@@ -296,6 +359,7 @@
 /turf/open/floor/plasteel,
 /area/space)
 "LW" = (
+/obj/structure/plasticflaps,
 /turf/open/floor/plating,
 /area/cargo/sorting)
 "Mo" = (
@@ -307,8 +371,20 @@
 "Os" = (
 /turf/closed/wall,
 /area/cargo/qm)
+"OC" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "OF" = (
 /obj/effect/turf_decal/stripes/line,
+/turf/open/floor/plasteel,
+/area/cargo/storage)
+"Pb" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 6
+	},
 /turf/open/floor/plasteel,
 /area/cargo/storage)
 "Pg" = (
@@ -321,6 +397,12 @@
 /obj/effect/turf_decal/delivery,
 /turf/open/floor/plasteel,
 /area/cargo/sorting)
+"Rd" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 5
+	},
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "Ry" = (
 /obj/structure/table/reinforced,
 /turf/open/floor/plating,
@@ -340,12 +422,24 @@
 	},
 /turf/open/floor/plasteel,
 /area/cargo/sorting)
+"Sx" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 8
+	},
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "Te" = (
 /turf/closed/wall,
 /area/maintenance/department/cargo)
 "TF" = (
 /turf/open/floor/plasteel,
 /area/cargo/qm)
+"Ue" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 1
+	},
+/turf/open/floor/plasteel,
+/area/cargo/storage)
 "Vm" = (
 /obj/structure/railing{
 	dir = 4
@@ -40086,14 +40180,14 @@ xk
 xk
 In
 RI
-RI
-RI
+zi
+zi
 RI
 In
 Cp
 Cp
 Cp
-Cp
+nP
 Cp
 Cp
 Cp
@@ -40349,9 +40443,9 @@ RI
 In
 Cp
 Cp
-lh
 Cp
-lh
+Cp
+Cp
 Cp
 Cp
 bK
@@ -40605,15 +40699,15 @@ RI
 ve
 In
 Cp
-Cp
-lh
-Cp
-lh
-Cp
-Cp
+uU
+Sx
+Sx
+Sx
+Sx
+jG
 If
 xZ
-xZ
+Hh
 xZ
 If
 xZ
@@ -40862,12 +40956,12 @@ TF
 TF
 aj
 Cp
-Cp
-lh
-nP
+Ue
 lh
 Cp
+lh
 Cp
+OF
 If
 xZ
 xZ
@@ -41119,16 +41213,16 @@ Mo
 TF
 TF
 Cp
-Cp
+Ue
 lh
 Cp
 lh
 Cp
-Cp
+OF
 If
 xZ
-Hh
 xZ
+lA
 bK
 An
 mu
@@ -41376,12 +41470,12 @@ Mo
 TF
 aj
 Cp
-Cp
+Ue
 lh
 Cp
 lh
-Cp
-Cp
+qU
+Pb
 LW
 xZ
 xZ
@@ -41633,16 +41727,16 @@ TF
 TF
 aj
 Cp
-Cp
+Ue
 lh
 Cp
 lh
-Cp
+ag
 gt
 bK
 xZ
 xZ
-xZ
+sp
 bK
 Sv
 mu
@@ -41890,7 +41984,7 @@ ya
 RV
 aj
 Cp
-Cp
+Ue
 qJ
 Cp
 qJ
@@ -41899,7 +41993,7 @@ lh
 bK
 xZ
 xZ
-xZ
+vP
 If
 If
 Av
@@ -42147,7 +42241,7 @@ nq
 nq
 nq
 Cp
-Cp
+Ue
 lQ
 Cp
 lQ
@@ -42404,11 +42498,11 @@ Cp
 Cp
 Cp
 Cp
+Ue
 Cp
 Cp
 Cp
-Cp
-Cp
+qU
 lh
 bK
 xZ
@@ -42661,12 +42755,12 @@ Cp
 Cp
 Cp
 Cp
-Cp
-Cp
-Cp
-Cp
-Cp
-Cp
+Rd
+OC
+OC
+OC
+dS
+pB
 If
 xZ
 xZ
@@ -43948,9 +44042,9 @@ Cp
 Cp
 gN
 xo
-xo
-xo
-xo
+Fs
+Fs
+Fs
 xo
 xo
 gN
@@ -44986,9 +45080,9 @@ xk
 Te
 qX
 qX
-qX
-qX
-qX
+rh
+rh
+rh
 qX
 qX
 ir
