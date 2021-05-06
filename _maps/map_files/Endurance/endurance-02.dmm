@@ -111,6 +111,10 @@
 "mu" = (
 /turf/open/floor/plasteel,
 /area/space)
+"mO" = (
+/obj/item/kirbyplants/random,
+/turf/open/floor/carpet,
+/area/maintenance/department/cargo)
 "nq" = (
 /obj/effect/spawner/structure/window/reinforced,
 /turf/open/floor/plating,
@@ -156,7 +160,9 @@
 /turf/open/floor/carpet,
 /area/space)
 "rh" = (
-/obj/structure/table/wood,
+/obj/structure/chair/comfy/brown{
+	dir = 8
+	},
 /turf/open/floor/carpet,
 /area/space)
 "sn" = (
@@ -182,6 +188,10 @@
 	},
 /turf/open/floor/plasteel,
 /area/cargo/storage)
+"uW" = (
+/obj/machinery/vending/cola/random,
+/turf/open/floor/carpet,
+/area/space)
 "va" = (
 /obj/structure/table/reinforced,
 /obj/item/paper_bin/carbon{
@@ -263,6 +273,11 @@
 "zj" = (
 /turf/open/openspace,
 /area/space)
+"zX" = (
+/obj/structure/table/wood,
+/obj/item/flashlight/lamp/green,
+/turf/open/floor/carpet,
+/area/space)
 "An" = (
 /obj/effect/turf_decal/bot,
 /turf/open/floor/plasteel,
@@ -292,6 +307,10 @@
 "Cp" = (
 /turf/open/floor/plasteel,
 /area/cargo/storage)
+"CS" = (
+/obj/machinery/vending/snack/random,
+/turf/open/floor/carpet,
+/area/space)
 "De" = (
 /obj/machinery/mineral/ore_redemption,
 /turf/open/floor/plating,
@@ -308,6 +327,15 @@
 	},
 /turf/closed/wall,
 /area/cargo/warehouse)
+"Fd" = (
+/obj/structure/table/wood,
+/obj/item/reagent_containers/food/snacks/candy,
+/obj/item/reagent_containers/food/drinks/soda_cans/pwr_game{
+	pixel_x = -4;
+	pixel_y = 6
+	},
+/turf/open/floor/carpet,
+/area/space)
 "Fs" = (
 /obj/structure/table,
 /turf/open/floor/plasteel,
@@ -316,6 +344,9 @@
 /obj/effect/turf_decal/loading_area,
 /turf/open/floor/plasteel,
 /area/space)
+"GB" = (
+/turf/open/floor/carpet,
+/area/maintenance/department/cargo)
 "GJ" = (
 /turf/open/openspace,
 /area/cargo/miningstorage)
@@ -338,6 +369,10 @@
 /obj/structure/table/reinforced,
 /turf/open/floor/plating,
 /area/cargo/miningoffice)
+"IP" = (
+/obj/machinery/vending/wardrobe,
+/turf/open/floor/carpet,
+/area/space)
 "Jp" = (
 /obj/structure/disposalpipe/segment{
 	dir = 4
@@ -397,6 +432,10 @@
 /obj/effect/turf_decal/delivery,
 /turf/open/floor/plasteel,
 /area/cargo/sorting)
+"PU" = (
+/obj/machinery/disposal/bin,
+/turf/open/floor/carpet,
+/area/space)
 "Rd" = (
 /obj/effect/turf_decal/stripes/line{
 	dir = 5
@@ -440,6 +479,12 @@
 	},
 /turf/open/floor/plasteel,
 /area/cargo/storage)
+"UZ" = (
+/obj/structure/chair/comfy/brown{
+	dir = 4
+	},
+/turf/open/floor/carpet,
+/area/space)
 "Vm" = (
 /obj/structure/railing{
 	dir = 4
@@ -452,6 +497,10 @@
 "VJ" = (
 /turf/open/floor/plating,
 /area/cargo/qm)
+"VR" = (
+/obj/machinery/vending/autodrobe,
+/turf/open/floor/carpet,
+/area/space)
 "Wz" = (
 /obj/effect/turf_decal/plaque,
 /turf/open/floor/plasteel,
@@ -460,6 +509,10 @@
 /obj/structure/filingcabinet/chestdrawer,
 /turf/open/floor/plasteel,
 /area/cargo/qm)
+"XK" = (
+/obj/item/kirbyplants/random,
+/turf/open/floor/carpet,
+/area/space)
 "XZ" = (
 /obj/structure/table/reinforced,
 /obj/item/folder/yellow{
@@ -490,6 +543,12 @@
 	},
 /turf/open/floor/plasteel,
 /area/cargo/miningstorage)
+"ZZ" = (
+/obj/structure/table/wood,
+/obj/item/paper_bin,
+/obj/item/pen,
+/turf/open/floor/carpet,
+/area/space)
 
 (1,1,1) = {"
 zj
@@ -43278,14 +43337,14 @@ xo
 xo
 gN
 xk
-xk
-xk
-xk
-mu
-mu
-mu
-ir
-ir
+Te
+mO
+GB
+qX
+qX
+qX
+qX
+XK
 ir
 ir
 ir
@@ -43536,13 +43595,13 @@ xo
 gN
 xk
 Te
-Te
-Te
-mu
-mu
-mu
-ir
-ir
+GB
+GB
+qX
+qX
+qX
+qX
+qX
 ir
 ir
 ir
@@ -43795,9 +43854,9 @@ xk
 Te
 qX
 qX
-qX
-qX
-qX
+uW
+PU
+CS
 qX
 qX
 ir
@@ -44052,9 +44111,9 @@ xk
 Te
 qX
 qX
-qX
-qX
-qX
+ir
+ir
+ir
 qX
 qX
 ir
@@ -44306,12 +44365,12 @@ Yq
 Yq
 Yq
 xk
-Te
+xk
 qX
 qX
-ir
-ir
-ir
+qX
+qX
+qX
 qX
 qX
 ir
@@ -44566,9 +44625,9 @@ xk
 Te
 qX
 qX
-qX
-qX
-qX
+UZ
+UZ
+UZ
 qX
 qX
 ir
@@ -44823,9 +44882,9 @@ xk
 Te
 qX
 qX
-qX
-qX
-qX
+Fd
+zX
+ZZ
 qX
 qX
 ir
@@ -45594,9 +45653,9 @@ xk
 Te
 qX
 qX
-qX
-qX
-qX
+ir
+ir
+ir
 qX
 qX
 ir
@@ -45851,9 +45910,9 @@ xk
 Te
 qX
 qX
-ir
-ir
-ir
+VR
+XK
+IP
 qX
 qX
 ir
@@ -46363,13 +46422,13 @@ xk
 xk
 xk
 Te
+XK
 qX
 qX
 qX
 qX
 qX
-qX
-qX
+XK
 ir
 ir
 ir
