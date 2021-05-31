@@ -18,8 +18,14 @@
 	var/slots = DEFAULT_SLOTS_AVAILABLE
 	/// Damage by rig zone. Lazy list.
 	var/list/damage_by_zone
+	/// Needs to be fully sealed to provide pressure protection
+	var/pressure_shielding_requires_sealing = TRUE
+	/// Needs to be fully sealed to provide temperature protection
+	var/temperature_shielding_requires_sealing = TRUE
+	/// Are we sealed?
+	var/sealed = FALSE
 
-/datum/component/rig_piece/Initialize(obj/item/rig/rig, apply_armor, cycle_delay, piece_type)
+/datum/component/rig_piece/Initialize(obj/item/rig/rig, rig_creation = FALSE, apply_armor, cycle_delay, piece_type, slots)
 	. = ..()
 	if(. & COMPONENT_INCOMPATIBLE)
 		return
@@ -33,9 +39,11 @@
 		src.cycle_delay = cycle_delay
 	if(!isnull(piece_type))
 		src.piece_type = piece_type
+	if(!isnull(slots))
+		src.slots = slots
 	var/obj/item/I = parent
 	I.resistance_flags |= (ACID_PROOF | INDESTRUCTIBLE | FIRE_PROOF)	// rig damage is handled separately.
-	RegisterToRig(rig)
+	RegisterToRig(rig, rig_creation)
 
 /datum/component/rig_piece/Destroy()
 	UnregisterFromRig()
@@ -52,6 +60,23 @@
  */
 /datum/component/rig_piece/proc/UnregisterFromRig(obj/item/rig/rig)
 
+
+/**
+ * Updates item stats.
+ */
+/datum/component/rig_piece/proc/update_item()
+	var/obj/item/I = parent
+	I.armor = (apply_armor && rig)? rig.get_user_armor() : getArmor()
+	I.max_heat_protection_temperature = (rig && (sealed || !temperature_shielding_requires_sealing))? rig.get_heat_shielding() : initial(I.max_heat_protection_temperature)
+	I.min_cold_protection_temperature = (rig && (sealed || !temperature_shielding_requires_sealing))? rig.get_cold_shielding() : initial(I.min_cold_protection_temperature)
+	if(!istype(I, /obj/item/clothing))
+		return
+	var/obj/item/clothing/C = I
+	var/initial_pressure_shield = initial(C.clothing_flags)
+	if(!initial_pressure_shield && (!rig || (!sealed && pressure_shielding_requires_sealing)))
+		C.clothing_flags &= ~STOPSPRESSUREDAMAGE
+	else
+		C.clothing_flags |= STOPSPRESSUREDAMAGE
 
 /datum/component/rig_piece/head
 	apply_armor = TRUE

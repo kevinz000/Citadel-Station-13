@@ -10,8 +10,6 @@
 	var/datum/armor/user_protection = list("melee" = 10, "laser" = 10, "bullet" = 10, "energy" = 10, "bomb" = 10, "bio" = 100, "rad" = 10, "acid" = 100, "wound" = 10)
 	/// Armor datum to apply for cases of rigsuit damage. If null, defaults to user_protection.
 	var/datum/armor/rig_protection
-	/// Module weight.
-	var/weight = RIGSUIT_WEIGHT_NONE
 	/// Siemens coefficient - conductivity. Defaults to fully nonconductive, more on that later in rigsuits.
 	var/conductivity = 0
 
