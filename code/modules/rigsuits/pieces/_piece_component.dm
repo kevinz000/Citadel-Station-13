@@ -25,7 +25,7 @@
 	/// Are we sealed?
 	var/sealed = FALSE
 
-/datum/component/rig_piece/Initialize(obj/item/rig/rig, rig_creation = FALSE, apply_armor, cycle_delay, piece_type, slots)
+/datum/component/rig_piece/Initialize(obj/item/rig/rig, rig_creation = FALSE, apply_effects, cycle_delay, piece_type, slots)
 	. = ..()
 	if(. & COMPONENT_INCOMPATIBLE)
 		return
@@ -33,8 +33,8 @@
 		return COMPONENT_INCOMPATIBLE
 	if(!istype(rig))
 		return COMPONENT_INCOMPATIBLE		// if you're an admin bussing, go learn how to do this properly with a rig proc, and stop fucking about.
-	if(!isnull(apply_armor))
-		src.apply_armor = apply_armor
+	if(!isnull(apply_effects))
+		src.apply_effects = apply_effects
 	if(!isnull(cycle_delay))
 		src.cycle_delay = cycle_delay
 	if(!isnull(piece_type))
@@ -100,13 +100,13 @@
 		C.clothing_flags = initial_flags
 	else
 		C.clothing_flags &= ~(STOPSPRESSUREDAMAGE | ALLOWINTERNALS | THICKMATERIAL | BLOCK_GAS_SMOKE_EFFECT)
-		if(rig.is_thick_material)
+		if(rig.is_thick_material())
 			C.clothing_flags |= THICKMATERIAL
-		if(rig.is_gas_smoke_shielded)
+		if(rig.is_gas_smoke_shielded())
 			C.clothing_flags |= BLOCK_GAS_SMOKE_EFFECT
-		if(rig.is_internals_allowed)
+		if(rig.is_internals_allowed())
 			C.clothing_flags |= ALLOWINTERNALS
-		if(rig.is_pressure_shielded)
+		if(rig.is_pressure_shielded())
 			C.clothing_flags |= STOPSPRESSUREDAMAGE
 	if(!(initial_flags & STOPSPRESSUREDAMAGE) && (!rig || (!sealed && pressure_shielding_requires_sealing)))
 		C.clothing_flags &= ~STOPSPRESSUREDAMAGE

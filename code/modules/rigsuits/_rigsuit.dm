@@ -139,8 +139,9 @@
 	update_integrals()
 
 /obj/item/rig/Destroy()
+	retract_all()
 	if(user)
-		deactivate(force = TRUE, instant = TRUE)
+		deactivate()
 	wipe_components()
 	wipe_pieces()
 	return ..()
