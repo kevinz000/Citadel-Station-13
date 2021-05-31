@@ -123,6 +123,10 @@
 	var/rig_unconscious_damage_penalty = 1.5
 	/// Incoming damage multiplier if the true wearer/user is dead OR does not exist (pilotless control)
 	var/rig_dead_damage_penalty = 3
+	/// EXPERIMENTAL - Unmanned piloting, marks the rig as being worn by a fake human user.
+	var/fakeuser = FALSE
+	/// EXPERIMENTAL - Remote control is forced the pilot to stand, regardless of status
+	var/force_user_standing = FALSE
 
 	/**
 	 * Hotbinds

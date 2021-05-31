@@ -10,7 +10,7 @@
  * Gets the control flags of a user.
  */
 /obj/item/rig/proc/get_control_flags(mob/M)
-	if(M == wearer)
+	if(!fakeuser && (M == user))
 		return user_control_flags
 	if(M in remote_controllers)
 		return remote_controllers[M]
