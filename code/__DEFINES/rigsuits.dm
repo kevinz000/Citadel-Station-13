@@ -6,6 +6,27 @@
 #define RIG_ZONE_L_LEG	"l_leg"
 #define RIG_ZONE_R_LEG	"r_leg"
 
+// Rig piece types - only one of each type should exist on a given rig.
+// This is a bitfield
+/// Head - RIG_ZONE_HEAD translates to this
+#define RIG_PIECE_HEAD		(1<<0)
+/// Suit - RIG_ZONE_CHEST translates to this
+#define RIG_PIECE_SUIT		(1<<1)
+/// Gauntlets - RIG_ZONE_L/R_ARM translates to this
+#define RIG_PIECE_GAUNTLETS	(1<<2)
+/// Boots - RIG_ZONE_L/R_LEG translates to this
+#define RIG_PIECE_BOOTS		(1<<3)
+
+// Global list lookup for rig zone to piece bitflag
+GLOBAL_LIST_INIT(rig_zone_lookup, list(
+	RIG_ZONE_HEAD = RIG_PIECE_HEAD,
+	RIG_ZONE_CHEST = RIG_PIECE_SUIT,
+	RIG_ZONE_L_ARM = RIG_PIECE_GAUNTLETS,
+	RIG_ZONE_R_ARM = RIG_PIECE_GAUNTLETS,
+	RIG_ZONE_L_LEG = RIG_PIECE_BOOTS,
+	RIG_ZONE_R_LEG = RIG_PIECE_BOOTS
+))
+
 // Weight
 
 // Weight amounts on modules/armor/exception

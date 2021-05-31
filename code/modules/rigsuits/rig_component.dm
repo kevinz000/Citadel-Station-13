@@ -8,8 +8,6 @@
 	var/weight = RIGSUIT_WEIGHT_NONE
 	/// Allowed suit types, flags.
 	var/allowed_suit_types = ALL
-	/// Disallowed suit types, flags. Overrides allowed.
-	var/disallowed_suit_types = NONE
 	/// Is this component considered an "abstract component" aka unremovable, can't be used in other suits.
 	var/internal = FALSE
 	/// Conflict type - this is a bitflag. If any other component has anything in this, there's a conflict.
@@ -21,7 +19,7 @@
  * @return Whether or not we should attach
  */
 /obj/item/rig_component/proc/can_attach(obj/item/rig/rig)
-	return (rig.suit_types & allowed_suit_types) && !(rig.suit_types & disallowed_suit_types)
+	return (rig.suit_types & allowed_suit_types) && !internal
 
 /**
  * Checks if we can be detached.
