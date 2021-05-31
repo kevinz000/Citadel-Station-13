@@ -1,7 +1,6 @@
 /**
  * Rigsuit modules
  */
-#warn todo: in depth comment
 /obj/item/rig_component/module
 
 

@@ -19,7 +19,7 @@
 	/// Damage by rig zone. Lazy list.
 	var/list/damage_by_zone
 
-/datum/component/rig_piece/Initialize(..., obj/item/rig/rig, apply_armor, cycle_delay, piece_type)
+/datum/component/rig_piece/Initialize(obj/item/rig/rig, apply_armor, cycle_delay, piece_type)
 	. = ..()
 	if(. & COMPONENT_INCOMPATIBLE)
 		return

@@ -4,6 +4,10 @@
 /obj/item/rig_component
 	/// Currently attached rig. Set by rig attach/detach procs.
 	var/obj/item/rig/host
+	/// Rig component type
+	var/component_type = RIG_COMPONENT_GENERIC
+	/// UI type. Can be a define or a custom string.
+	var/ui_type = RIG_COMPONENT_UI_GENERIC
 	/// Weight of this component
 	var/weight = RIGSUIT_WEIGHT_NONE
 	/// Allowed suit types, flags.
@@ -49,3 +53,27 @@
 /obj/item/rig_component/proc/on_detach(obj/item/rig/rig)
 	if(!rig_creation)
 		rig.update_weight()
+
+/**
+ * UI data for this piece.
+ * Static.
+ */
+/obj/item/rig_component/proc/rig_ui_data(mob/user)
+	. = list()
+	.["ui"] = ui_type
+	.["name"] = name
+	.["desc"] = desc
+
+/**
+ * UI act on piece
+ */
+/obj/item/rig_component/proc/rig_ui_act(action, params)
+	return
+
+/**
+ * Call this to update our UI data. We don't constantly resend data to save performance.
+ */
+/obj/item/rig_component/proc/update_ui()
+	host?.mark_component_ui_dirty(src)
+
+
