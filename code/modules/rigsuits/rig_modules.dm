@@ -63,28 +63,17 @@
  * Updates rig installed armor.
  */
 /obj/item/rig/proc/update_armor_module()
-	sync_all_pieces()
+	update_pieces()
 
 /**
  * Updates rig installed pressure module.
  */
 /obj/item/rig/proc/update_pressure_module()
 	sync_all_pieces()
-
+sw
 /**
  * Updates rig installed thermal module.
  */
 /obj/item/rig/proc/update_thermal_module()
 	sync_all_pieces()
 
-/**
- * Updates the rigsuit's weight.
- */
-/obj/item/rig/proc/update_weight()
-	var/old = weight
-	weight = 0
-	for(var/i in all_components)
-		var/obj/item/rig_component/C = i
-		weight += C.weight
-	if(old != weight)
-		update_slowdown()
