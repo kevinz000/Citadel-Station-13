@@ -2,7 +2,7 @@
  * Gets the armor datum applied to wearers
  */
 /obj/item/rig/proc/get_user_armor()
-	return installed_armor? installed_armor.user_protection : getARmor()
+	return installed_armor? installed_armor.user_protection : getArmor()
 
 /**
  * Gets the armor datum applied to rig damage

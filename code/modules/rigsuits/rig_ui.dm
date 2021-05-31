@@ -27,8 +27,6 @@
 	var/control_flags = get_control_flags(user)
 	if(!(control_flags & RIG_CONTROL_UI_VIEW))
 		return UI_CLOSE
-	if(!(control_flags & RIG_CONTROL_UI_USE))
-		return UI_UPDATE
 	return UI_INTERACTIVE
 
 
@@ -40,13 +38,15 @@
 	if(.)
 		return
 	var/control_flags = get_control_flags(usr)
-	if(!(control_flags & RIG_CONTROL_UI_USE))
-		return TRUE
 	if(params["module"])
-		if(!(control_flags & RIG_CONTROL_USE_MODULES))
+		if(!(control_flags & RIG_CONTROL_UI_MODULES))
 			return TRUE
 		var/obj/item/rig_component/module/M = locate(params["module"]) in modules
 		if(!M)
 			return TRUE
 		M.rig_ui_act(action, params))
+		return TRUE
+
+	// Everything below are considered settings and require UI_CONTROL
+	if(!(control_flags & RIG_CONTROL_UI_CONTROL))
 		return TRUE
