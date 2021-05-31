@@ -3362,6 +3362,7 @@
 #include "code\modules\rigsuits\_component.dm"
 #include "code\modules\research\xenobiology\crossbreeding\stabilized.dm"
 #include "code\modules\rigsuits\_rigsuit.dm"
+#include "code\modules\rigsuits\rig_activation.dm"
 #include "code\modules\rigsuits\rig_armor.dm"
 #include "code\modules\rigsuits\rig_hotbinds.dm"
 #include "code\modules\rigsuits\rig_intrinsics.dm"

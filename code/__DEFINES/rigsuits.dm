@@ -17,6 +17,14 @@
 /// Boots - RIG_ZONE_L/R_LEG translates to this
 #define RIG_PIECE_BOOTS		(1<<3)
 
+// Rig piece applying effects
+/// Apply armor
+#define RIG_PIECE_APPLY_ARMOR			(1<<0)
+/// Apply thermal shielding
+#define RIG_PIECE_APPLY_THERMALS		(1<<1)
+/// Apply pressure shielding/thickmaterial/similar
+#define RIG_PIECE_APPLY_PRESSURE		(1<<2)
+
 // Global list lookup for rig zone to piece bitflag
 GLOBAL_LIST_INIT(rig_zone_lookup, list(
 	RIG_ZONE_HEAD = RIG_PIECE_HEAD,

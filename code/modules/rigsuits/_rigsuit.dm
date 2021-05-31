@@ -35,6 +35,8 @@
 	 */
 	/// The current user we're on.
 	var/mob/living/user
+	/// Are we currently activated?
+	var/activated = FALSE
 	/// What the user can control.
 	var/user_control_flags = RIG_CONTROL_DEFAULT
 	/// Suit types
@@ -141,4 +143,11 @@
 		deactivate(force = TRUE, instant = TRUE)
 	wipe_components()
 	wipe_pieces()
+	return ..()
+
+/obj/item/rig/dropped(mob/user, silent)
+	// Retract all pieces
+	retract_all()
+	// Immediately deactivate
+	deactivate()
 	return ..()

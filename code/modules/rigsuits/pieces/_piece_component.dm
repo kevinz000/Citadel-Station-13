@@ -9,7 +9,7 @@
 	/// Our host rig piece, if it exists.
 	var/obj/item/rig/rig
 	/// Should we get armor, pressure, thermal shielding etc transferred to us. Used to ensure no stacking if we ever get uniform rigs.
-	var/apply_armor = FALSE
+	var/apply_effects = RIG_PIECE_APPLY_ARMOR | RIG_PIECE_APPLY_THERMALS | RIG_PIECE_APPLY_PRESSURE
 	/// Separate cycle delay - time needed to fully seal a piece on deploy, separate from rig's innate activation/deactivation delays
 	var/cycle_delay = 0
 	/// Piece type bitflag - each rig can only have one of each type.
@@ -89,31 +89,42 @@
  */
 /datum/component/rig_piece/proc/update_item()
 	var/obj/item/I = parent
-	I.armor = (apply_armor && rig)? rig.get_user_armor() : getArmor()
-	I.max_heat_protection_temperature = (rig && (sealed || !temperature_shielding_requires_sealing))? rig.get_heat_shielding() : initial(I.max_heat_protection_temperature)
-	I.min_cold_protection_temperature = (rig && (sealed || !temperature_shielding_requires_sealing))? rig.get_cold_shielding() : initial(I.min_cold_protection_temperature)
+	I.armor = ((apply_effects & RIG_PIECE_APPLY_ARMOR) && rig)? rig.get_user_armor() : getArmor()
+	I.max_heat_protection_temperature = ((apply_effects & RIG_PIECE_APPLY_THERMALS) && rig && (sealed || !temperature_shielding_requires_sealing))? rig.get_heat_shielding() : initial(I.max_heat_protection_temperature)
+	I.min_cold_protection_temperature = ((apply_effects & RIG_PIECE_APPLY_THERMALS) && rig && (sealed || !temperature_shielding_requires_sealing))? rig.get_cold_shielding() : initial(I.min_cold_protection_temperature)
 	if(!istype(I, /obj/item/clothing))
 		return
 	var/obj/item/clothing/C = I
-	var/initial_pressure_shield = initial(C.clothing_flags)
-	if(!initial_pressure_shield && (!rig || (!sealed && pressure_shielding_requires_sealing)))
+	var/initial_flags = initial(C.clothing_flags)
+	if(!rig || !(apply_effects & RIG_PIECE_APPLY_PRESSURE))
+		C.clothing_flags = initial_flags
+	else
+		C.clothing_flags &= ~(STOPSPRESSUREDAMAGE | ALLOWINTERNALS | THICKMATERIAL | BLOCK_GAS_SMOKE_EFFECT)
+		if(rig.is_thick_material)
+			C.clothing_flags |= THICKMATERIAL
+		if(rig.is_gas_smoke_shielded)
+			C.clothing_flags |= BLOCK_GAS_SMOKE_EFFECT
+		if(rig.is_internals_allowed)
+			C.clothing_flags |= ALLOWINTERNALS
+		if(rig.is_pressure_shielded)
+			C.clothing_flags |= STOPSPRESSUREDAMAGE
+	if(!(initial_flags & STOPSPRESSUREDAMAGE) && (!rig || (!sealed && pressure_shielding_requires_sealing)))
 		C.clothing_flags &= ~STOPSPRESSUREDAMAGE
 	else
 		C.clothing_flags |= STOPSPRESSUREDAMAGE
+	update_sealed_icon()
+
+/datum/component/rig_piece/proc/update_sealed_icon()
+	#warn TODO: Update worn icon for sealed/unsealed sprites.
 
 /datum/component/rig_piece/head
-	apply_armor = TRUE
 	piece_type = RIG_PIECE_HEAD
 
 /datum/component/rig_piece/suit
-	apply_armor = TRUE
 	piece_type = RIG_PIECE_SUIT
 
 /datum/component/rig_piece/gauntlets
-	apply_armor = TRUE
 	piece_type = RIG_PIECE_GAUNTLETS
 
 /datum/component/rig_piece/boots
-	apply_armor = TRUE
 	piece_type = RIG_PIECE_BOOTS
-
