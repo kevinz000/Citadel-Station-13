@@ -60,6 +60,29 @@
  */
 /datum/component/rig_piece/proc/UnregisterFromRig(obj/item/rig/rig)
 
+/**
+ * Called by rig on successful deploy
+ */
+/datum/component/rig_piece/proc/on_deploy(mob/living/wearer)
+
+/**
+ * Called by rig on successful retract
+ */
+/datum/component/rig_piece/proc/on_retract(mob/living/wearer)
+
+/**
+ * Called by rig on seal
+ */
+/datum/component/rig_piece/proc/on_seal(mob/living/wearer)
+	sealed = TRUE
+	update_item()
+
+/**
+ * Called by rig on unseal
+ */
+/datum/component/rig_piece/proc/on_unseal(mob/living/wearer)
+	sealed = FALSE
+	update_item()
 
 /**
  * Updates item stats.
