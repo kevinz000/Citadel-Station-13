@@ -14,6 +14,10 @@
 	var/cycle_delay = 0
 	/// Piece type bitflag - each rig can only have one of each type.
 	var/piece_type = NONE
+	/// Slots available - this is per rig zone this is responsible for, not total!
+	var/slots = DEFAULT_SLOTS_AVAILABLE
+	/// Damage by rig zone. Lazy list.
+	var/list/damage_by_zone
 
 /datum/component/rig_piece/Initialize(..., obj/item/rig/rig, apply_armor, cycle_delay, piece_type)
 	. = ..()

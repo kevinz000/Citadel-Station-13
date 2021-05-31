@@ -2,7 +2,7 @@
  * Rigsuit modules
  */
 #warn todo: in depth comment
-/obj/item/rig_component/rig_module
+/obj/item/rig_component/module
 
 
 
@@ -20,6 +20,6 @@
  * Provides items to a user's hand, magnetic catches them if they drop.
  * Used for many tools like integrated toolsets, etc etc.
  */
-/obj/item/rig_component/rig_module/item_supplier
+/obj/item/rig_component/module/item_supplier
 
 

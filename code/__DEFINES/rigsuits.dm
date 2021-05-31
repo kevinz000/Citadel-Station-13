@@ -27,6 +27,28 @@ GLOBAL_LIST_INIT(rig_zone_lookup, list(
 	RIG_ZONE_R_LEG = RIG_PIECE_BOOTS
 ))
 
+// Slots
+/// Default slots available per piece
+#define DEFAULT_SLOTS_AVAILABLE			20
+
+// Control flags
+/// Default control flags
+#define RIG_CONTROL_DEFAULT						ALL
+/// Can move the suit
+#define RIG_CONTROL_MOVEMENT					(1<<0)
+/// Can use hands
+#define RIG_CONTROL_HANDS						(1<<1)
+/// Can activate/deactivate the rig
+#define RIG_CONTROL_ACTIVATION					(1<<2)
+/// Can view UI
+#define RIG_CONTROL_UI_VIEW						(1<<3)
+/// Can interact with hotbinds
+#define RIG_CONTROL_USE_HOTBINDS				(1<<4)
+/// Can activate non hotbound modules
+#define RIG_CONTROL_USE_MODULES					(1<<5)
+/// Can deploy/undeploy pieces
+#define RIG_CONTROL_PIECE_DEPLOYMENt			(1<<6)
+
 // Weight
 
 // Weight amounts on modules/armor/exception
