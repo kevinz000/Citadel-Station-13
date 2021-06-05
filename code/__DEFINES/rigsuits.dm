@@ -11,6 +11,8 @@
 #define RIG_ZONE_R_ARM	"r_arm"
 #define RIG_ZONE_L_LEG	"l_leg"
 #define RIG_ZONE_R_LEG	"r_leg"
+/// This represents full body modules - these modules will take slots and size from all zones.
+#define RIG_ZONE_ALL	"all"
 
 // Rig piece types - only one of each type should exist on a given rig.
 // This is a bitfield
@@ -63,7 +65,7 @@ GLOBAL_LIST_INIT(rig_zone_lookup, list(
 /// Can activate non hotbound modules
 #define RIG_CONTROL_UI_MODULES					(1<<5)
 /// Can deploy/undeploy pieces
-#define RIG_CONTROL_PIECE_DEPLOYMENt			(1<<6)
+#define RIG_CONTROL_DEPLOY						(1<<6)
 
 // Component types
 /// Generic default

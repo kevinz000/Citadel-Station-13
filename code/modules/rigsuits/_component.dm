@@ -8,8 +8,16 @@
 	var/component_type = RIG_COMPONENT_GENERIC
 	/// UI type. Can be a define or a custom string.
 	var/ui_type = RIG_COMPONENT_UI_GENERIC
-	/// Weight of this component
+	/// Weight of this component - this affects stats like power usage and slowdown
 	var/weight = RIGSUIT_WEIGHT_NONE
+	/// Slots used - a section must have enough slots to support this module
+	var/slots = 0
+	/// Size used - a section must have enough free space to support this module
+	var/size = 0
+	/// Prevent the same type of component from being mounted if one's already in ANY of the sections this occupies
+	var/prevent_duplicates = TRUE
+	/// Rig zones this occupies.
+	var/rig_zone = RIG_ZONE_CHEST
 	/// Allowed suit types, flags.
 	var/allowed_suit_types = ALL
 	/// Is this component considered an "abstract component" aka unremovable, can't be used in other suits.

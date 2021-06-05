@@ -6,6 +6,7 @@
 /obj/item/rig_component/armor
 	name = "unnamed armor module"
 	desc = "Suspicious."
+	rig_zone = RIG_ZONE_ALL
 	/// Armor datum to apply to the rigsuit's pieces, for cases of user protection.
 	var/datum/armor/user_protection = list("melee" = 10, "laser" = 10, "bullet" = 10, "energy" = 10, "bomb" = 10, "bio" = 100, "rad" = 10, "acid" = 100, "wound" = 10)
 	/// Armor datum to apply for cases of rigsuit damage. If null, defaults to user_protection.

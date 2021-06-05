@@ -34,11 +34,11 @@
 	 * BASIC VARIABLES
 	 */
 	/// The current user we're on.
-	var/mob/living/user
+	var/mob/living/wearer
 	/// Are we currently activated?
 	var/activated = FALSE
 	/// What the user can control.
-	var/user_control_flags = RIG_CONTROL_DEFAULT
+	var/wearer_control_flags = RIG_CONTROL_DEFAULT
 	/// Suit types
 	var/suit_types = RIG_TYPE_STANDARD
 	/// Innate activation/deactivation delay. Unaffected by movement.
@@ -156,3 +156,9 @@
 	// Immediately deactivate
 	deactivate()
 	return ..()
+
+/obj/item/rig/Moved(atom/OldLoc, Dir)
+	. = ..()
+	if(activated && (loc != wearer))
+		retract_all()
+		deactivate()

@@ -5,6 +5,7 @@
 /obj/item/rig_component/thermal_shielding
 	name = "unnamed thermal module"
 	desc = "Suspicious"
+	rig_zone = RIG_ZONE_ALL
 	/// Minimum cold protection temperature.
 	cold_protection = SPACE_HELM_MIN_TEMP_PROTECT
 	/// Maximum heat protection temperature

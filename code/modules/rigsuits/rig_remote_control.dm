@@ -10,8 +10,34 @@
  * Gets the control flags of a user.
  */
 /obj/item/rig/proc/get_control_flags(mob/M)
-	if(!fakeuser && (M == user))
-		return user_control_flags
+	if(!fakeuser && (M == wearer))
+		return wearer_control_flags
 	if(M in remote_controllers)
 		return remote_controllers[M]
 	return NONE
+
+/**
+ * Checks if a user has a set of control flags
+ */
+/obj/item/rig/proc/check_control_flags(mob/M, flags)
+	return (get_control_flags(M) & flags) == flags
+
+/**
+ * Send different messages based on if target is the actual wearer, or someone controlling the suit.
+ * If no target, sends to wearer only
+ * If target, sends wearer or controller message to target based on who they are, AND sends wearer message to wearer if target_only isn't TRUE
+ *
+ * Applies span class notice by default.
+ */
+/obj/item/rig/proc/rig_message(mob/target, wearer_message, controller_message, target_only = FALSE)
+	if(!controller_message)
+		controller_message = wearer_message
+	if(!target)
+		to_chat(wearer, "<span class='notice'>[wearer_message]</span>")
+		return
+	if(target == wearer)
+		to_chat(wearer, "<span class='notice'>[wearer_message]</span>")
+		return
+	to_chat(target, "<span class='notice'>[controller_message]</span>")
+	if(!target_only)
+		to_chat(wearer, "<span class='notice'>[wearer_message]</span>")

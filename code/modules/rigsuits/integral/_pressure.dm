@@ -5,6 +5,7 @@
 /obj/item/rig_component/pressure_shielding
 	name = "unnamed pressure module"
 	desc = "Suspicious"
+	rig_zone = RIG_ZONE_ALL
 	/// Stops pressure damage
 	var/pressure_immune = TRUE
 	/// Allows internal usage
