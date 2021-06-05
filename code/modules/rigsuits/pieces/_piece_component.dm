@@ -16,6 +16,8 @@
 	var/piece_type = NONE
 	/// Slots available - this is per rig zone this is responsible for, not total!
 	var/slots = DEFAULT_SLOTS_AVAILABLE
+	/// Max combined size - this is per rig zone this is responsible for, not total!
+	var/size = DEFAULT_SIZE_AVAILABLE
 	/// Damage by rig zone. Lazy list.
 	var/list/damage_by_zone
 	/// Needs to be fully sealed to provide pressure protection
@@ -24,8 +26,14 @@
 	var/temperature_shielding_requires_sealing = TRUE
 	/// Are we sealed?
 	var/sealed = FALSE
+	/// Are we deployed?
+	var/deployed = FALSE
+	/// The slot we deploy to, for humans. It is currently infeasible to dynamically detect this.
+	var/equip_slot
+	/// Max health
+	var/maxhealth = DEFAULT_RIG_INTEGRITY
 
-/datum/component/rig_piece/Initialize(obj/item/rig/rig, rig_creation = FALSE, apply_effects, cycle_delay, piece_type, slots)
+/datum/component/rig_piece/Initialize(obj/item/rig/rig, rig_creation = FALSE, apply_effects, cycle_delay, piece_type, slots, maxhealth)
 	. = ..()
 	if(. & COMPONENT_INCOMPATIBLE)
 		return
@@ -41,6 +49,8 @@
 		src.piece_type = piece_type
 	if(!isnull(slots))
 		src.slots = slots
+	if(!isnull(maxhealth))
+		src.maxhealth = maxhealth
 	var/obj/item/I = parent
 	I.resistance_flags |= (ACID_PROOF | INDESTRUCTIBLE | FIRE_PROOF)	// rig damage is handled separately.
 	RegisterToRig(rig, rig_creation)
@@ -59,6 +69,27 @@
  * Cleans us up from a rig. Never use outside of deletion, rig-swapping isn't supported yet.
  */
 /datum/component/rig_piece/proc/UnregisterFromRig(obj/item/rig/rig)
+
+
+/**
+ * Moves our parent back into our rig
+ */
+/datum/component/rig_piece/proc/moveIntoRig()
+	var/obj/item/I = parent
+	I.forceMove(rig)
+	deployed = FALSE
+
+/**
+ * Deploys onto a user.
+ *
+ * @params
+ * - L - person to deploy onto
+ * - force - knock off anything conflicting in the slot
+ * - harder
+ */
+/datum/component/rig/proc/deployOntoUser(mob/living/L, force = FALSE, harder = FALSE)
+
+	deployed = TRUE
 
 /**
  * Called by rig on successful deploy
@@ -138,12 +169,16 @@
 
 /datum/component/rig_piece/head
 	piece_type = RIG_PIECE_HEAD
+	equip_slot = SLOT_HEAD
 
 /datum/component/rig_piece/suit
 	piece_type = RIG_PIECE_SUIT
+	equip_slot = SLOT_WEAR_SUIT
 
 /datum/component/rig_piece/gauntlets
 	piece_type = RIG_PIECE_GAUNTLETS
+	equip_slot = SLOT_GLOVES
 
 /datum/component/rig_piece/boots
 	piece_type = RIG_PIECE_BOOTS
+	equip_slot = SLOT_SHOES
