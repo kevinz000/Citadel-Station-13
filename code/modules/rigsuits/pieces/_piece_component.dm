@@ -63,24 +63,37 @@
 /**
  * Called by rig on successful deploy
  */
-/datum/component/rig_piece/proc/on_deploy(mob/living/wearer)
+/datum/component/rig_piece/proc/on_deploy(mob/living/wearer, instant_seal)
+	if(!instant_seal)
+		to_chat(wearer, "<span class='notice'>Your [parent] deploys around your [get_zone_string(wearer)]</span>")
+	else
+		to_chat(wearer, "<span class='notice'>Your [parent] deploys around you [get_zone_string(wearer)], locking into place with some mechanical clicks.</span>")
+
 
 /**
  * Called by rig on successful retract
  */
-/datum/component/rig_piece/proc/on_retract(mob/living/wearer)
+/datum/component/rig_piece/proc/on_retract(mob/living/wearer, instant_seal)
+	if(!instant_seal)
+		to_chat(wearer, "<span class='notice'>Your [parent] retracts from your [get_zone_string(wearer)]</span>")
+	else
+		to_chat(wearer, "<span class='notice'>Your [parent] unlocks itself and retracts from your [get_zone_string(wearer)]</span>")
 
 /**
  * Called by rig on seal
  */
-/datum/component/rig_piece/proc/on_seal(mob/living/wearer)
+/datum/component/rig_piece/proc/on_seal(mob/living/wearer, instant_seal)
+	if(!instant_seal)
+		to_chat(wearer, "<span class='notice'>[parent] locks into place with some mechanical clicks.</span>")
 	sealed = TRUE
 	update_item()
 
 /**
  * Called by rig on unseal
  */
-/datum/component/rig_piece/proc/on_unseal(mob/living/wearer)
+/datum/component/rig_piece/proc/on_unseal(mob/living/wearer, instant_seal)
+	if(!instant_seal)
+		to_chat(wearer, "<span class='notice'>[parent] loosens, mechanical locks clicking out of place.</span>")
 	sealed = FALSE
 	update_item()
 
@@ -116,6 +129,12 @@
 
 /datum/component/rig_piece/proc/update_sealed_icon()
 	#warn TODO: Update worn icon for sealed/unsealed sprites.
+
+/**
+ * Get the zone string of "body", "head", "feet", etc.
+ */
+/datum/component/rig_piece/proc/get_zone_string(mob/wearer)
+	return "body"
 
 /datum/component/rig_piece/head
 	piece_type = RIG_PIECE_HEAD
