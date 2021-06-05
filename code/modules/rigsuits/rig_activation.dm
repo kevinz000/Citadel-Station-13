@@ -7,8 +7,7 @@
 /obj/item/rig/proc/activate(mob/user, silent, bypass_seal_delay, deploy_all)
 	ASSERT(isliving(loc))
 	wearer = loc
-
-
+	rig_message(user, "[src] clicks into place around you.", "RIG system initializations complete.")
 	if(!deploy_all)
 		INVOKE_ASYNC(src, .proc/try_seal_all, bypass_delay = bypass_seal_delay)
 	else
@@ -19,7 +18,7 @@
  * Immediately deactivates the rig.
  */
 /obj/item/rig/proc/deactivate(mob/user, silent, retract_all)
-
+	rig_message(user, "[src]'s locks click open, detaching itself from you.", "RIG shutdown complete.")
 	unseal_all(bypass_delay = TRUE)
 	if(retract_all)
 		retract_all()
