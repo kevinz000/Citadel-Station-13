@@ -40,7 +40,7 @@
 	/// What the user can control.
 	var/user_control_flags = RIG_CONTROL_DEFAULT
 	/// Suit types
-	var/suit_types = NONE
+	var/suit_types = RIG_TYPE_STANDARD
 	/// Innate activation/deactivation delay. Unaffected by movement.
 	var/cycle_delay = 5 SECONDS
 	/// List of modules to attach. = RIG_INITIAL_MODULE_PERMANENT association to force attach and permanently attach, **as well as make weightless, ignoring conflicts, and not cost complexity/size.**
