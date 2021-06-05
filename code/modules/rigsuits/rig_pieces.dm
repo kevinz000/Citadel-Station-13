@@ -40,7 +40,7 @@
 /**
  * Attempts to deploy a piece.
  */
-/obj/item/rig/proc/try_deploy(obj/item/I, force = FALSE, harder = FALSE, seal_immediately = FALSE)
+/obj/item/rig/proc/try_deploy(datum/component/rig_piece/P, force = FALSE, harder = FALSE, seal_immediately = FALSE)
 	P = resolve_piece_component(P)
 	if(!P)
 		CRASH("ATtempted to deploy an invalid piece.")

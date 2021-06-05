@@ -51,6 +51,8 @@
 	var/obj/item/stock_parts/cell/cell = /obj/item/stock_parts/cell/high/plus
 	/// Conventionally removable power cell?
 	var/removable_cell = TRUE
+	/// Installed air tank, used both for internals and for propulsion.
+	var/obj/item/tank/tank = /obj/item/tank/internals/oxygen
 	/// Starting power level, if any. Null for full.
 	var/starting_charge
 
@@ -136,6 +138,10 @@
 
 /obj/item/rig/Initialize(mapload)
 	. = ..()
+	if(ispath(cell))
+		cell = new cell
+	if(ispath(tank))
+		tank = new tank
 	initialize_pieces()
 	initialize_components()
 	update_intrinsics()
@@ -144,10 +150,12 @@
 
 /obj/item/rig/Destroy()
 	retract_all()
-	if(user)
+	if(wearer)
 		deactivate()
 	wipe_components()
 	wipe_pieces()
+	QDEL_NULL(tank)
+	QDEL_NULL(cell)
 	return ..()
 
 /obj/item/rig/dropped(mob/user, silent)
