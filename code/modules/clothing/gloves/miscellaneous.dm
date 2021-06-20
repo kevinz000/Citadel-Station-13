@@ -37,14 +37,19 @@
 /obj/item/clothing/gloves/fingerless/pugilist/equipped(mob/user, slot)
 	. = ..()
 	if(slot == SLOT_GLOVES)
-		use_buffs(user, TRUE)
 		wornonce = TRUE
+		if((HAS_TRAIT(user, TRAIT_NOPUGILIST)))
+			to_chat(user, "<span class='danger'>What purpose is there to don the weapons of pugilism if you're already well-practiced in martial arts? Mixing arts is blasphemous!</span>")
+			return
+		use_buffs(user, TRUE)
 
 /obj/item/clothing/gloves/fingerless/pugilist/dropped(mob/user)
 	. = ..()
 	if(wornonce)
-		use_buffs(user, FALSE)
 		wornonce = FALSE
+		if((HAS_TRAIT(user, TRAIT_NOPUGILIST)))
+			return
+		use_buffs(user, FALSE)
 
 /obj/item/clothing/gloves/fingerless/pugilist/proc/use_buffs(mob/user, buff)
 	if(buff) // tarukaja
@@ -70,6 +75,18 @@
 			H.dna?.species?.attack_sound_override = null
 		if(!silent)
 			to_chat(user, "<span class='warning'>With [src] off of your arms, you feel less ready to punch things.</span>")
+
+/obj/item/clothing/gloves/fingerless/pugilist/crafted
+	unique_reskin = list("Short" = "armwraps",
+						"Extended" = "armwraps_extended"
+						)
+
+/obj/item/clothing/gloves/fingerless/pugilist/crafted/reskin_obj(mob/M)
+	. = ..()
+	if(icon_state == "armwraps_extended")
+		item_state = "armwraps_extended"
+	else
+		return
 
 /obj/item/clothing/gloves/fingerless/pugilist/chaplain
 	name = "armwraps of unyielding resolve"
@@ -247,14 +264,18 @@
 /obj/item/clothing/gloves/fingerless/pugilist/mauler/equipped(mob/user, slot)
 	. = ..()
 	if(slot == SLOT_GLOVES)
-		use_mauls(user, TRUE)
 		wornonce = TRUE
+		if((HAS_TRAIT(user, TRAIT_NOPUGILIST)))
+			return
+		use_mauls(user, TRUE)
 
 /obj/item/clothing/gloves/fingerless/pugilist/mauler/dropped(mob/user)
 	. = ..()
 	if(wornonce)
-		use_mauls(user, FALSE)
 		wornonce = FALSE
+		if((HAS_TRAIT(user, TRAIT_NOPUGILIST)))
+			return
+		use_mauls(user, FALSE)
 
 /obj/item/clothing/gloves/fingerless/pugilist/mauler/proc/use_mauls(mob/user, maul)
 	if(maul)
