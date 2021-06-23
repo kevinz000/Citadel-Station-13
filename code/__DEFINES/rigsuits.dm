@@ -43,6 +43,11 @@ GLOBAL_LIST_INIT(rig_zone_lookup, list(
 	RIG_ZONE_R_LEG = RIG_PIECE_BOOTS
 ))
 
+// Flags for starting_components
+/// Unremovable, but does not go towards any weight/slot/etc limits. Ignores conflicts.
+#define RIG_INITIAL_MODULE_INBUILT			(1<<0)
+
+
 /**
  * Rigsuit balancing paradigm:
  *
@@ -143,4 +148,3 @@ GLOBAL_LIST_INIT(rig_zone_lookup, list(
 #define RIGSUIT_WEIGHT_SLOWDOWN_DIVISOR		50
 
 // Component conflict types - bitfield.
-// Armor, thermal, and pressure modules are never conflicting, as there can only be one.

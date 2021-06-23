@@ -41,3 +41,12 @@
 	to_chat(target, "<span class='notice'>[controller_message]</span>")
 	if(!target_only)
 		to_chat(wearer, "<span class='notice'>[wearer_message]</span>")
+
+/**
+ * Checks if user has control flags.
+ * If false, warns the user with a message.
+ */
+/obj/item/rig/proc/attempt_control_flags(mob/M, flags, msg = "<span class='warning'>You seem to be locked out of this function.</span>")
+	. = check_control_flags(M, flags)
+	if(!.)
+		to_chat(M, msg)

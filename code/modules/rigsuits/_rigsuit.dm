@@ -43,7 +43,7 @@
 	var/suit_types = RIG_TYPE_STANDARD
 	/// Innate activation/deactivation delay. Unaffected by movement.
 	var/cycle_delay = 5 SECONDS
-	/// List of modules to attach. = RIG_INITIAL_MODULE_PERMANENT association to force attach and permanently attach, **as well as make weightless, ignoring conflicts, and not cost complexity/size.**
+	/// List of modules to attach. = RIG_INITIAL_MODULE_INBUILT association to force attach and permanently attach, **as well as make weightless, ignoring conflicts, and not cost complexity/size.**
 	var/list/obj/item/rig_component/starting_components = list()
 	/// Innate conflict list - if any component has anythign in this list, it'll conflict even if there's no components like it, regardless of allowed suit types.
 	var/innate_component_conflicts
@@ -58,14 +58,16 @@
 
 	/**
 	 * RIG PIECES - Stuff that's physically put on or deployed by the user.
-	 * Traditionally just stuff like suit + gloves/boots, but this modular system allows for much more than that.
+	 * Traditionally just stuff like suit + gloves/boots, but this modular system allows for much more than that in the future.
+	 * Plus, this is a shitty replacement to something like interfaces, which BYOND doesn't have.
 	 */
 	/// List of rig piece components that are our physical parts. This is generated at runtime, and is associated to the physical item.
 	var/list/datum/component/rig_piece/piece_components
 	/// List of physical rig pieces. At runtime, this is associated to the component, allowing for two way lookup.
-	var/list/obj/item/rig_pieces = list()
-	/// Default component typepath if not overridden above
-	var/default_rig_piece_component = /datum/component/rig_piece
+	var/list/obj/item/rig_pieces
+	/// Rig piece type to rig piece.
+	var/list/rig_pieces_by_type
+
 	/**
 	 * INTEGRAL COMPONENTS
 	 * All rigs have these slots.
@@ -130,6 +132,18 @@
 	 */
 	/// List of hotbind datums that are configured.
 	var/list/datum/rig_hotbind/hotbinds
+
+	/**
+	 * UI
+	 */
+	/// List of components awaiting rig_ui_data update
+	var/list/obj/item/rig_component/ui_components_queued
+	/// List of pieces awaiting rig_ui_data update. Uses components.
+	var/list/datum/component/rig_piece/ui_pieces_queued
+	/// timerid for ui update queuing.
+	var/ui_update_queued
+	/// Need to update module list.
+	var/ui_refs_changed = FALSE
 
 /obj/item/rig/Initialize(mapload)
 	. = ..()

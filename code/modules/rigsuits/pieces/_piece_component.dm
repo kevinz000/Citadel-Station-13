@@ -18,6 +18,8 @@
 	var/slots = DEFAULT_SLOTS_AVAILABLE
 	/// Max combined size - this is per rig zone this is responsible for, not total!
 	var/size = DEFAULT_SIZE_AVAILABLE
+	/// Innate weight - this is not per rig zone and is instead just on this piece.
+	var/innate_weight = 0
 	/// Damage by rig zone. Lazy list.
 	var/list/damage_by_zone
 	/// Needs to be fully sealed to provide pressure protection
@@ -33,26 +35,33 @@
 	/// Max health
 	var/maxhealth = DEFAULT_RIG_INTEGRITY
 
-/datum/component/rig_piece/Initialize(obj/item/rig/rig, rig_creation = FALSE, apply_effects, cycle_delay, piece_type, slots, maxhealth)
+/datum/component/rig_piece/Initialize(obj/item/rig/rig, rig_creation = FALSE, apply_effects, cycle_delay, piece_type, slots, size, maxhealth, weight)
 	. = ..()
 	if(. & COMPONENT_INCOMPATIBLE)
 		return
 	if(!isitem(parent))
 		return COMPONENT_INCOMPATIBLE
-	if(!istype(rig))
-		return COMPONENT_INCOMPATIBLE		// if you're an admin bussing, go learn how to do this properly with a rig proc, and stop fucking about.
 	if(!isnull(apply_effects))
 		src.apply_effects = apply_effects
 	if(!isnull(cycle_delay))
 		src.cycle_delay = cycle_delay
 	if(!isnull(piece_type))
+		// no multiple types for the moment.
+		ASSERT(!MODULUS(log(2, piece_type), 1))
 		src.piece_type = piece_type
 	if(!isnull(slots))
 		src.slots = slots
 	if(!isnull(maxhealth))
 		src.maxhealth = maxhealth
+	if(!isnull(weight))
+		src.innate_weight = weight
+	if(!isnull(size))
+		src.size = size
 	var/obj/item/I = parent
 	I.resistance_flags |= (ACID_PROOF | INDESTRUCTIBLE | FIRE_PROOF)	// rig damage is handled separately.
+	if(!rig)
+		stack_trace("Rig piece created without being directly instantiated by a rig control module. This isn't supported right now, but is being allowed anyways.")
+		return
 	RegisterToRig(rig, rig_creation)
 
 /datum/component/rig_piece/Destroy()
@@ -69,6 +78,20 @@
  * Cleans us up from a rig. Never use outside of deletion, rig-swapping isn't supported yet.
  */
 /datum/component/rig_piece/proc/UnregisterFromRig(obj/item/rig/rig)
+	var/obj/item/I = parent
+	. = list()
+	.["name"] = I.name
+	.["sealed"] = sealed
+	.["deployed"] = deployed
+	.["slots"] = slots
+	.["size"] = size
+	.["weight"] = innate_weight
+	.["maxhealth"] = maxhealth
+
+/**
+ * Gets our TGUI data.
+ */
+/datum/component/rig_piece/proc/rig_ui_data(mob/user)
 
 
 /**
@@ -85,10 +108,16 @@
  * @params
  * - L - person to deploy onto
  * - force - knock off anything conflicting in the slot
- * - harder
+ * - harder - knock off nodrop items too
  */
 /datum/component/rig/proc/deployOntoUser(mob/living/L, force = FALSE, harder = FALSE)
-
+	if(!equip_slot)
+		CRASH("Invalid equip slot")
+	var/obj/item/existing = L.get_item_by_slot(equip_slot)
+	if(existing && (!force || !L.dropItemToGround(existing, harder)))
+		return FALSE
+	if(!L.equip_to_slot_if_possible(parent, equip_slot, FALSE, TRUE, TRUE, TRUE, FALSE))
+		return FALSE
 	deployed = TRUE
 
 /**
@@ -99,7 +128,7 @@
 		to_chat(wearer, "<span class='notice'>Your [parent] deploys around your [get_zone_string(wearer)]</span>")
 	else
 		to_chat(wearer, "<span class='notice'>Your [parent] deploys around you [get_zone_string(wearer)], locking into place with some mechanical clicks.</span>")
-
+	rig.ui_queue_component(src)
 
 /**
  * Called by rig on successful retract
@@ -109,6 +138,7 @@
 		to_chat(wearer, "<span class='notice'>Your [parent] retracts from your [get_zone_string(wearer)]</span>")
 	else
 		to_chat(wearer, "<span class='notice'>Your [parent] unlocks itself and retracts from your [get_zone_string(wearer)]</span>")
+	rig.ui_queue_component(src)
 
 /**
  * Called by rig on seal
@@ -118,6 +148,7 @@
 		to_chat(wearer, "<span class='notice'>[parent] locks into place with some mechanical clicks.</span>")
 	sealed = TRUE
 	update_item()
+	rig.ui_queue_component(src)
 
 /**
  * Called by rig on unseal
@@ -127,6 +158,7 @@
 		to_chat(wearer, "<span class='notice'>[parent] loosens, mechanical locks clicking out of place.</span>")
 	sealed = FALSE
 	update_item()
+	rig.ui_queue_component(src)
 
 /**
  * Updates item stats.

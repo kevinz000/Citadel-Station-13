@@ -2,6 +2,9 @@
  * Initializes pieces
  */
 /obj/item/rig/proc/initialize_pieces()
+	wipe_pieces()
+	rig_pieces = list()
+	piece_components = list()
 	PopulatePieces()
 
 /**
@@ -17,6 +20,7 @@
 	for(var/i in rig_pieces)
 		qdel(i)
 	rig_pieces = list()
+	rig_pieces_by_type = list()
 	piece_components = lisT()
 
 /**
@@ -31,8 +35,26 @@
 /**
  * Adds a rig piece
  */
-/obj/item/rig/proc/add_piece(obj/item/I, component_path = /datum/component/rig_piece, slots = DEFAULT_SLOTS_AVAILABLE, size = DEFAULT_SIZE_AVAILABLE, integrity = DEFAULT_RIG_INTEGRITY)
+/obj/item/rig/proc/instantiate_piece(obj/item/I, component_path = /datum/component/rig_piece, slots = DEFAULT_SLOTS_AVAILABLE, size = DEFAULT_SIZE_AVAILABLE, integrity = DEFAULT_RIG_INTEGRITY)
 
+
+/**
+ * Adds a piece to this rig.
+ */
+/obj/item/rig/proc/add_piece(datum/component/rig_piece/P)
+	var/obj/item/I
+	if(istype(P))
+		I = P.parent
+	else
+		I = P
+		P = I.GetComponent(/datum/component/rig_piece)
+	ASSERT(P)
+	ASSERT(I)
+
+	// ...
+
+	ui_queue_piece(P)
+	ui_queue_reflists()
 
 /**
  * Deploys a piece
@@ -135,3 +157,7 @@
 /**
  * Unseals all deployed pieces. Blocking call.
  */
+
+/// Gets the rig piece component of a rig piece type.
+/obj/item/rig/proc/get_piece(piece_type)
+	return rig_pieces_by_type[piece_type]
