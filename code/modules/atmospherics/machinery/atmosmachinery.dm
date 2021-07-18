@@ -21,25 +21,31 @@
 	resistance_flags = FIRE_PROOF
 	max_integrity = 200
 	obj_flags = CAN_BE_HIT | ON_BLUEPRINTS
+	/// See __DEFINES/atmospherics
+	var/pipe_flags = NONE
+	/// The layer we're on. Overriden by PIPING_ALL_LAYER
+	var/pipe_layer = PIPE_LAYER_DEFAULT
+	/// Does this interact with the environment or just with pipenets? If so, it needs to be TRUE so we set it to the right processing bracket.
+	VAR_FINAL/interacts_with_air = FALSE
+	/// List of atmosmachinery we're connected to
+	var/list/obj/machinery/atmospherics/connected
+	/// Device type, determining the number of connections we have.
+	var/device_type = NONE
+	/// Directions we'll connect in. Set dynamically by our dir.
+	var/initialize_directions = NONE
+
 	var/nodealert = 0
 	var/can_unwrench = 0
-	var/initialize_directions = 0
 	var/pipe_color
-	var/piping_layer = PIPING_LAYER_DEFAULT
-	var/pipe_flags = NONE
 
 	var/static/list/iconsetids = list()
 	var/static/list/pipeimages = list()
 
 	var/image/pipe_vision_img = null
 
-	var/device_type = 0
-	var/list/obj/machinery/atmospherics/nodes
-
 	var/construction_type
 	var/pipe_state //icon_state as a pipe item
 	var/on = FALSE
-	var/interacts_with_air = FALSE
 
 /obj/machinery/atmospherics/examine(mob/user)
 	. = ..()
@@ -48,29 +54,73 @@
 		if(SEND_SIGNAL(L, COMSIG_CHECK_VENTCRAWL))
 			. += "<span class='notice'>Alt-click to crawl through it.</span>"
 
-/obj/machinery/atmospherics/New(loc, process = TRUE, setdir)
+/obj/machinery/atmospherics/Initialize(mapload, process = TRUE, setdir)
 	if(!isnull(setdir))
 		setDir(setdir)
-	if(pipe_flags & PIPING_CARDINAL_AUTONORMALIZE)
-		normalize_cardinal_directions()
-	nodes = new(device_type)
 	if (!armor)
 		armor = list("melee" = 25, "bullet" = 10, "laser" = 10, "energy" = 100, "bomb" = 0, "bio" = 100, "rad" = 100, "fire" = 100, "acid" = 70)
-	..()
+	. = ..()
 	if(process)
 		if(interacts_with_air)
 			SSair.atmos_air_machinery += src
 		else
 			SSair.atmos_machinery += src
+	if(!SSair.initialized)
+		return
+	InitAtmos()
+
+/**
+ * Called once on init.
+ */
+/obj/machinery/atmospherics/proc/InitAtmos()
+	connected = new /list(4)
+	Join()
+
+/**
+ * Called to join its place in a network.
+ */
+/obj/machinery/atmospherics/proc/Join()
+	if(QDELETED(src))
+		CRASH("Attempted to Join() while waiting for GC")
+	if(pipe_flags & PIPING_NETWORK_JOINED)
+		CRASH("Attempted to Join() while already joined to network.")
+	if(pipe_flags & PIPING_CARDINAL_AUTONORMALIZE)
+		normalize_cardinal_directions()
 	SetInitDirections()
 
-/obj/machinery/atmospherics/Destroy()
-	for(var/i in 1 to device_type)
-		nullifyNode(i)
+	pipe_flags |= PIPING_NETWORK_JOINED
+	QueueRebuild()
 
+/**
+ * Called to leave its place in a network.
+ */
+/obj/machinery/atmospherics/proc/Leave()
+	if(QDELETED(src))
+		CRASH("Attempted to Leave() while waiting for GC")
+	if(!(pipe_flags & PIPING_NETWORK_JOINED))
+		CRASH("Attempted to Leave() without being joined to network.")
+
+	pipe_flags &= ~PIPING_NETWORK_JOINED
+
+/**
+ * Called to rebuild its pipenet(s)w
+ */
+/obj/machinery/atmospherics/proc/Rebuild()
+	pipe_flags &= ~PIPING_REBUILD_QUEUED
+
+/**
+ * Queues us for a pipenet rebuild.
+ */
+/obj/machiienry/atmospherics/proc/QueueRebuild()
+	if(pipe_flags & PIPING_REBUILD_QUEUED)
+		return
+	SSair.queue_for_rebuild(src)
+	pipe_flags |= PIPING_REBUILD_QUEUED
+
+/obj/machinery/atmospherics/Destroy()
+	Leave()
 	SSair.atmos_machinery -= src
 	SSair.atmos_air_machinery -= src
-	SSair.pipenets_needing_rebuilt -= src
 
 	dropContents()
 	if(pipe_vision_img)
@@ -105,6 +155,9 @@
 				break
 	return node_connects
 
+/**
+ * If our pipe flags state to normalize cardinals, ensure that we're NORTH|SOUTH or EAST|WEST by normalizing to NORTH or EAST, instead of allowing all 4 directions.
+ */
 /obj/machinery/atmospherics/proc/normalize_cardinal_directions()
 	switch(dir)
 		if(SOUTH)
@@ -124,12 +177,21 @@
 				break
 	update_icon()
 
+/**
+ * Modifies our piping layer.
+ */
 /obj/machinery/atmospherics/proc/setPipingLayer(new_layer)
-	piping_layer = (pipe_flags & PIPING_DEFAULT_LAYER_ONLY) ? PIPING_LAYER_DEFAULT : new_layer
-	update_icon()
+	if(!(CheckLocationConflict(loc, new_layer) != PIPE_LOCATION_CLEAR))
+		CRASH("Attempted to set piping layer to a conflicting layer.")
+	Leave()
+	pipe_layer = (pipe_flags & PIPING_DEFAULT_LAYER_ONLY) ? PIPE_LAYER_DEFAULT : new_layer
+	Join()
+	update_appearance()
+
+
 
 /obj/machinery/atmospherics/proc/can_be_node(obj/machinery/atmospherics/target, iteration)
-	return connection_check(target, piping_layer)
+	return connection_check(target, pipe_layer)
 
 //Find a connecting /obj/machinery/atmospherics in specified direction
 /obj/machinery/atmospherics/proc/findConnecting(direction, prompted_layer)
@@ -145,8 +207,8 @@
 
 /obj/machinery/atmospherics/proc/isConnectable(obj/machinery/atmospherics/target, given_layer)
 	if(isnull(given_layer))
-		given_layer = piping_layer
-	if((target.piping_layer == given_layer) || (target.pipe_flags & PIPING_ALL_LAYER))
+		given_layer = pipe_layer
+	if((target.pipe_layer == given_layer) || (target.pipe_flags & PIPING_ALL_LAYER))
 		return TRUE
 	return FALSE
 
@@ -182,7 +244,7 @@
 	if(istype(W, /obj/item/pipe)) //lets you autodrop
 		var/obj/item/pipe/pipe = W
 		if(user.dropItemToGround(pipe))
-			pipe.setPipingLayer(piping_layer) //align it with us
+			pipe.setPipingLayer(pipe_layer) //align it with us
 			return TRUE
 	else
 		return ..()
@@ -246,26 +308,26 @@
 	if(!(flags_1 & NODECONSTRUCT_1))
 		if(can_unwrench)
 			var/obj/item/pipe/stored = new construction_type(loc, null, dir, src)
-			stored.setPipingLayer(piping_layer)
+			stored.setPipingLayer(pipe_layer)
 			if(!disassembled)
 				stored.obj_integrity = stored.max_integrity * 0.5
 			transfer_fingerprints_to(stored)
 	..()
 
-/obj/machinery/atmospherics/proc/getpipeimage(iconset, iconstate, direction, col=rgb(255,255,255), piping_layer=2)
+/obj/machinery/atmospherics/proc/getpipeimage(iconset, iconstate, direction, col=rgb(255,255,255), pipe_layer=2)
 
 	//Add identifiers for the iconset
 	if(iconsetids[iconset] == null)
 		iconsetids[iconset] = num2text(iconsetids.len + 1)
 
 	//Generate a unique identifier for this image combination
-	var/identifier = iconsetids[iconset] + "_[iconstate]_[direction]_[col]_[piping_layer]"
+	var/identifier = iconsetids[iconset] + "_[iconstate]_[direction]_[col]_[pipe_layer]"
 
 	if((!(. = pipeimages[identifier])))
 		var/image/pipe_overlay
 		pipe_overlay = . = pipeimages[identifier] = image(iconset, iconstate, dir = direction)
 		pipe_overlay.color = col
-		PIPING_LAYER_SHIFT(pipe_overlay, piping_layer)
+		PIPE_LAYER_SHIFT(pipe_overlay, pipe_layer)
 
 /obj/machinery/atmospherics/on_construction(obj_color, set_layer)
 	if(can_unwrench)
@@ -284,7 +346,7 @@
 /obj/machinery/atmospherics/Entered(atom/movable/AM)
 	if(istype(AM, /mob/living))
 		var/mob/living/L = AM
-		L.ventcrawl_layer = piping_layer
+		L.ventcrawl_layer = pipe_layer
 	return ..()
 
 /obj/machinery/atmospherics/singularity_pull(S, current_size)
@@ -341,4 +403,4 @@
 	return TRUE
 
 /obj/machinery/atmospherics/proc/update_layer()
-	layer = initial(layer) + (piping_layer - PIPING_LAYER_DEFAULT) * PIPING_LAYER_LCHANGE
+	layer = initial(layer) + (pipe_layer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_LCHANGE

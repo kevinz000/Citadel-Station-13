@@ -19,7 +19,7 @@ Buildable meters
 	item_state = "buildpipe"
 	w_class = WEIGHT_CLASS_SMALL
 	level = 2
-	var/piping_layer = PIPING_LAYER_DEFAULT
+	var/pipe_layer = PIPE_LAYER_DEFAULT
 	var/RPD_type
 	var/disposable = TRUE
 
@@ -66,18 +66,18 @@ Buildable meters
 
 /obj/item/pipe/dropped(mob/user)
 	if(loc)
-		setPipingLayer(piping_layer)
+		setPipingLayer(pipe_layer)
 	return ..()
 
-/obj/item/pipe/proc/setPipingLayer(new_layer = PIPING_LAYER_DEFAULT)
+/obj/item/pipe/proc/setPipingLayer(new_layer = PIPE_LAYER_DEFAULT)
 	var/obj/machinery/atmospherics/fakeA = pipe_type
 
 	if(initial(fakeA.pipe_flags) & PIPING_ALL_LAYER)
-		new_layer = PIPING_LAYER_DEFAULT
-	piping_layer = new_layer
+		new_layer = PIPE_LAYER_DEFAULT
+	pipe_layer = new_layer
 
-	PIPING_LAYER_SHIFT(src, piping_layer)
-	layer = initial(layer) + ((piping_layer - PIPING_LAYER_DEFAULT) * PIPING_LAYER_LCHANGE)
+	PIPE_LAYER_SHIFT(src, pipe_layer)
+	layer = initial(layer) + ((pipe_layer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_LCHANGE)
 
 /obj/item/pipe/proc/update()
 	var/obj/machinery/atmospherics/fakeA = pipe_type
@@ -142,7 +142,7 @@ Buildable meters
 		if((M.pipe_flags & flags & PIPING_ONE_PER_TURF))	//Only one dense/requires density object per tile, eg connectors/cryo/heater/coolers.
 			to_chat(user, "<span class='warning'>Something is hogging the tile!</span>")
 			return TRUE
-		if((M.piping_layer != piping_layer) && !((M.pipe_flags | flags) & PIPING_ALL_LAYER)) //don't continue if either pipe goes across all layers
+		if((M.pipe_layer != pipe_layer) && !((M.pipe_flags | flags) & PIPING_ALL_LAYER)) //don't continue if either pipe goes across all layers
 			continue
 		if(M.GetInitDirections() & SSair.get_init_dirs(pipe_type, fixed_dir()))	// matches at least one direction on either type of pipe
 			to_chat(user, "<span class='warning'>There is already a pipe at that location!</span>")
@@ -151,7 +151,7 @@ Buildable meters
 
 	var/obj/machinery/atmospherics/A = new pipe_type(loc)
 	build_pipe(A)
-	A.on_construction(color, piping_layer)
+	A.on_construction(color, pipe_layer)
 	transfer_fingerprints_to(A)
 
 	W.play_tool_sound(src)
@@ -197,20 +197,20 @@ Buildable meters
 	icon_state = "meter"
 	item_state = "buildpipe"
 	w_class = WEIGHT_CLASS_BULKY
-	var/piping_layer = PIPING_LAYER_DEFAULT
+	var/pipe_layer = PIPE_LAYER_DEFAULT
 
 /obj/item/pipe_meter/wrench_act(mob/living/user, obj/item/W)
 	if(!W.tool_behaviour == TOOL_WRENCH)
 		return
 	var/obj/machinery/atmospherics/pipe/pipe
 	for(var/obj/machinery/atmospherics/pipe/P in loc)
-		if(P.piping_layer == piping_layer)
+		if(P.pipe_layer == pipe_layer)
 			pipe = P
 			break
 	if(!pipe)
 		to_chat(user, "<span class='warning'>You need to fasten it to a pipe!</span>")
 		return TRUE
-	new /obj/machinery/meter(loc, piping_layer)
+	new /obj/machinery/meter(loc, pipe_layer)
 	W.play_tool_sound(src)
 	to_chat(user, "<span class='notice'>You fasten the meter to the pipe.</span>")
 	qdel(src)
@@ -224,7 +224,7 @@ Buildable meters
 		to_chat(user, "<span class='warning'>You need to fasten it to the floor!</span>")
 		return TRUE
 
-	new /obj/machinery/meter/turf(loc, piping_layer)
+	new /obj/machinery/meter/turf(loc, pipe_layer)
 	S.play_tool_sound(src)
 	to_chat(user, "<span class='notice'>You fasten the meter to the [loc.name].</span>")
 	qdel(src)
@@ -232,11 +232,11 @@ Buildable meters
 /obj/item/pipe_meter/dropped(mob/user)
 	. = ..()
 	if(loc)
-		setAttachLayer(piping_layer)
+		setAttachLayer(pipe_layer)
 
-/obj/item/pipe_meter/proc/setAttachLayer(new_layer = PIPING_LAYER_DEFAULT)
-	piping_layer = new_layer
-	PIPING_LAYER_DOUBLE_SHIFT(src, piping_layer)
+/obj/item/pipe_meter/proc/setAttachLayer(new_layer = PIPE_LAYER_DEFAULT)
+	pipe_layer = new_layer
+	PIPE_LAYER_DOUBLE_SHIFT(src, pipe_layer)
 
 /obj/item/pipe/bluespace
 	pipe_type = /obj/machinery/atmospherics/pipe/bluespace

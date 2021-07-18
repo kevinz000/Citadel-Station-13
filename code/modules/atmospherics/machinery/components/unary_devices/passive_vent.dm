@@ -14,7 +14,7 @@
 /obj/machinery/atmospherics/components/unary/passive_vent/update_icon_nopipes()
 	cut_overlays()
 	if(showpipe)
-		var/image/cap = getpipeimage(icon, "vent_cap", initialize_directions, piping_layer = piping_layer)
+		var/image/cap = getpipeimage(icon, "vent_cap", initialize_directions, pipe_layer = pipe_layer)
 		add_overlay(cap)
 	icon_state = "passive_vent"
 
@@ -43,9 +43,9 @@
 	return TRUE
 
 /obj/machinery/atmospherics/components/unary/passive_vent/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "passive_vent_map-1"
 
 /obj/machinery/atmospherics/components/unary/passive_vent/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "passive_vent_map-3"

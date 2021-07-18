@@ -221,7 +221,7 @@ GLOBAL_LIST_INIT(fluid_duct_recipes, list(
 	var/destroy_speed = 5
 	var/paint_speed = 5
 	var/category = ATMOS_CATEGORY
-	var/piping_layer = PIPING_LAYER_DEFAULT
+	var/pipe_layer = PIPE_LAYER_DEFAULT
 	var/ducting_layer = DUCT_LAYER_DEFAULT
 	var/datum/pipe_info/recipe
 	var/static/datum/pipe_info/first_atmos
@@ -273,7 +273,7 @@ GLOBAL_LIST_INIT(fluid_duct_recipes, list(
 /obj/item/pipe_dispenser/ui_data(mob/user)
 	var/list/data = list(
 		"category" = category,
-		"piping_layer" = piping_layer,
+		"pipe_layer" = pipe_layer,
 
 		"ducting_layer" = ducting_layer,
 
@@ -327,8 +327,8 @@ GLOBAL_LIST_INIT(fluid_duct_recipes, list(
 					recipe = first_plumbing
 			p_dir = NORTH
 			playeffect = FALSE
-		if("piping_layer")
-			piping_layer = text2num(params["piping_layer"])
+		if("pipe_layer")
+			pipe_layer = text2num(params["pipe_layer"])
 			playeffect = FALSE
 		// if("ducting_layer")
 		// 	ducting_layer = text2num(params["ducting_layer"])
@@ -417,7 +417,7 @@ GLOBAL_LIST_INIT(fluid_duct_recipes, list(
 					if(do_after(user, atmos_build_speed, target = A))
 						activate()
 						var/obj/item/pipe_meter/PM = new /obj/item/pipe_meter(A)
-						PM.setAttachLayer(piping_layer)
+						PM.setAttachLayer(pipe_layer)
 						if(mode & WRENCH_MODE)
 							PM.wrench_act(user, src)
 				else
@@ -434,7 +434,7 @@ GLOBAL_LIST_INIT(fluid_duct_recipes, list(
 
 						P.update()
 						P.add_fingerprint(usr)
-						P.setPipingLayer(piping_layer)
+						P.setPipingLayer(pipe_layer)
 						if(findtext("[queued_p_type]", "/obj/machinery/atmospherics/pipe") && !findtext("[queued_p_type]", "layer_manifold"))
 							P.add_atom_colour(GLOB.pipe_paint_colors[paint_color], FIXED_COLOUR_PRIORITY)
 						if(mode & WRENCH_MODE)

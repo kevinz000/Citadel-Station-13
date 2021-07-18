@@ -6,7 +6,7 @@
 	dir = SOUTH
 	initialize_directions = NORTH|SOUTH
 	pipe_flags = PIPING_ALL_LAYER | PIPING_DEFAULT_LAYER_ONLY | PIPING_CARDINAL_AUTONORMALIZE
-	piping_layer = PIPING_LAYER_DEFAULT
+	pipe_layer = PIPE_LAYER_DEFAULT
 	device_type = 0
 	volume = 260
 	construction_type = /obj/item/pipe/binary
@@ -38,7 +38,7 @@
 
 /obj/machinery/atmospherics/pipe/layer_manifold/update_icon()	//HEAVILY WIP FOR UPDATE ICONS!!
 	cut_overlays()
-	layer = initial(layer) + (PIPING_LAYER_MAX * PIPING_LAYER_LCHANGE)	//This is above everything else.
+	layer = initial(layer) + (PIPE_LAYER_MAX * PIPE_LAYER_LCHANGE)	//This is above everything else.
 
 	for(var/node in front_nodes)
 		add_attached_images(node)
@@ -51,21 +51,21 @@
 	if(!A)
 		return
 	if(istype(A, /obj/machinery/atmospherics/pipe/layer_manifold))
-		for(var/i in PIPING_LAYER_MIN to PIPING_LAYER_MAX)
+		for(var/i in PIPE_LAYER_MIN to PIPE_LAYER_MAX)
 			add_attached_image(get_dir(src, A), i)
 			return
-	add_attached_image(get_dir(src, A), A.piping_layer, A.pipe_color)
+	add_attached_image(get_dir(src, A), A.pipe_layer, A.pipe_color)
 
 /obj/machinery/atmospherics/pipe/layer_manifold/proc/add_attached_image(p_dir, p_layer, p_color = null)
 	var/image/I
 
 	if(p_color)
-		I = getpipeimage(icon, "pipe", p_dir, p_color, piping_layer = piping_layer)
+		I = getpipeimage(icon, "pipe", p_dir, p_color, pipe_layer = pipe_layer)
 	else
-		I = getpipeimage(icon, "pipe", p_dir, piping_layer = piping_layer)
+		I = getpipeimage(icon, "pipe", p_dir, pipe_layer = pipe_layer)
 
 	I.layer = layer - 0.01
-	PIPING_LAYER_SHIFT(I, p_layer)
+	PIPE_LAYER_SHIFT(I, p_layer)
 	add_overlay(I)
 
 /obj/machinery/atmospherics/pipe/layer_manifold/SetInitDirections()
@@ -84,7 +84,7 @@
 	front_nodes = list()
 	back_nodes = list()
 	var/list/new_nodes = list()
-	for(var/iter in PIPING_LAYER_MIN to PIPING_LAYER_MAX)
+	for(var/iter in PIPE_LAYER_MIN to PIPE_LAYER_MAX)
 		var/obj/machinery/atmospherics/foundfront = findConnecting(dir, iter)
 		var/obj/machinery/atmospherics/foundback = findConnecting(turn(dir, 180), iter)
 		front_nodes += foundfront
@@ -103,7 +103,7 @@
 	hide(T.intact)
 
 /obj/machinery/atmospherics/pipe/layer_manifold/setPipingLayer()
-	piping_layer = PIPING_LAYER_DEFAULT
+	pipe_layer = PIPE_LAYER_DEFAULT
 
 /obj/machinery/atmospherics/pipe/layer_manifold/pipeline_expansion()
 	return get_all_connected_nodes()
@@ -128,7 +128,7 @@
 	if(initialize_directions & dir)
 		return ..()
 	if((NORTH|EAST) & dir)
-		user.ventcrawl_layer = clamp(user.ventcrawl_layer + 1, PIPING_LAYER_MIN, PIPING_LAYER_MAX)
+		user.ventcrawl_layer = clamp(user.ventcrawl_layer + 1, PIPE_LAYER_MIN, PIPE_LAYER_MAX)
 	if((SOUTH|WEST) & dir)
-		user.ventcrawl_layer = clamp(user.ventcrawl_layer - 1, PIPING_LAYER_MIN, PIPING_LAYER_MAX)
+		user.ventcrawl_layer = clamp(user.ventcrawl_layer - 1, PIPE_LAYER_MIN, PIPE_LAYER_MAX)
 	to_chat(user, "You align yourself with the [user.ventcrawl_layer]\th output.")

@@ -12,14 +12,14 @@
 	pipe_state = "relief_valve-t"
 
 /obj/machinery/atmospherics/components/binary/relief_valve/layer1
-	piping_layer = PIPING_LAYER_MIN
-	pixel_x = -PIPING_LAYER_P_X
-	pixel_y = -PIPING_LAYER_P_Y
+	pipe_layer = PIPE_LAYER_MIN
+	pixel_x = -PIPE_LAYER_P_X
+	pixel_y = -PIPE_LAYER_P_Y
 
 /obj/machinery/atmospherics/components/binary/relief_valve/layer3
-	piping_layer = PIPING_LAYER_MAX
-	pixel_x = PIPING_LAYER_P_X
-	pixel_y = PIPING_LAYER_P_Y
+	pipe_layer = PIPE_LAYER_MAX
+	pixel_x = PIPE_LAYER_P_X
+	pixel_y = PIPE_LAYER_P_Y
 
 /obj/machinery/atmospherics/components/binary/relief_valve/update_icon_nopipes()
 	if(dir==SOUTH)

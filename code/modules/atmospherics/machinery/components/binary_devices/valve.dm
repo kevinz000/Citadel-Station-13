@@ -71,39 +71,39 @@ It's like a regular ol' straight pipe, but you can turn it on and off.
 
 
 /obj/machinery/atmospherics/components/binary/valve/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "mvalve_map-1"
 
 /obj/machinery/atmospherics/components/binary/valve/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "mvalve_map-3"
 
 /obj/machinery/atmospherics/components/binary/valve/on
 	on = TRUE
 
 /obj/machinery/atmospherics/components/binary/valve/on/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "mvalve_map-1"
 
 /obj/machinery/atmospherics/components/binary/valve/on/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "mvalve_map-3"
 
 /obj/machinery/atmospherics/components/binary/valve/digital/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "dvalve_map-1"
 
 /obj/machinery/atmospherics/components/binary/valve/digital/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "dvalve_map-3"
 
 /obj/machinery/atmospherics/components/binary/valve/digital/on
 	on = TRUE
 
 /obj/machinery/atmospherics/components/binary/valve/digital/on/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "dvalve_map-1"
 
 /obj/machinery/atmospherics/components/binary/valve/digital/on/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "dvalve_map-3"

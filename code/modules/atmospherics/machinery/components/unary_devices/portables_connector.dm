@@ -26,7 +26,7 @@
 /obj/machinery/atmospherics/components/unary/portables_connector/update_icon_nopipes()
 	icon_state = "connector"
 	if(showpipe)
-		var/image/cap = getpipeimage(icon, "connector_cap", initialize_directions, piping_layer = piping_layer)
+		var/image/cap = getpipeimage(icon, "connector_cap", initialize_directions, pipe_layer = pipe_layer)
 		add_overlay(cap)
 
 /obj/machinery/atmospherics/components/unary/portables_connector/process_atmos()
@@ -48,20 +48,20 @@
 
 
 /obj/machinery/atmospherics/components/unary/portables_connector/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "connector_map-1"
 
 /obj/machinery/atmospherics/components/unary/portables_connector/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "connector_map-3"
 
 /obj/machinery/atmospherics/components/unary/portables_connector/visible
 	level = 2
 
 /obj/machinery/atmospherics/components/unary/portables_connector/visible/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "connector_map-1"
 
 /obj/machinery/atmospherics/components/unary/portables_connector/visible/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "connector_map-3"

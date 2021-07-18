@@ -236,50 +236,42 @@
 
 //MULTIPIPES
 //IF YOU EVER CHANGE THESE CHANGE SPRITES TO MATCH.
-#define PIPING_LAYER_MIN 1
-#define PIPING_LAYER_MAX 3
-#define PIPING_LAYER_DEFAULT 2
-#define PIPING_LAYER_P_X 5
-#define PIPING_LAYER_P_Y 5
-#define PIPING_LAYER_LCHANGE 0.05
+#define PIPE_LAYER_MIN 1
+#define PIPE_LAYER_MAX 5
+#define PIPE_LAYER_DEFAULT 3
+#define PIPE_LAYER_P_X 5
+#define PIPE_LAYER_P_Y 5
+#define PIPE_LAYER_LCHANGE 0.05
 
 #define PIPING_ALL_LAYER				(1<<0)	//intended to connect with all layers, check for all instead of just one.
 #define PIPING_ONE_PER_TURF				(1<<1) 	//can only be built if nothing else with this flag is on the tile already.
-#define PIPING_DEFAULT_LAYER_ONLY		(1<<2)	//can only exist at PIPING_LAYER_DEFAULT
+#define PIPING_DEFAULT_LAYER_ONLY		(1<<2)	//can only exist at PIPE_LAYER_DEFAULT
 #define PIPING_CARDINAL_AUTONORMALIZE	(1<<3)	//north/south east/west doesn't matter, auto normalize on build.
+/// We've joined to pipe network + fully initialized. This can be true even if we're queued for a rebuild.
+#define PIPING_NETWORK_JOINED			(1<<4)
+/// We're queued for a pipenet rebuild.
+#define PIPING_REBUILD_QUEUED			(1<<5)
 
-// Gas defines because i hate typepaths
-#define GAS_O2					"o2"
-#define GAS_N2					"n2"
-#define GAS_CO2					"co2"
-#define GAS_PLASMA				"plasma"
-#define GAS_H2O					"water_vapor"
-#define GAS_HYPERNOB			"nob"
-#define GAS_NITROUS				"n2o"
-#define GAS_NITRYL				"no2"
-#define GAS_TRITIUM				"tritium"
-#define GAS_BZ					"bz"
-#define GAS_STIMULUM			"stim"
-#define GAS_PLUOXIUM			"pluox"
-#define GAS_MIASMA				"miasma"
-#define GAS_METHANE				"methane"
-#define GAS_METHYL_BROMIDE		"methyl_bromide"
-
-#define GAS_FLAG_DANGEROUS		(1<<0)
-#define GAS_FLAG_BREATH_PROC	(1<<1)
+// CheckLocationConflict return values
+/// Can fit there
+#define PIPE_LOCATION_CLEAR			0
+/// Another one per turf object is on it
+#define PIPE_LOCATION_TILE_HOGGED	1
+/// Normal conflict
+#define PIPE_LOCATION_DIR_CONFLICT	2
 
 //HELPERS
-#define PIPING_LAYER_SHIFT(T, PipingLayer) \
+#define PIPE_LAYER_SHIFT(T, PipingLayer) \
 	if(T.dir & (NORTH|SOUTH)) {									\
-		T.pixel_x = (PipingLayer - PIPING_LAYER_DEFAULT) * PIPING_LAYER_P_X;\
+		T.pixel_x = (PipingLayer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_P_X;\
 	}																		\
 	if(T.dir & (WEST|EAST)) {										\
-		T.pixel_y = (PipingLayer - PIPING_LAYER_DEFAULT) * PIPING_LAYER_P_Y;\
+		T.pixel_y = (PipingLayer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_P_Y;\
 	}
 
-#define PIPING_LAYER_DOUBLE_SHIFT(T, PipingLayer) \
-	T.pixel_x = (PipingLayer - PIPING_LAYER_DEFAULT) * PIPING_LAYER_P_X;\
-	T.pixel_y = (PipingLayer - PIPING_LAYER_DEFAULT) * PIPING_LAYER_P_Y;
+#define PIPE_LAYER_DOUBLE_SHIFT(T, PipingLayer) \
+	T.pixel_x = (PipingLayer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_P_X;\
+	T.pixel_y = (PipingLayer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_P_Y;
 
 #define QUANTIZE(variable)		(round(variable,0.0000001))/*I feel the need to document what happens here. Basically this is used to catch most rounding errors, however it's previous value made it so that
 															once gases got hot enough, most procedures wouldnt occur due to the fact that the mole counts would get rounded away. Thus, we lowered it a few orders of magnititude */

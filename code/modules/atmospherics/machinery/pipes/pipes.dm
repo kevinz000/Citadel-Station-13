@@ -61,7 +61,7 @@
 	if(istype(W, /obj/item/pipe_meter))
 		var/obj/item/pipe_meter/meter = W
 		user.dropItemToGround(meter)
-		meter.setAttachLayer(piping_layer)
+		meter.setAttachLayer(pipe_layer)
 	else
 		return ..()
 

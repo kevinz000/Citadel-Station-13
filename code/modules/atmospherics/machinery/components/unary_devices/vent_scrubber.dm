@@ -65,7 +65,7 @@
 /obj/machinery/atmospherics/components/unary/vent_scrubber/update_icon_nopipes()
 	cut_overlays()
 	if(showpipe)
-		var/image/cap = getpipeimage(icon, "scrub_cap", initialize_directions, piping_layer = piping_layer)
+		var/image/cap = getpipeimage(icon, "scrub_cap", initialize_directions, pipe_layer = pipe_layer)
 		add_overlay(cap)
 
 	if(welded)
@@ -268,11 +268,11 @@
 	playsound(loc, 'sound/weapons/bladeslice.ogg', 100, 1)
 
 /obj/machinery/atmospherics/components/unary/vent_scrubber/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "scrub_map-1"
 
 /obj/machinery/atmospherics/components/unary/vent_scrubber/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "scrub_map-3"
 
 /obj/machinery/atmospherics/components/unary/vent_scrubber/on
@@ -280,11 +280,11 @@
 	icon_state = "scrub_map_on-2"
 
 /obj/machinery/atmospherics/components/unary/vent_scrubber/on/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "scrub_map_on-1"
 
 /obj/machinery/atmospherics/components/unary/vent_scrubber/on/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "scrub_map_on-3"
 
 #undef SIPHONING

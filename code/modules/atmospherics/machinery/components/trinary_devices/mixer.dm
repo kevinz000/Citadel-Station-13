@@ -39,9 +39,9 @@
 
 		var/image/cap
 		if(node)
-			cap = getpipeimage(icon, "cap", direction, node.pipe_color, piping_layer = piping_layer)
+			cap = getpipeimage(icon, "cap", direction, node.pipe_color, pipe_layer = pipe_layer)
 		else
-			cap = getpipeimage(icon, "cap", direction, piping_layer = piping_layer)
+			cap = getpipeimage(icon, "cap", direction, pipe_layer = pipe_layer)
 
 		add_overlay(cap)
 
@@ -185,10 +185,10 @@
 // mapping
 
 /obj/machinery/atmospherics/components/trinary/mixer/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "mixer_off_map-1"
 /obj/machinery/atmospherics/components/trinary/mixer/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "mixer_off_map-3"
 
 /obj/machinery/atmospherics/components/trinary/mixer/on
@@ -196,10 +196,10 @@
 	icon_state = "mixer_on"
 
 /obj/machinery/atmospherics/components/trinary/mixer/on/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "mixer_on_map-1"
 /obj/machinery/atmospherics/components/trinary/mixer/on/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "mixer_on_map-3"
 
 /obj/machinery/atmospherics/components/trinary/mixer/flipped
@@ -207,10 +207,10 @@
 	flipped = TRUE
 
 /obj/machinery/atmospherics/components/trinary/mixer/flipped/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "mixer_off_f_map-1"
 /obj/machinery/atmospherics/components/trinary/mixer/flipped/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "mixer_off_f_map-3"
 
 /obj/machinery/atmospherics/components/trinary/mixer/flipped/on
@@ -218,10 +218,10 @@
 	icon_state = "mixer_on_f"
 
 /obj/machinery/atmospherics/components/trinary/mixer/flipped/on/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "mixer_on_f_map-1"
 /obj/machinery/atmospherics/components/trinary/mixer/flipped/on/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "mixer_on_f_map-3"
 
 /obj/machinery/atmospherics/components/trinary/mixer/airmix //For standard airmix to distro

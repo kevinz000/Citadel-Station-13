@@ -16,11 +16,11 @@
 	pipe_state = "heunary"
 
 /obj/machinery/atmospherics/components/unary/heat_exchanger/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "he_map-1"
 
 /obj/machinery/atmospherics/components/unary/heat_exchanger/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "he_map-3"
 
 /obj/machinery/atmospherics/components/unary/heat_exchanger/update_icon()
@@ -30,7 +30,7 @@
 		add_atom_colour(node.color, FIXED_COLOUR_PRIORITY)
 	else
 		icon_state = "he0"
-	PIPING_LAYER_SHIFT(src, piping_layer)
+	PIPE_LAYER_SHIFT(src, pipe_layer)
 
 /obj/machinery/atmospherics/components/unary/heat_exchanger/atmosinit()
 	if(!partner)

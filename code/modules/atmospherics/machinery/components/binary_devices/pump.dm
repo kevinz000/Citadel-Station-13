@@ -192,11 +192,11 @@
 		return TRUE
 
 /obj/machinery/atmospherics/components/binary/pump/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state= "pump_map-1"
 
 /obj/machinery/atmospherics/components/binary/pump/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state= "pump_map-3"
 
 /obj/machinery/atmospherics/components/binary/pump/on
@@ -204,9 +204,9 @@
 	icon_state = "pump_on_map-2"
 
 /obj/machinery/atmospherics/components/binary/pump/on/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state= "pump_on_map-1"
 
 /obj/machinery/atmospherics/components/binary/pump/on/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state= "pump_on_map-3"

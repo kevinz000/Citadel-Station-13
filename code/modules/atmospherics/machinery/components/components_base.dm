@@ -53,13 +53,13 @@
 			underlays += get_pipe_underlay("pipe_exposed", direction)
 
 	if(!shift_underlay_only)
-		PIPING_LAYER_SHIFT(src, piping_layer)
+		PIPE_LAYER_SHIFT(src, pipe_layer)
 
 /obj/machinery/atmospherics/components/proc/get_pipe_underlay(state, dir, color = null)
 	if(color)
-		. = getpipeimage('icons/obj/atmospherics/components/binary_devices.dmi', state, dir, color, piping_layer = shift_underlay_only ? piping_layer : 2)
+		. = getpipeimage('icons/obj/atmospherics/components/binary_devices.dmi', state, dir, color, pipe_layer = shift_underlay_only ? pipe_layer : 2)
 	else
-		. = getpipeimage('icons/obj/atmospherics/components/binary_devices.dmi', state, dir, piping_layer = shift_underlay_only ? piping_layer : 2)
+		. = getpipeimage('icons/obj/atmospherics/components/binary_devices.dmi', state, dir, pipe_layer = shift_underlay_only ? pipe_layer : 2)
 
 // Pipenet stuff; housekeeping
 

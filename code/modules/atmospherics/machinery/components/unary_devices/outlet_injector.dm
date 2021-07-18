@@ -187,22 +187,22 @@
 // mapping
 
 /obj/machinery/atmospherics/components/unary/outlet_injector/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "inje_map-1"
 
 /obj/machinery/atmospherics/components/unary/outlet_injector/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "inje_map-3"
 
 /obj/machinery/atmospherics/components/unary/outlet_injector/on
 	on = TRUE
 
 /obj/machinery/atmospherics/components/unary/outlet_injector/on/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "inje_map-1"
 
 /obj/machinery/atmospherics/components/unary/outlet_injector/on/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "inje_map-3"
 
 /obj/machinery/atmospherics/components/unary/outlet_injector/atmos

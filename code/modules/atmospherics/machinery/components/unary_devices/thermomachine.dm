@@ -31,8 +31,8 @@
 /obj/machinery/atmospherics/components/unary/thermomachine/on_construction()
 	var/obj/item/circuitboard/machine/thermomachine/board = circuit
 	if(board)
-		piping_layer = board.pipe_layer
-	..(dir, piping_layer)
+		pipe_layer = board.pipe_layer
+	..(dir, pipe_layer)
 
 /obj/machinery/atmospherics/components/unary/thermomachine/RefreshParts()
 	var/B
@@ -50,7 +50,7 @@
 	else
 		icon_state = icon_state_off
 
-	add_overlay(getpipeimage(icon, "pipe", dir, , piping_layer))
+	add_overlay(getpipeimage(icon, "pipe", dir, , pipe_layer))
 
 /obj/machinery/atmospherics/components/unary/thermomachine/update_icon_nopipes()
 	cut_overlays()

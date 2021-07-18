@@ -23,7 +23,7 @@
 	if(gas_type)
 		air_contents.set_moles(gas_type,AIR_CONTENTS)
 		name = "[name] ([GLOB.gas_data.names[gas_type]])"
-	setPipingLayer(piping_layer)
+	setPipingLayer(pipe_layer)
 
 /obj/machinery/atmospherics/components/unary/tank/air
 	icon_state = "grey"

@@ -41,7 +41,7 @@
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/update_icon_nopipes()
 	cut_overlays()
 	if(showpipe)
-		var/image/cap = getpipeimage(icon, "dpvent_cap", dir, piping_layer = piping_layer)
+		var/image/cap = getpipeimage(icon, "dpvent_cap", dir, pipe_layer = pipe_layer)
 		add_overlay(cap)
 
 	if(!on || !is_operational())
@@ -179,11 +179,11 @@
 // Mapping
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "dpvent_map-1"
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "dpvent_map-3"
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/on
@@ -191,11 +191,11 @@
 	icon_state = "dpvent_map_on-2"
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/on/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "dpvent_map_on-1"
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/on/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "dpvent_map_on-3"
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/incinerator_toxmix
@@ -211,11 +211,11 @@
 	frequency = FREQ_AIRLOCK_CONTROL
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "dpvent_map-1"
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "dpvent_map-3"
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/on
@@ -223,11 +223,11 @@
 	icon_state = "dpvent_map_on-2"
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/on/layer1
-	piping_layer = 1
+	pipe_layer = 1
 	icon_state = "dpvent_map_on-1"
 
 /obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/on/layer3
-	piping_layer = 3
+	pipe_layer = 3
 	icon_state = "dpvent_map_on-3"
 
 #undef EXT_BOUND
