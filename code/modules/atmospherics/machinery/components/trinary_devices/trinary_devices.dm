@@ -1,5 +1,5 @@
-/obj/machinery/atmospherics/components/trinary
-	icon = 'icons/obj/atmospherics/components/trinary_devices.dmi'
+/obj/machinery/atmospherics/component/trinary
+	icon = 'icons/obj/atmospherics/component/trinary_devices.dmi'
 	dir = SOUTH
 	initialize_directions = SOUTH|NORTH|WEST
 	use_power = IDLE_POWER_USE
@@ -9,7 +9,7 @@
 
 	var/flipped = FALSE
 
-/obj/machinery/atmospherics/components/trinary/SetInitDirections()
+/obj/machinery/atmospherics/component/trinary/SetInitDirections()
 	switch(dir)
 		if(NORTH)
 			initialize_directions = EAST|NORTH|SOUTH
@@ -24,7 +24,7 @@
 Housekeeping and pipe network stuff
 */
 
-/obj/machinery/atmospherics/components/trinary/getNodeConnects()
+/obj/machinery/atmospherics/component/trinary/getNodeConnects()
 
 	//Mixer:
 	//1 and 2 is input

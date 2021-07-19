@@ -81,6 +81,6 @@ GLOBAL_LIST_EMPTY(bluespace_pipe_networks)
 
 /obj/machinery/atmospherics/pipe/bluespace/proc/get_pipe_underlay(state, dir, color = null)
 	if(color)
-		. = getpipeimage('icons/obj/atmospherics/components/binary_devices.dmi', state, dir, color)
+		. = getpipeimage('icons/obj/atmospherics/component/binary_devices.dmi', state, dir, color)
 	else
-		. = getpipeimage('icons/obj/atmospherics/components/binary_devices.dmi', state, dir)
+		. = getpipeimage('icons/obj/atmospherics/component/binary_devices.dmi', state, dir)

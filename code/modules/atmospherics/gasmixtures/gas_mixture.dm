@@ -385,25 +385,14 @@ get_true_breath_pressure(pp) --> gas_pp = pp/breath_pp*total_moles()
  */
 /datum/gas_mixture/proc/specific_entropy()
 	if(!total_moles())
-		return 1000000		// some ridiculously high value
+		return INFINITY		// some ridiculously high value
+	. = 0
 	for(var/gasid in get_gases())
 		var/moles = get_moles(gasid)
-
-# warn finish this and note that molar mass needs to be converted to kg for this equation
-# warn get gas pump/filter procs in. ensure last mole of gas is instant.
-/datum/gas_mixture/proc/specific_entropy_gas(var/gasid)
-	if (!(gasid in gas) || gas[gasid] == 0)
-		return SPECIFIC_ENTROPY_VACUUM	//that gas isn't here
-
-	//group_multiplier gets divided out in volume/gas[gasid] - also, V/(m*T) = R/(partial pressure)
-	var/molar_mass = GLOB.meta_gas_molar_mass[gasid]
-	var/specific_heat = GLOB.meta_gas_specific_heats[gasid]
-	return R_IDEAL_GAS_EQUATION * ( log( (IDEAL_GAS_ENTROPY_CONSTANT*volume/(gas[gasid] * temperature)) * (molar_mass*specific_heat*temperature)**(2/3) + 1 ) +  15 )
-
-	//alternative, simpler equation
-	//var/partial_pressure = gas[gasid] * R_IDEAL_GAS_EQUATION * temperature / volume
-	//return R_IDEAL_GAS_EQUATION * ( log (1 + IDEAL_GAS_ENTROPY_CONSTANT/partial_pressure) + 20 )
-
+		var/molar_mass = GLOB.gas_data.molar_masses[gasid]
+		var/specific_heat = GLOB.gas_data.specific_heats[gasid]
+		. += R_IDEAL_GAS_EQUATION * (log((IDEAL_GAS_ENTROPY_CONSTANT * volume / (moles * temperature)) * ((molar_mass * 0.001 * specific_heat * return_temperature()) ** (2/3)) + 1) + 15) * moles
+	. /= total_moles()
 
 /// Releases gas from src to output air. This means that it can not transfer air to gas mixture with higher pressure.
 /// a global proc due to rustmos

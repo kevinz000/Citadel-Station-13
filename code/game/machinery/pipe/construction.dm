@@ -59,7 +59,7 @@ Buildable meters
 	add_atom_colour(make_from.color, FIXED_COLOUR_PRIORITY)
 	pipe_type = make_from.type
 
-/obj/item/pipe/trinary/flippable/make_from_existing(obj/machinery/atmospherics/components/trinary/make_from)
+/obj/item/pipe/trinary/flippable/make_from_existing(obj/machinery/atmospherics/component/trinary/make_from)
 	..()
 	if(make_from.flipped)
 		do_a_flip()
@@ -174,7 +174,7 @@ Buildable meters
 		// but they shouldn't turn on automatically when wrenched.
 		A.on = FALSE
 
-/obj/item/pipe/trinary/flippable/build_pipe(obj/machinery/atmospherics/components/trinary/T)
+/obj/item/pipe/trinary/flippable/build_pipe(obj/machinery/atmospherics/component/trinary/T)
 	..()
 	T.flipped = flipped
 

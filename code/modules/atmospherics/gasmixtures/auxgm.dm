@@ -57,7 +57,7 @@ GLOBAL_LIST_INIT(nonreactive_gases, typecacheof(list(GAS_O2, GAS_N2, GAS_CO2, GA
 	var/fire_energy_released = 0 // how much energy is released per mole of fuel burned
 	var/fire_burn_rate = 1 // how many moles are burned per product released
 	/// Molar mass in g/mol, used for specific entropy calculations (gas pumping difficulty). Heavier gases are harder to pump.
-	var/molar_mass = 10
+	var/molar_mass = 32
 
 /datum/gas/proc/breath(partial_pressure, light_threshold, heavy_threshold, moles, mob/living/carbon/C, obj/item/organ/lungs/lungs)
 	// This is only called on gases with the GAS_FLAG_BREATH_PROC flag. When possible, do NOT use this--

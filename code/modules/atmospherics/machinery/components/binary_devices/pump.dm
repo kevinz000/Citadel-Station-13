@@ -10,7 +10,7 @@
 //     Higher quantities of this cause more air to be perfected later
 //     but overall network volume is also increased as this increases...
 
-/obj/machinery/atmospherics/components/binary/pump
+/obj/machinery/atmospherics/component/binary/pump
 	icon_state = "pump_map-2"
 	name = "gas pump"
 	desc = "A pump that moves gas by pressure."
@@ -27,12 +27,12 @@
 	construction_type = /obj/item/pipe/directional
 	pipe_state = "pump"
 
-/obj/machinery/atmospherics/components/binary/pump/examine(mob/user)
+/obj/machinery/atmospherics/component/binary/pump/examine(mob/user)
 	. = ..()
 	. += "<span class='notice'>You can hold <b>Ctrl</b> and click on it to toggle it on and off.</span>"
 	. += "<span class='notice'>You can hold <b>Alt</b> and click on it to maximize its pressure.</span>"
 
-/obj/machinery/atmospherics/components/binary/pump/CtrlClick(mob/user)
+/obj/machinery/atmospherics/component/binary/pump/CtrlClick(mob/user)
 	var/area/A = get_area(src)
 	var/turf/T = get_turf(src)
 	if(user.canUseTopic(src, BE_CLOSE, FALSE,))
@@ -42,7 +42,7 @@
 		message_admins("Pump, [src.name], turned [on ? "on" : "off"] by [ADMIN_LOOKUPFLW(usr)] at [ADMIN_COORDJMP(T)], [A]")
 		return ..()
 
-/obj/machinery/atmospherics/components/binary/pump/AltClick(mob/user)
+/obj/machinery/atmospherics/component/binary/pump/AltClick(mob/user)
 	. = ..()
 	var/area/A = get_area(src)
 	var/turf/T = get_turf(src)
@@ -53,16 +53,16 @@
 		message_admins("Pump, [src.name], was maximized by [ADMIN_LOOKUPFLW(usr)] at [ADMIN_COORDJMP(T)], [A]")
 		return TRUE
 
-/obj/machinery/atmospherics/components/binary/pump/Destroy()
+/obj/machinery/atmospherics/component/binary/pump/Destroy()
 	SSradio.remove_object(src,frequency)
 	if(radio_connection)
 		radio_connection = null
 	return ..()
 
-/obj/machinery/atmospherics/components/binary/pump/update_icon_nopipes()
+/obj/machinery/atmospherics/component/binary/pump/update_icon_nopipes()
 	icon_state = (on && is_operational()) ? "pump_on" : "pump_off"
 
-/obj/machinery/atmospherics/components/binary/pump/process_atmos()
+/obj/machinery/atmospherics/component/binary/pump/process_atmos()
 //	..()
 	if(!on || !is_operational())
 		return
@@ -86,13 +86,13 @@
 		update_parents()
 
 //Radio remote control
-/obj/machinery/atmospherics/components/binary/pump/proc/set_frequency(new_frequency)
+/obj/machinery/atmospherics/component/binary/pump/proc/set_frequency(new_frequency)
 	SSradio.remove_object(src, frequency)
 	frequency = new_frequency
 	if(frequency)
 		radio_connection = SSradio.add_object(src, frequency, filter = RADIO_ATMOSIA)
 
-/obj/machinery/atmospherics/components/binary/pump/proc/broadcast_status()
+/obj/machinery/atmospherics/component/binary/pump/proc/broadcast_status()
 	if(!radio_connection)
 		return
 
@@ -105,20 +105,20 @@
 	))
 	radio_connection.post_signal(src, signal, filter = RADIO_ATMOSIA)
 
-/obj/machinery/atmospherics/components/binary/pump/ui_interact(mob/user, datum/tgui/ui)
+/obj/machinery/atmospherics/component/binary/pump/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "AtmosPump", name)
 		ui.open()
 
-/obj/machinery/atmospherics/components/binary/pump/ui_data()
+/obj/machinery/atmospherics/component/binary/pump/ui_data()
 	var/data = list()
 	data["on"] = on
 	data["pressure"] = round(target_pressure)
 	data["max_pressure"] = round(MAX_OUTPUT_PRESSURE)
 	return data
 
-/obj/machinery/atmospherics/components/binary/pump/ui_act(action, params)
+/obj/machinery/atmospherics/component/binary/pump/ui_act(action, params)
 	if(..())
 		return
 	var/turf/T = get_turf(src)
@@ -146,12 +146,12 @@
 				investigate_log("was set to [target_pressure] kPa by [key_name(usr)]", INVESTIGATE_ATMOS)
 	update_icon()
 
-/obj/machinery/atmospherics/components/binary/pump/atmosinit()
+/obj/machinery/atmospherics/component/binary/pump/atmosinit()
 	..()
 	if(frequency)
 		set_frequency(frequency)
 
-/obj/machinery/atmospherics/components/binary/pump/receive_signal(datum/signal/signal)
+/obj/machinery/atmospherics/component/binary/pump/receive_signal(datum/signal/signal)
 	if(!signal.data["tag"] || (signal.data["tag"] != id) || (signal.data["sigtype"]!="command"))
 		return
 
@@ -176,11 +176,11 @@
 	broadcast_status()
 	update_icon()
 
-/obj/machinery/atmospherics/components/binary/pump/power_change()
+/obj/machinery/atmospherics/component/binary/pump/power_change()
 	..()
 	update_icon()
 
-/obj/machinery/atmospherics/components/binary/pump/can_unwrench(mob/user)
+/obj/machinery/atmospherics/component/binary/pump/can_unwrench(mob/user)
 	. = ..()
 	var/area/A = get_area(src)
 	if(. && on && is_operational())
@@ -191,22 +191,22 @@
 		message_admins("Pump, [src.name], was unwrenched by [ADMIN_LOOKUPFLW(user)] at [A]")
 		return TRUE
 
-/obj/machinery/atmospherics/components/binary/pump/layer1
+/obj/machinery/atmospherics/component/binary/pump/layer1
 	pipe_layer = 1
 	icon_state= "pump_map-1"
 
-/obj/machinery/atmospherics/components/binary/pump/layer3
+/obj/machinery/atmospherics/component/binary/pump/layer3
 	pipe_layer = 3
 	icon_state= "pump_map-3"
 
-/obj/machinery/atmospherics/components/binary/pump/on
+/obj/machinery/atmospherics/component/binary/pump/on
 	on = TRUE
 	icon_state = "pump_on_map-2"
 
-/obj/machinery/atmospherics/components/binary/pump/on/layer1
+/obj/machinery/atmospherics/component/binary/pump/on/layer1
 	pipe_layer = 1
 	icon_state= "pump_on_map-1"
 
-/obj/machinery/atmospherics/components/binary/pump/on/layer3
+/obj/machinery/atmospherics/component/binary/pump/on/layer3
 	pipe_layer = 3
 	icon_state= "pump_on_map-3"

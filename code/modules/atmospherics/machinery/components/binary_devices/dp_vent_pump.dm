@@ -4,8 +4,8 @@
 #define INPUT_MIN	2
 #define OUTPUT_MAX	4
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump
-	icon = 'icons/obj/atmospherics/components/unary_devices.dmi' //We reuse the normal vent icons!
+/obj/machinery/atmospherics/component/binary/dp_vent_pump
+	icon = 'icons/obj/atmospherics/component/unary_devices.dmi' //We reuse the normal vent icons!
 	icon_state = "dpvent_map-2"
 
 	//node2 is output port
@@ -34,11 +34,11 @@
 	//INPUT_MIN: Do not pass input_pressure_min
 	//OUTPUT_MAX: Do not pass output_pressure_max
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/Destroy()
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/Destroy()
 	SSradio.remove_object(src, frequency)
 	return ..()
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/update_icon_nopipes()
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/update_icon_nopipes()
 	cut_overlays()
 	if(showpipe)
 		var/image/cap = getpipeimage(icon, "dpvent_cap", dir, pipe_layer = pipe_layer)
@@ -49,7 +49,7 @@
 	else
 		icon_state = pump_direction ? "vent_out" : "vent_in"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/process_atmos()
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/process_atmos()
 	..()
 
 	if(!on)
@@ -96,13 +96,13 @@
 
 	//Radio remote control
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/proc/set_frequency(new_frequency)
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/proc/set_frequency(new_frequency)
 	SSradio.remove_object(src, frequency)
 	frequency = new_frequency
 	if(frequency)
 		radio_connection = SSradio.add_object(src, frequency, filter = RADIO_ATMOSIA)
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/proc/broadcast_status()
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/proc/broadcast_status()
 	if(!radio_connection)
 		return
 
@@ -119,13 +119,13 @@
 	))
 	radio_connection.post_signal(src, signal, filter = RADIO_ATMOSIA)
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/atmosinit()
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/atmosinit()
 	..()
 	if(frequency)
 		set_frequency(frequency)
 	broadcast_status()
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/receive_signal(datum/signal/signal)
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/receive_signal(datum/signal/signal)
 	if(!signal.data["tag"] || (signal.data["tag"] != id) || (signal.data["sigtype"]!="command"))
 		return
 
@@ -166,10 +166,10 @@
 		broadcast_status()
 	update_icon()
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume
 	name = "large dual-port air vent"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/New()
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume/New()
 	..()
 	var/datum/gas_mixture/air1 = airs[1]
 	var/datum/gas_mixture/air2 = airs[2]
@@ -178,55 +178,55 @@
 
 // Mapping
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/layer1
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/layer1
 	pipe_layer = 1
 	icon_state = "dpvent_map-1"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/layer3
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/layer3
 	pipe_layer = 3
 	icon_state = "dpvent_map-3"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/on
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/on
 	on = TRUE
 	icon_state = "dpvent_map_on-2"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/on/layer1
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/on/layer1
 	pipe_layer = 1
 	icon_state = "dpvent_map_on-1"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/on/layer3
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/on/layer3
 	pipe_layer = 3
 	icon_state = "dpvent_map_on-3"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/incinerator_toxmix
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume/incinerator_toxmix
 	id = INCINERATOR_TOXMIX_DP_VENTPUMP
 	frequency = FREQ_AIRLOCK_CONTROL
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/incinerator_atmos
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume/incinerator_atmos
 	id = INCINERATOR_ATMOS_DP_VENTPUMP
 	frequency = FREQ_AIRLOCK_CONTROL
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/incinerator_syndicatelava
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume/incinerator_syndicatelava
 	id = INCINERATOR_SYNDICATELAVA_DP_VENTPUMP
 	frequency = FREQ_AIRLOCK_CONTROL
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/layer1
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume/layer1
 	pipe_layer = 1
 	icon_state = "dpvent_map-1"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/layer3
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume/layer3
 	pipe_layer = 3
 	icon_state = "dpvent_map-3"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/on
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume/on
 	on = TRUE
 	icon_state = "dpvent_map_on-2"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/on/layer1
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume/on/layer1
 	pipe_layer = 1
 	icon_state = "dpvent_map_on-1"
 
-/obj/machinery/atmospherics/components/binary/dp_vent_pump/high_volume/on/layer3
+/obj/machinery/atmospherics/component/binary/dp_vent_pump/high_volume/on/layer3
 	pipe_layer = 3
 	icon_state = "dpvent_map_on-3"
 

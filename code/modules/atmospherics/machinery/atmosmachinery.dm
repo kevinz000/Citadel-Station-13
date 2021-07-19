@@ -73,7 +73,7 @@
  * Called once on init.
  */
 /obj/machinery/atmospherics/proc/InitAtmos()
-	connected = new /list(4)
+	connected = new /list(device_type)
 	Join()
 
 /**
@@ -227,7 +227,7 @@
  * And in both cases there needs to be special handling.
  */
 /obj/machinery/atmospherics/proc/FindConnecting(direction, layer = pipe_layer)
-	for(var/obj/machinery/atmospherics/other in get_step(src, direction)
+	for(var/obj/machinery/atmospherics/other in get_step(src, direction))
 		if(CanConnect(other))
 			return other
 

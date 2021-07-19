@@ -77,7 +77,6 @@
 	fire_products = list(GAS_N2 = 1)
 	oxidation_rate = 0.5
 	oxidation_temperature = FIRE_MINIMUM_TEMPERATURE_TO_EXIST + 100
-	molar_mass =
 
 /datum/gas/nitryl
 	id = GAS_NITRYL
@@ -98,6 +97,7 @@
 	moles_visible = MOLES_GAS_VISIBLE
 	flags = GAS_FLAG_DANGEROUS
 	fusion_power = 1
+	molar_mass = 10
 	/*
 	these are for when we add hydrogen, trit gets to keep its hardcoded fire for legacy reasons
 	fire_provides = list(GAS_H2O = 2)

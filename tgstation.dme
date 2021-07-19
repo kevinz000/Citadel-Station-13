@@ -137,6 +137,7 @@
 #include "code\__DEFINES\admin\keybindings.dm"
 #include "code\__DEFINES\atmospherics\atmospherics.dm"
 #include "code\__DEFINES\atmospherics\gases.dm"
+#include "code\__DEFINES\atmospherics\machinery.dm"
 #include "code\__DEFINES\chemistry\reactions.dm"
 #include "code\__DEFINES\combat\attack_types.dm"
 #include "code\__DEFINES\combat\block.dm"

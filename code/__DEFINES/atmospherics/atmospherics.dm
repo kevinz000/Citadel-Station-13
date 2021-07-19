@@ -1,6 +1,7 @@
 //ATMOS
 //stuff you should probably leave well alone!
 #define R_IDEAL_GAS_EQUATION	8.31	//kPa*L/(K*mol)
+#define IDEAL_GAS_ENTROPY_CONSTANT 1164    // (mol^3 * s^3) / (kg^3 * L).
 #define ONE_ATMOSPHERE			101.325	//kPa
 #define TCMB					2.7		// -270.3degC
 #define TCRYO					225		// -48.15degC
@@ -107,17 +108,6 @@
 #define LOW_PRESSURE_DAMAGE					8		//The amount of damage someone takes when in a low pressure area (The pressure threshold is so low that it doesn't make sense to do any calculations, so it just applies this flat value).
 
 #define COLD_SLOWDOWN_FACTOR				35		//Humans are slowed by the difference between bodytemp and BODYTEMP_COLD_DAMAGE_LIMIT divided by this
-
-//PIPES
-//Atmos pipe limits
-#define MAX_OUTPUT_PRESSURE					4500 // (kPa) What pressure pumps and powered equipment max out at.
-#define MAX_TRANSFER_RATE					200 // (L/s) Maximum speed powered equipment can work at.
-
-//used for device_type vars
-#define UNARY		1
-#define BINARY 		2
-#define TRINARY		3
-#define QUATERNARY	4
 
 //TANKS
 #define TANK_MELT_TEMPERATURE				1000000	//temperature in kelvins at which a tank will start to melt
@@ -233,45 +223,6 @@
 #define INCINERATOR_SYNDICATELAVA_AIRLOCK_CONTROLLER 	"syndicatelava_airlock_controller"
 #define INCINERATOR_SYNDICATELAVA_AIRLOCK_INTERIOR 		"syndicatelava_airlock_interior"
 #define INCINERATOR_SYNDICATELAVA_AIRLOCK_EXTERIOR	 	"syndicatelava_airlock_exterior"
-
-//MULTIPIPES
-//IF YOU EVER CHANGE THESE CHANGE SPRITES TO MATCH.
-#define PIPE_LAYER_MIN 1
-#define PIPE_LAYER_MAX 5
-#define PIPE_LAYER_DEFAULT 3
-#define PIPE_LAYER_P_X 5
-#define PIPE_LAYER_P_Y 5
-#define PIPE_LAYER_LCHANGE 0.05
-
-#define PIPE_ALL_LAYER				(1<<0)	//intended to connect with all layers, check for all instead of just one.
-#define PIPE_ONE_PER_TURF				(1<<1) 	//can only be built if nothing else with this flag is on the tile already.
-#define PIPE_DEFAULT_LAYER_ONLY		(1<<2)	//can only exist at PIPE_LAYER_DEFAULT
-#define PIPE_CARDINAL_AUTONORMALIZE	(1<<3)	//north/south east/west doesn't matter, auto normalize on build.
-/// We've joined to pipe network + fully initialized. This can be true even if we're queued for a rebuild.
-#define PIPE_NETWORK_JOINED			(1<<4)
-/// We're queued for a pipenet rebuild.
-#define PIPE_REBUILD_QUEUED			(1<<5)
-
-// CheckLocationConflict return values
-/// Can fit there
-#define PIPE_LOCATION_CLEAR			0
-/// Another one per turf object is on it
-#define PIPE_LOCATION_TILE_HOGGED	1
-/// Normal conflict
-#define PIPE_LOCATION_DIR_CONFLICT	2
-
-//HELPERS
-#define PIPE_LAYER_SHIFT(T, PipingLayer) \
-	if(T.dir & (NORTH|SOUTH)) {									\
-		T.pixel_x = (PipingLayer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_P_X;\
-	}																		\
-	if(T.dir & (WEST|EAST)) {										\
-		T.pixel_y = (PipingLayer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_P_Y;\
-	}
-
-#define PIPE_LAYER_DOUBLE_SHIFT(T, PipingLayer) \
-	T.pixel_x = (PipingLayer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_P_X;\
-	T.pixel_y = (PipingLayer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_P_Y;
 
 #define QUANTIZE(variable)		(round(variable,0.0000001))/*I feel the need to document what happens here. Basically this is used to catch most rounding errors, however it's previous value made it so that
 															once gases got hot enough, most procedures wouldnt occur due to the fact that the mole counts would get rounded away. Thus, we lowered it a few orders of magnititude */
