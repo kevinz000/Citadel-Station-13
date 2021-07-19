@@ -26,7 +26,7 @@
 	/// The layer we're on. Overriden by PIPE_ALL_LAYER
 	var/pipe_layer = PIPE_LAYER_DEFAULT
 	/// Does this interact with the environment or just with pipenets? If so, it needs to be TRUE so we set it to the right processing bracket.
-	VAR_FINAL/interacts_with_air = FALSE
+	var/interacts_with_air = FALSE
 	/// List of atmosmachinery we're connected to
 	var/list/obj/machinery/atmospherics/connected
 	/// Device type, determining the number of connections we have. If we're PIPE_ALL_LAYER, this is multiplied by total pipe layers.
