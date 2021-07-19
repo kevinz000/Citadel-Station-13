@@ -1,6 +1,6 @@
 // Contains helpers for transferring gases from one place to another.
 
-
+# warn convert entire file, standardize names, inputs, outputs for usage
 
 //Generalized gas pumping proc.
 //Moves gas from one gas_mixture to another and returns the amount of power needed (assuming 1 second), or -1 if no gas was pumped.
