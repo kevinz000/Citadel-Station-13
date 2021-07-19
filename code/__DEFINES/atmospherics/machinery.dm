@@ -3,6 +3,8 @@
 #define PIPE_LAYER_MIN 1
 #define PIPE_LAYER_MAX 5
 #define PIPE_LAYER_DEFAULT 3
+/// Total pipe layers. KEEP THIS UP TO DATE.
+#define PIPE_LAYER_TOTAL 5
 #define PIPE_LAYER_P_X 5
 #define PIPE_LAYER_P_Y 5
 #define PIPE_LAYER_LCHANGE 0.05

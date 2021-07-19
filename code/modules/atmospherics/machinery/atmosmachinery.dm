@@ -29,7 +29,7 @@
 	VAR_FINAL/interacts_with_air = FALSE
 	/// List of atmosmachinery we're connected to
 	var/list/obj/machinery/atmospherics/connected
-	/// Device type, determining the number of connections we have.
+	/// Device type, determining the number of connections we have. If we're PIPE_ALL_LAYER, this is multiplied by total pipe layers.
 	var/device_type = NONE
 	/// Directions we'll connect in. Set dynamically by our dir.
 	var/initialize_directions = NONE
@@ -54,9 +54,11 @@
 		if(SEND_SIGNAL(L, COMSIG_CHECK_VENTCRAWL))
 			. += "<span class='notice'>Alt-click to crawl through it.</span>"
 
-/obj/machinery/atmospherics/Initialize(mapload, process = TRUE, setdir)
+/obj/machinery/atmospherics/Initialize(mapload, process = TRUE, setdir, setlayer)
 	if(!isnull(setdir))
 		setDir(setdir)
+	if(!isnull(setlayer))
+		pipe_layer = setlayer
 	if (!armor)
 		armor = list("melee" = 25, "bullet" = 10, "laser" = 10, "energy" = 100, "bomb" = 0, "bio" = 100, "rad" = 100, "fire" = 100, "acid" = 70)
 	. = ..()
@@ -73,7 +75,7 @@
  * Called once on init.
  */
 /obj/machinery/atmospherics/proc/InitAtmos()
-	connected = new /list(device_type)
+	connected = new /list(MaximumPossibleNodes())
 	Join()
 
 /**
@@ -84,13 +86,16 @@
 		CRASH("Attempted to Join() while waiting for GC")
 	if(pipe_flags & PIPE_NETWORK_JOINED)
 		CRASH("Attempted to Join() while already joined to network.")
+	var/conflict
+	if(!((conflict = CheckLocationConflict(loc, pipe_layer)) == PIPE_LOCATION_CLEAR))
+		CRASH("Attempted to Join() with a conflict([conflict]) at location.")
 	if(pipe_flags & PIPE_CARDINAL_AUTONORMALIZE)
-		normalize_cardinal_directions()
-	SetInitDirections()
-
-	update_appearance()
+		NormalizeCardinalDirections()
 	pipe_flags |= PIPE_NETWORK_JOINED
-	QueueRebuild()
+	SetInitDirections()
+	if(Connect())
+		QueueRebuild()
+	update_appearance()
 
 /**
  * Called to leave its place in a network.
@@ -100,9 +105,21 @@
 		CRASH("Attempted to Leave() while waiting for GC")
 	if(!(pipe_flags & PIPE_NETWORK_JOINED))
 		CRASH("Attempted to Leave() without being joined to network.")
-
-	update_appearance()
 	pipe_flags &= ~PIPE_NETWORK_JOINED
+	Disconnect()
+	update_appearance()
+
+/obj/machinery/atmospherics/Moved(atom/OldLoc, Dir)
+	. = ..()
+	if(pipe_flags & PIPE_NETWORK_JOINED)
+		stack_trace("Atmos machinery moved while network was joined. This is bad.")
+		Leave()
+		Join()
+
+/obj/machinery/atmospherics/forceMove(atom/destination)
+	Leave()
+	. = ..()
+	Join()
 
 /**
  * Called to rebuild its pipenet(s)
@@ -131,36 +148,95 @@
 	return ..()
 	//return QDEL_HINT_FINDREFERENCE
 
-/obj/machinery/atmospherics/proc/destroy_network()
-	return
-
-/obj/machinery/atmospherics/proc/build_network()
-	// Called to build a network from this node
-	return
-
-/obj/machinery/atmospherics/proc/nullifyNode(i)
-	if(nodes[i])
-		var/obj/machinery/atmospherics/N = nodes[i]
-		N.disconnect(src)
-		nodes[i] = null
-
-/obj/machinery/atmospherics/proc/getNodeConnects()
-	var/list/node_connects = list()
-	node_connects.len = device_type
-
+/**
+ * Connects us to our neighbors.
+ * Does not build network, just sets nodes.
+ * Returns if we found anyone.
+ */
+/obj/machinery/atmospherics/proc/Connect()
+	. = FALSE
+	connected = list()
+	var/list/current = list()
+	var/list/node_order = GetNodeOrder()
 	for(var/i in 1 to device_type)
-		for(var/D in GLOB.cardinals)
+		for(var/obj/machinery/atmospherics/target in get_step(src, node_order[i])))
+			if(CanConnect(other, i))
+				. = TRUE
+				connected[GetNodePosition(node_order[i], other.layer)] = other
+				var/their_order = other.GetNodePosition(get_dir(other, src), pipe_layer)
+				if(!their_order)
+					stack_trace("Couldn't find where to place ourselves in other's nodes. Us: [src]([COORD(src)]) Them: [other]([COORD(other)]")
+				else if(their_order != null)
+					stack_trace("Attempted to connect to something that's already connected on that side. Us: [src]([COORD(src)]) Them: [other]([COORD(other)]")
+				other.connected[their_order] = src
+				other.update_appearance()
+
+/**
+ * Determines node order.
+ * This should always be deterministic!
+ */
+/obj/machinery/atmospherics/proc/GetNodePosition(dir, layer)
+	. = 0
+	for(var/D in GLOB.cardinals_multiz)
+		if(D & GetInitDirections())
+			++.
+		if(D == dir)
+			return D * ((pipe_flags * PIPE_ALL_LAYER)? (PIPE_LAYER_MIN - layer + 1) : 1)
+	CRASH("Failed to find valid position ([dir], [layer])")
+
+/**
+ * Gets the order to scan nodes in.
+ * This should always be deterministic!
+ */
+/obj/machinery/atmospheric/proc/GetNodeOrder()
+	. = new /list(device_type)
+	for(var/i in 1 to device_type)
+		for(var/D in GLOB.cardinals_multiz)
 			if(D & GetInitDirections())
-				if(D in node_connects)
+				if(D in .)
 					continue
-				node_connects[i] = D
+				.[i] = D
 				break
-	return node_connects
+
+/**
+ * Disconnects us from our neighbors.
+ * Immediately tears down networks.
+ */
+/obj/machinery/atmospherics/proc/Disconnect()
+	Teardown()
+	for(var/obj/machinery/atmospherics/other as anything in connected)
+		var/pos = other.connected.Find(src)
+		if(!pos)
+			stack_trace("Couldn't find ourselves in other while disconnecting.")
+			continue
+		other.connected[pos] = null
+		other.update_appearance()
+	connected.len = 0
+	connected.len = device_type
+
+/**
+ * Constructs our pipeline if we don't have one
+ */
+/obj/machinery/atmospherics/proc/Build()
+	return
+
+/**
+ * Tears down our pipeline.
+ */
+/obj/machinery/atmospherics/proc/Teardown()
+	return
+
+/**
+ * Gets the maximum number of nodes we can have.
+ * This determines the size of our nodes list.
+ */
+/obj/machineray/atmospherics/proc/MaximumPossibleNodes()
+	return device_type * ((pipe_flags & PIPE_ALL_LAYER)? PIPE_LAYER_TOTAL : 1)
 
 /**
  * If our pipe flags state to normalize cardinals, ensure that we're NORTH|SOUTH or EAST|WEST by normalizing to NORTH or EAST, instead of allowing all 4 directions.
  */
-/obj/machinery/atmospherics/proc/normalize_cardinal_directions()
+/obj/machinery/atmospherics/proc/NormalizeCardinalDirections()
 	switch(dir)
 		if(SOUTH)
 			setDir(NORTH)
@@ -179,22 +255,10 @@
 /obj/machinery/atmospherics/proc/GetInitDirections()
 	return initialize_directions
 
-//this is called just after the air controller sets up turfs
-/obj/machinery/atmospherics/proc/atmosinit(list/node_connects)
-	if(!node_connects) //for pipes where order of nodes doesn't matter
-		node_connects = getNodeConnects()
-
-	for(var/i in 1 to device_type)
-		for(var/obj/machinery/atmospherics/target in get_step(src,node_connects[i]))
-			if(can_be_node(target, i))
-				nodes[i] = target
-				break
-	update_icon()
-
 /**
  * Modifies our piping layer.
  */
-/obj/machinery/atmospherics/proc/setPipingLayer(new_layer)
+/obj/machinery/atmospherics/proc/SetPipingLayer(new_layer)
 	if(!(CheckLocationConflict(loc, new_layer) != PIPE_LOCATION_CLEAR))
 		CRASH("Attempted to set piping layer to a conflicting layer.")
 	Leave()
@@ -217,8 +281,8 @@
 /**
  * Checks if a target pipe can be a node.
  */
-/obj/machinery/atmospherics/proc/CanConnect(obj/machinery/atmospherics/other)
-	return StandardConnectionCheck(other)
+/obj/machinery/atmospherics/proc/CanConnect(obj/machinery/atmospherics/other, node)
+	return StandardConnectionCheck(other) && (pipe_flags & PIPE_NETWORK_JOINED) && (other.pipe_flags & PIPE_NETWORK_JOINED)
 
 /**
  * Finds a connecting object in a direction + given layer
@@ -243,27 +307,31 @@
 /obj/machinery/atmospherics/proc/StandardCanLayersConnect(obj/machinery/atmospherics/other, layer = pipe_layer)
 	return (other.pipe_layer == layer) || (other.pipe_flags & PIPE_ALL_LAYER)
 
-/obj/machinery/atmospherics/proc/pipeline_expansion()
-	return nodes
+/**
+ * Used during pipeline builds.
+ * Returns a list of things we're directly connected to.
+ */
+/obj/machinery/atmospherics/proc/DirectConnection(datum/pipeline/querying, obj/machinery/atmospherics/source)
+	return list()
 
-/obj/machinery/atmospherics/proc/returnPipenet()
-	return
+/**
+ * Replaces a pipenet with another
+ */
+/obj/machinery/atmospherics/proc/ReplacePipeline(datum/pipeline/old, datum/pipeline/replacing)
+	CRASH("Base ReplacePipeline called [old] [replacing] on [src]")
 
-/obj/machinery/atmospherics/proc/returnPipenetAir()
-	return
+/**
+ * Sets our pipenet to something. Used during pipeline initial builds.
+ */
+/obj/machinery/atmospherics/proc/SetPipeline(datum/pipeline/setting, obj/machinery/atmospherics/source)
+	CRASH("Base SetPipeline called [setting] [source] on [src]")
 
-/obj/machinery/atmospherics/proc/setPipenet()
-	return
+/**
+ * Nullifies a pipenet from us
+ */
+/obj/machinery/atmospherics/proc/NullifyPipeline(datum/pipeline/removing)
+	CRASH("Base NullifyPipeline called [removing] on [src]")
 
-/obj/machinery/atmospherics/proc/replacePipenet()
-	return
-
-/obj/machinery/atmospherics/proc/disconnect(obj/machinery/atmospherics/reference)
-	if(istype(reference, /obj/machinery/atmospherics/pipe))
-		var/obj/machinery/atmospherics/pipe/P = reference
-		P.destroy_network()
-	nodes[nodes.Find(reference)] = null
-	update_icon()
 
 /obj/machinery/atmospherics/attackby(obj/item/W, mob/user, params)
 	if(istype(W, /obj/item/pipe)) //lets you autodrop
@@ -355,6 +423,7 @@
 		PIPE_LAYER_SHIFT(pipe_overlay, pipe_layer)
 
 /obj/machinery/atmospherics/on_construction(obj_color, set_layer)
+	#warn get rid of this
 	if(can_unwrench)
 		add_atom_colour(obj_color, FIXED_COLOUR_PRIORITY)
 		pipe_color = obj_color
