@@ -12,7 +12,7 @@
 	var/active = FALSE
 
 	var/last_pressure_delta = 0
-	pipe_flags = PIPING_ONE_PER_TURF | PIPING_DEFAULT_LAYER_ONLY
+	pipe_flags = PIPE_ONE_PER_TURF | PIPE_DEFAULT_LAYER_ONLY
 
 	density = TRUE
 

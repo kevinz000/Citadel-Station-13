@@ -26,7 +26,7 @@
 	layer = OBJ_LAYER
 	showpipe = TRUE
 
-	pipe_flags = PIPING_ONE_PER_TURF | PIPING_DEFAULT_LAYER_ONLY
+	pipe_flags = PIPE_ONE_PER_TURF | PIPE_DEFAULT_LAYER_ONLY
 
 	var/gas_type = GAS_PLASMA
 	var/efficiency_multiplier = 1

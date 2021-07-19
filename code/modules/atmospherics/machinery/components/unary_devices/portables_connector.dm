@@ -7,7 +7,7 @@
 	use_power = NO_POWER_USE
 	level = 0
 	layer = GAS_FILTER_LAYER
-	pipe_flags = PIPING_ONE_PER_TURF
+	pipe_flags = PIPE_ONE_PER_TURF
 	pipe_state = "connector"
 
 	var/obj/machinery/portable_atmospherics/connected_device

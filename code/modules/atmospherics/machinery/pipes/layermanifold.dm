@@ -5,7 +5,7 @@
 	desc = "A special pipe to bridge pipe layers with."
 	dir = SOUTH
 	initialize_directions = NORTH|SOUTH
-	pipe_flags = PIPING_ALL_LAYER | PIPING_DEFAULT_LAYER_ONLY | PIPING_CARDINAL_AUTONORMALIZE
+	pipe_flags = PIPE_ALL_LAYER | PIPE_DEFAULT_LAYER_ONLY | PIPE_CARDINAL_AUTONORMALIZE
 	pipe_layer = PIPE_LAYER_DEFAULT
 	device_type = 0
 	volume = 260

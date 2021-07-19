@@ -23,7 +23,7 @@
 	obj_flags = CAN_BE_HIT | ON_BLUEPRINTS
 	/// See __DEFINES/atmospherics
 	var/pipe_flags = NONE
-	/// The layer we're on. Overriden by PIPING_ALL_LAYER
+	/// The layer we're on. Overriden by PIPE_ALL_LAYER
 	var/pipe_layer = PIPE_LAYER_DEFAULT
 	/// Does this interact with the environment or just with pipenets? If so, it needs to be TRUE so we set it to the right processing bracket.
 	VAR_FINAL/interacts_with_air = FALSE
@@ -82,13 +82,14 @@
 /obj/machinery/atmospherics/proc/Join()
 	if(QDELETED(src))
 		CRASH("Attempted to Join() while waiting for GC")
-	if(pipe_flags & PIPING_NETWORK_JOINED)
+	if(pipe_flags & PIPE_NETWORK_JOINED)
 		CRASH("Attempted to Join() while already joined to network.")
-	if(pipe_flags & PIPING_CARDINAL_AUTONORMALIZE)
+	if(pipe_flags & PIPE_CARDINAL_AUTONORMALIZE)
 		normalize_cardinal_directions()
 	SetInitDirections()
 
-	pipe_flags |= PIPING_NETWORK_JOINED
+	update_appearance()
+	pipe_flags |= PIPE_NETWORK_JOINED
 	QueueRebuild()
 
 /**
@@ -97,25 +98,26 @@
 /obj/machinery/atmospherics/proc/Leave()
 	if(QDELETED(src))
 		CRASH("Attempted to Leave() while waiting for GC")
-	if(!(pipe_flags & PIPING_NETWORK_JOINED))
+	if(!(pipe_flags & PIPE_NETWORK_JOINED))
 		CRASH("Attempted to Leave() without being joined to network.")
 
-	pipe_flags &= ~PIPING_NETWORK_JOINED
+	update_appearance()
+	pipe_flags &= ~PIPE_NETWORK_JOINED
 
 /**
- * Called to rebuild its pipenet(s)w
+ * Called to rebuild its pipenet(s)
  */
 /obj/machinery/atmospherics/proc/Rebuild()
-	pipe_flags &= ~PIPING_REBUILD_QUEUED
+	pipe_flags &= ~PIPE_REBUILD_QUEUED
 
 /**
  * Queues us for a pipenet rebuild.
  */
 /obj/machiienry/atmospherics/proc/QueueRebuild()
-	if(pipe_flags & PIPING_REBUILD_QUEUED)
+	if(pipe_flags & PIPE_REBUILD_QUEUED)
 		return
 	SSair.queue_for_rebuild(src)
-	pipe_flags |= PIPING_REBUILD_QUEUED
+	pipe_flags |= PIPE_REBUILD_QUEUED
 
 /obj/machinery/atmospherics/Destroy()
 	Leave()
@@ -165,6 +167,18 @@
 		if(WEST)
 			setDir(EAST)
 
+/**
+ * Ensures our init directions are set properly
+ */
+/obj/machinery/atmospherics/proc/SetInitDirections()
+	return
+
+/**
+ * Gets our init directions
+ */
+/obj/machinery/atmospherics/proc/GetInitDirections()
+	return initialize_directions
+
 //this is called just after the air controller sets up turfs
 /obj/machinery/atmospherics/proc/atmosinit(list/node_connects)
 	if(!node_connects) //for pipes where order of nodes doesn't matter
@@ -184,42 +198,53 @@
 	if(!(CheckLocationConflict(loc, new_layer) != PIPE_LOCATION_CLEAR))
 		CRASH("Attempted to set piping layer to a conflicting layer.")
 	Leave()
-	pipe_layer = (pipe_flags & PIPING_DEFAULT_LAYER_ONLY) ? PIPE_LAYER_DEFAULT : new_layer
+	pipe_layer = (pipe_flags & PIPE_DEFAULT_LAYER_ONLY) ? PIPE_LAYER_DEFAULT : new_layer
 	Join()
 	update_appearance()
 
+/**
+ * Checks our current location for conflicts
+ */
+/obj/machinery/atmospherics/proc/CheckLocationConflict(turf/T = get_turf(src), layer = pipe_layer)
+	var/turf_hogging = pipe_flags & PIPE_ONE_PER_TURF
+	for(var/obj/machinery/atmospherics/A in T)
+		if(A.pipe_flags & turf_hogging)
+			return PIPE_LOCATION_TILE_HOGGED
+		if((A.pipe_layer == pipe_layer) && (A.initialize_directions & initialize_directions))
+			return PIPE_LOCATION_DIR_CONFLICT
+	return PIPE_LOCATION_CLEAR
 
+/**
+ * Checks if a target pipe can be a node.
+ */
+/obj/machinery/atmospherics/proc/CanConnect(obj/machinery/atmospherics/other)
+	return StandardConnectionCheck(other)
 
-/obj/machinery/atmospherics/proc/can_be_node(obj/machinery/atmospherics/target, iteration)
-	return connection_check(target, pipe_layer)
+/**
+ * Finds a connecting object in a direction + given layer
+ * Explicitly does not return a list of objects.
+ * The only things that should connect to more than one layer at a time right now are layer manifolds, and mains pipes
+ * And in both cases there needs to be special handling.
+ */
+/obj/machinery/atmospherics/proc/FindConnecting(direction, layer = pipe_layer)
+	for(var/obj/machinery/atmospherics/other in get_step(src, direction)
+		if(CanConnect(other))
+			return other
 
-//Find a connecting /obj/machinery/atmospherics in specified direction
-/obj/machinery/atmospherics/proc/findConnecting(direction, prompted_layer)
-	for(var/obj/machinery/atmospherics/target in get_step(src, direction))
-		if(target.initialize_directions & get_dir(target,src))
-			if(connection_check(target, prompted_layer))
-				return target
+/**
+ * Standard two-way connection check
+ */
+/obj/machinery/atmospherics/proc/StandardConnectionCheck(obj/machinery/atmospherics/other, layer = pipe_layer)
+	return (initialize_directions & get_dir(src, other)) && (get_dist(other) <= 1) && (other.initialize_directions & get_dir(other, src)) && StandardCanLayersConnect(other, layer) && other.StandardCanLayersConnect(src, layer)
 
-/obj/machinery/atmospherics/proc/connection_check(obj/machinery/atmospherics/target, given_layer)
-	if(isConnectable(target, given_layer) && target.isConnectable(src, given_layer) && (target.initialize_directions & get_dir(target,src)))
-		return TRUE
-	return FALSE
-
-/obj/machinery/atmospherics/proc/isConnectable(obj/machinery/atmospherics/target, given_layer)
-	if(isnull(given_layer))
-		given_layer = pipe_layer
-	if((target.pipe_layer == given_layer) || (target.pipe_flags & PIPING_ALL_LAYER))
-		return TRUE
-	return FALSE
+/**
+ * One way connection check
+ */
+/obj/machinery/atmospherics/proc/StandardCanLayersConnect(obj/machinery/atmospherics/other, layer = pipe_layer)
+	return (other.pipe_layer == layer) || (other.pipe_flags & PIPE_ALL_LAYER)
 
 /obj/machinery/atmospherics/proc/pipeline_expansion()
 	return nodes
-
-/obj/machinery/atmospherics/proc/SetInitDirections()
-	return
-
-/obj/machinery/atmospherics/proc/GetInitDirections()
-	return initialize_directions
 
 /obj/machinery/atmospherics/proc/returnPipenet()
 	return

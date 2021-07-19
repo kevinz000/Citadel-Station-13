@@ -243,14 +243,14 @@
 #define PIPE_LAYER_P_Y 5
 #define PIPE_LAYER_LCHANGE 0.05
 
-#define PIPING_ALL_LAYER				(1<<0)	//intended to connect with all layers, check for all instead of just one.
-#define PIPING_ONE_PER_TURF				(1<<1) 	//can only be built if nothing else with this flag is on the tile already.
-#define PIPING_DEFAULT_LAYER_ONLY		(1<<2)	//can only exist at PIPE_LAYER_DEFAULT
-#define PIPING_CARDINAL_AUTONORMALIZE	(1<<3)	//north/south east/west doesn't matter, auto normalize on build.
+#define PIPE_ALL_LAYER				(1<<0)	//intended to connect with all layers, check for all instead of just one.
+#define PIPE_ONE_PER_TURF				(1<<1) 	//can only be built if nothing else with this flag is on the tile already.
+#define PIPE_DEFAULT_LAYER_ONLY		(1<<2)	//can only exist at PIPE_LAYER_DEFAULT
+#define PIPE_CARDINAL_AUTONORMALIZE	(1<<3)	//north/south east/west doesn't matter, auto normalize on build.
 /// We've joined to pipe network + fully initialized. This can be true even if we're queued for a rebuild.
-#define PIPING_NETWORK_JOINED			(1<<4)
+#define PIPE_NETWORK_JOINED			(1<<4)
 /// We're queued for a pipenet rebuild.
-#define PIPING_REBUILD_QUEUED			(1<<5)
+#define PIPE_REBUILD_QUEUED			(1<<5)
 
 // CheckLocationConflict return values
 /// Can fit there

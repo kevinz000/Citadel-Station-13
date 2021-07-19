@@ -23,7 +23,7 @@
 		if(other.pipe_layer == pipe_layer)
 			return other
 	for(var/obj/machinery/atmospherics/A in loc)
-		if(A.pipe_flags & PIPING_ALL_LAYER)
+		if(A.pipe_flags & PIPE_ALL_LAYER)
 			return A
 		if(A.pipe_layer == pipe_layer)
 			return A

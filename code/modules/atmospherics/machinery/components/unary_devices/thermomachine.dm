@@ -12,7 +12,7 @@
 	plane = GAME_PLANE
 	circuit = /obj/item/circuitboard/machine/thermomachine
 
-	pipe_flags = PIPING_ONE_PER_TURF
+	pipe_flags = PIPE_ONE_PER_TURF
 
 	var/icon_state_off = "freezer"
 	var/icon_state_on = "freezer_1"

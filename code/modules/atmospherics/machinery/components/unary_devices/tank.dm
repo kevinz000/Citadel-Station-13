@@ -9,7 +9,7 @@
 	max_integrity = 800
 	density = TRUE
 	layer = ABOVE_WINDOW_LAYER
-	pipe_flags = PIPING_ONE_PER_TURF
+	pipe_flags = PIPE_ONE_PER_TURF
 
 	var/volume = 10000 //in liters
 	/// The typepath of the gas this tank should be filled with.
