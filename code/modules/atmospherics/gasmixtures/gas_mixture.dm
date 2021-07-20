@@ -391,7 +391,7 @@ get_true_breath_pressure(pp) --> gas_pp = pp/breath_pp*total_moles()
 		var/moles = get_moles(gasid)
 		var/molar_mass = GLOB.gas_data.molar_masses[gasid]
 		var/specific_heat = GLOB.gas_data.specific_heats[gasid]
-		. += R_IDEAL_GAS_EQUATION * (log((IDEAL_GAS_ENTROPY_CONSTANT * volume / (moles * temperature)) * ((molar_mass * 0.001 * specific_heat * return_temperature()) ** (2/3)) + 1) + 15) * moles
+		. += R_IDEAL_GAS_EQUATION * (log((IDEAL_GAS_ENTROPY_CONSTANT * return_volume() / (moles * return_temperature())) * ((molar_mass * 0.001 * specific_heat * return_temperature()) ** (2/3)) + 1) + 15) * moles
 	. /= total_moles()
 
 /// Releases gas from src to output air. This means that it can not transfer air to gas mixture with higher pressure.

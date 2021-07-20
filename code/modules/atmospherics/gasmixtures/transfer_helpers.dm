@@ -112,6 +112,34 @@
 
 	source.transfer_to(sink, transfer_moles)
 
+/**
+ * Heat exchange proc gas <--> gas
+ *
+ * Returns thermal energy in joules transferred
+ *
+ * @params
+ * * gas1
+ * * gas2
+ * * volume - volume exposed
+ * * dt - seconds to simulate
+ * * conductivity
+ */
+
+/**
+ * Heat exchange proc gas <--> turf
+ *
+ * Returns thermal energy in joules transferred
+ *
+ * @params
+ * * gas
+ * * turf
+ * * volume - volume exposed
+ * * dt - seconds to simulate
+ * * conductivity
+*/
+
+
+
 //Generalized gas pumping proc.
 //Moves gas from one gas_mixture to another and returns the amount of power needed (assuming 1 second), or -1 if no gas was pumped.
 //transfer_moles - Limits the amount of moles to transfer. The actual amount of gas moved may also be limited by available_power, if given.
