@@ -5,14 +5,19 @@
 	/// Welded vents/scrubbers
 	var/welded = FALSE
 	// Air movement calculations
+	// Not all components will use these, but they're pretty much standard.
 	/// Maximum power rating - maximum power it can draw for operations in watts.
 	var/power_rating = ATMOSMECH_POWER_RATING
 	/// Current power rating - defaults to max
 	var/power_setting = ATMOSMECH_POWER_RATING
 	/// Max operating pressure - cannot pressurize above this, but can accept above this
 	var/max_pressure = ATMOSMECH_PUMP_PRESSURE
+	/// Current pressure setting - defaults to max
+	var/pressure_setting = ATMOSMECH_PUMP_PRESSURE
 	/// Max operating rate - cannot pump faster than this (L/s)
 	var/max_rate = ATMOSMECH_PUMP_RATE
+	/// Current rate setting - defaults to max
+	var/rate_setting = ATMOSMECH_PUMP_RATE
 	/// Efficiency multiplier
 	var/power_efficiency = 1
 	/// Minimum volume to move per second before it gives up
@@ -21,6 +26,9 @@
 	var/moles_to_instant_pump = ATMOSMECH_INSTANT_PUMP_MOLES
 	/// Below this in pressure, anything left is instantly moved. This ensures you can't require infinite power to drain something.
 	var/pressure_to_instant_pump = ATMOSMECH_INSTANT_PUMP_PRESSURE
+	/// Last flow rate, set by gas transfer procs [code/modules/atmospherics/gasmixtures/transfer_helpers.dm]. Has different contexts based on what proc you used.
+	var/last_transfer_rate
+	/// Last power usage, set by gas transfer procs [code/modules/atmospherics/gasmixtures/transfer_helpers.dm].
 	/// Pipelines this belongs to. This should have the same indices as [connected]
 	var/list/datum/pipeline/pipelines
 	/// Gas mixtures we contain. This should have the same indices as [connected]
@@ -31,7 +39,7 @@
 	var/showpipe = FALSE
 	var/shift_underlay_only = TRUE //Layering only shifts underlay?
 
-/obj/machinery/atmospherics/component/AtmosInit()
+/obj/machinery/atmospherics/component/InitAtmos()
 	pipelines = new /list(device_type)
 	airs = new /list(device_type)
 	for(var/i in 1 to device_type)
@@ -62,8 +70,8 @@
 	var/connected = 0 //Direction bitset
 
 	for(var/i in 1 to device_type) //adds intact pieces
-		if(nodes[i])
-			var/obj/machinery/atmospherics/node = nodes[i]
+		if(connected[i])
+			var/obj/machinery/atmospherics/node = connected[i]
 			var/image/img = get_pipe_underlay("pipe_intact", get_dir(src, node), node.pipe_color)
 			underlays += img
 			connected |= img.dir
@@ -185,6 +193,22 @@
 /obj/machinery/atmospherics/component/attack_ghost(mob/dead/observer/O)
 	. = ..()
 	atmosanalyzer_scan(airs, O, src, FALSE)
+
+// Standard ui_data
+/obj/machinery/atmospherics/component/ui_static_data(mob/user)
+	. = ..()
+	.["power_max"] = power_rating
+	.["pressure_max"] = max_pressure
+	.["rate_max"] = max_rate
+
+// Standard ui_data
+/obj/machinery/atmospherics/component/ui_data(mob/user)
+	. = ..()
+	.["power_setting"] = power_setting
+	.["pressure_setting"] = pressure_setting
+	.["rate_setting"] = rate_setting
+	.["power_current"] = last_power_draw
+	.["rate_current"] = last_transfer_rate
 
 // Tool acts
 

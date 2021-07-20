@@ -156,7 +156,7 @@
 /**
  * Queues us for a pipenet rebuild.
  */
-/obj/machiienry/atmospherics/proc/QueueRebuild()
+/obj/machinery/atmospherics/proc/QueueRebuild()
 	if(pipe_flags & PIPE_REBUILD_QUEUED)
 		return
 	SSair.queue_for_rebuild(src)

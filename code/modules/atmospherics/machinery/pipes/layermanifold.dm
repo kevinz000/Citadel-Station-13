@@ -23,10 +23,10 @@
 
 /obj/machinery/atmospherics/pipe/layer_manifold/update_overlays()
 	. = ..()
-	for(var/node in front_nodes)
-		. += add_attached_images(node)
-	for(var/node in back_nodes)
-		. += add_attached_images(node)
+	for(var/i in 1 to connected.len)
+		if(!connected[i])
+			continue
+		. += add_attached_images(connected[i])
 
 /obj/machinery/atmospherics/pipe/layer_manifold/update_layer()
 	layer = initial(layer) + (PIPE_LAYER_MAX * PIPE_LAYER_LCHANGE)	//This is above everything else.

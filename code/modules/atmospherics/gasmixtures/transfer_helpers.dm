@@ -1,6 +1,116 @@
-// Contains helpers for transferring gases from one place to another.
+// Helpers for machine transfer, taking into account power draws, max pressures, max volumes, etc.
+// All of these also, if provided with machine parameter, set the machine's last_power_draw and last_transfer_rate.
 
-#warn convert entire file, standardize names, inputs, outputs for usage
+/**
+ * Gas pumping proc
+ * Moves gas from source to sink.
+ * Returns the amount of power needed in watts (dt is ignored, it's assumed the machine will handle conversion. dt only exists here so the machine doesn't also have to calculate volume rate and last flow rate)
+ *
+ * @params
+ * * source - Source mixture
+ * * sink - Destination mixture
+ * * max_volume - maximum volume to transfer in L/s
+ * * max_pressure - maximum pressure to pressurize to in destination
+ * * available_power - power able to be used.
+ * * efficiency_multiplier - amplify available power by this much
+ * * machine - atmospherics component. If this is set, its last_flow_rate will be set by this proc to volume pumped.
+ * * dt - Seconds to simulate.
+ */
+/proc/pump_gas(datum/gas_mixture/source, datum/gas_mixture/sink, max_volume = ATMOSMECH_PUMP_RATE, max_pressure = ATMOSMECH_PUMP_PRESSURE, available_power = INFINITY, efficiency_multiplier = 1, obj/machinery/atmospherics/component/machine, dt = 1)
+	efficiency_multiplier *= ATMOSMECH_GLOBAL_EFFICIENCY_MULTIPLIER
+
+/**
+ * Gas scrubbing proc
+ * Moves scrubbing gasids from source to sink.
+ * Returns the amount of power needed in watts (dt is ignored, it's assumed the machine will handle conversion. dt only exists here so the machine doesn't also have to calculate volume rate and last flow rate)
+ *
+ * @params
+ * * gasids - list of gas ids to scrub.
+ * * source - Source mixture
+ * * sink - Destination mixture
+ * * max_volume - maximum volume to transfer in L/s
+ * * max_pressure - maximum pressure to pressurize to in destination
+ * * available_power - power able to be used.
+ * * efficiency_multiplier - amplify available power by this much
+ * * machine - atmospherics component. If this is set, its last_flow_rate will be set by this proc to volume of gas scrubbed out.
+ * * dt - Seconds to simulate.
+ */
+/proc/scrub_gas(list/gasids, datum/gas_mixture/source, datum/gas_mixture/sink, max_volume = ATMOSMECH_PUMP_RATE, max_pressure = ATMOSMECH_PUMP_PRESSURE, available_power = INFINITY, efficiency_multiplier = 1, obj/machinery/atmospherics/component/machine, dt = 1)
+	efficiency_multiplier *= ATMOSMECH_GLOBAL_EFFICIENCY_MULTIPLIER
+
+/**
+ * Gas filtering proc
+ * Moves gas from source to sink, except filtered gasids, which goes into associated filter
+ * Returns the amount of power needed in watts (dt is ignored, it's assumed the machine will handle conversion. dt only exists here so the machine doesn't also have to calculate volume rate and last flow rate)
+ *
+ * @params
+ * * gasids - gasids to filter out **associated to gas mixtures to filter them into**
+ * * source - Source mixture
+ * * sink - Destination mixture
+ * * max_volume - maximum volume to transfer in L/s
+ * * max_pressure - maximum pressure to pressurize to in destination
+ * * available_power - power able to be used.
+ * * efficiency_multiplier - amplify available power by this much
+ * * machine - atmospherics component. If this is set, its last_flow_rate will be set by this proc to volume of gas processed through the filter (whether filtered out or sent to output).
+ * * dt - Seconds to simulate.
+ */
+/proc/filter_gas(list/gasids, datum/gas_mixture/source, datum/gas_mixture/sink, max_volume = ATMOSMECH_PUMP_RATE, max_pressure = ATMOSMECH_PUMP_PRESSURE, available_power = INFINITY, efficiency_multiplier = 1, obj/machinery/atmospherics/component/machine, dt = 1)
+	efficiency_multiplier *= ATMOSMECH_GLOBAL_EFFICIENCY_MULTIPLIER
+
+/**
+ * Gas mixing proc
+ * Moves gas from sources to sink.
+ * Returns the amount of power needed in watts (dt is ignored, it's assumed the machine will handle conversion. dt only exists here so the machine doesn't also have to calculate volume rate and last flow rate)
+ *
+ * @params
+ * * sources - Source mixtures associated by a ratio (0 to 1). Must add up to 1 or horrible things happen.
+ * * sink - Destination mixture
+ * * max_volume - maximum volume to transfer in L/s
+ * * max_pressure - maximum pressure to pressurize to in destination
+ * * available_power - power able to be used.
+ * * efficiency_multiplier - amplify available power by this much
+ * * machine - atmospherics component. If this is set, its last_flow_rate will be set by this proc to volume of gas processed through the filter (whether filtered out or sent to output).
+ * * dt - Seconds to simulate.
+ */
+/proc/mix_gas(datum/gas_mixture/sources, datum/gas_mixture/sink, max_volume = ATMOSMECH_PUMP_RATE, max_pressure = ATMOSMECH_PUMP_PRESSURE, available_power = INFINITY, efficiency_multiplier = 1, obj/machinery/atmospherics/component/machine, dt = 1)
+	efficiency_multiplier *= ATMOSMECH_GLOBAL_EFFICIENCY_MULTIPLIER
+
+/**
+ * Gas flow proc
+ * Passively flows gas from source to sink as long as there's a pressure gradient.
+ * One way
+ *
+ * @params
+ * * source - Source mixture
+ * * sink - Destination mixture
+ * * max_volume - maximum volume to transfer in L/s
+ * * machine - atmospherics component. If this is set, its last_flow_rate will be set by this proc to volume of gas flowing through.
+ * * dt - Seconds to simulate.
+ */
+/proc/flow_gas(datum/gas_mixture/source, datum/gas_mixture/sink, max_volume = ATMOSMECH_PUMP_RATE, obj/machinery/atmospherics/component/machine, dt = 1)
+	// pv = nrt --> p = nrt/v
+	// volume and gas constant (duh) stays static
+	// any gas we move however will contain moles and thermal energy
+
+	// no gas in source
+	if(!source.total_moles() || !source.return_temperature())
+		return
+
+	var/src_pressure = source.return_pressure()
+	var/dest_pressure = sink.return_pressure()
+
+	// first if they're already more or less equal don't bother moving
+	if((dest_pressure - src_pressure) > -1)
+		return
+
+	// target pressure change
+	var/pressure_delta = (src_pressure - dest_pressure) * 0.5
+	// transfer moles
+	var/transfer_moles = pressure_delta * sink.return_volume() / (source.return_temperature() * R_IDEAL_GAS_EQUATION)
+	// wanted transfer volume
+	var/transfer_volume =
+
+	source.transfer_to(sink, transfer_moles)
 
 //Generalized gas pumping proc.
 //Moves gas from one gas_mixture to another and returns the amount of power needed (assuming 1 second), or -1 if no gas was pumped.
@@ -48,6 +158,8 @@
 
 	return power_draw
 
+
+// this is baystation's
 //Gas 'pumping' proc for the case where the gas flow is passive and driven entirely by pressure differences (but still one-way).
 /proc/pump_gas_passive(var/obj/machinery/M, var/datum/gas_mixture/source, var/datum/gas_mixture/sink, var/transfer_moles = null)
 	if (source.total_moles < MINIMUM_MOLES_TO_PUMP) //if we cant transfer enough gas just stop to avoid further processing
