@@ -54,7 +54,7 @@
 		if(SEND_SIGNAL(L, COMSIG_CHECK_VENTCRAWL))
 			. += "<span class='notice'>Alt-click to crawl through it.</span>"
 
-/obj/machinery/atmospherics/Initialize(mapload, process = TRUE, setdir, setlayer)
+/obj/machinery/atmospherics/Initialize(mapload, process = TRUE, setdir, setlayer, constructed = FALSE)
 	if(!isnull(setdir))
 		setDir(setdir)
 	if(!isnull(setlayer))
@@ -67,6 +67,9 @@
 			SSair.atmos_air_machinery += src
 		else
 			SSair.atmos_machinery += src
+	if(!SSair.initialized && !constructed)
+		// if not custom constructing, immediately init
+		InitAtmos()
 
 /**
  * Called once on init.
@@ -74,6 +77,25 @@
 /obj/machinery/atmospherics/proc/InitAtmos()
 	connected = new /list(MaximumPossibleNodes())
 	Join()
+
+/**
+ * Snowflaked because pipes are not nearly even machinery at this point
+ * Called on construction to begin init.
+ * The proper way to do this is to have constructed = FALSE in the new() call for pipes, and then call this to set everything.
+ */
+/obj/machinery/atmospherics/proc/InitConstructed(set_color, set_dir, set_layer)
+	SHOULD_CALL_PARENT(TRUE)
+	if(set_color)
+		pipe_color = set_color
+	add_atom_colour(pipe_color, FIXED_COLOUR_PRIORITY)
+	if(set_layer)
+		SetPipingLayer(set_layer)
+	var/turf/T = get_turf(src)
+	level = T.intact ? 2 : 1
+	if(set_dir)
+		setDir(set_dir)
+	if(!SSair.initialized)
+		InitAtmos()
 
 /**
  * Called to join its place in a network.
@@ -86,13 +108,19 @@
 	var/conflict
 	if(!((conflict = CheckLocationConflict(loc, pipe_layer)) == PIPE_LOCATION_CLEAR))
 		CRASH("Attempted to Join() with a conflict([conflict]) at location.")
-	if(pipe_flags & PIPE_CARDINAL_AUTONORMALIZE)
-		NormalizeCardinalDirections()
+	PreJoin()
 	pipe_flags |= PIPE_NETWORK_JOINED
-	SetInitDirections()
 	if(Connect())
 		QueueRebuild()
 	update_appearance()
+
+/**
+ * Called during Join() just before connecting
+ */
+/obj/machinery/atmospherics/proc/PreJoin()
+	if(pipe_flags & PIPE_CARDINAL_AUTONORMALIZE)
+		NormalizeCardinalDirections()
+	SetInitDirections()
 
 /**
  * Called to leave its place in a network.
@@ -458,21 +486,6 @@
 		pipe_overlay = . = pipeimages[identifier] = image(iconset, iconstate, dir = direction)
 		pipe_overlay.color = col
 		PIPE_LAYER_SHIFT(pipe_overlay, pipe_layer)
-
-/obj/machinery/atmospherics/on_construction(obj_color, set_layer)
-	#warn modify this, it should call atmosinit but most of this should be handled in there.
-	if(can_unwrench)
-		add_atom_colour(obj_color, FIXED_COLOUR_PRIORITY)
-		pipe_color = obj_color
-	setPipingLayer(set_layer)
-	var/turf/T = get_turf(src)
-	level = T.intact ? 2 : 1
-	atmosinit()
-	var/list/nodes = pipeline_expansion()
-	for(var/obj/machinery/atmospherics/A in nodes)
-		A.atmosinit()
-		A.addMember(src)
-	build_network()
 
 /obj/machinery/atmospherics/Entered(atom/movable/AM)
 	if(istype(AM, /mob/living))

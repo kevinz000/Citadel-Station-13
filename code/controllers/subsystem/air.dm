@@ -63,7 +63,9 @@ SUBSYSTEM_DEF(air)
 	var/excited_group_pressure_goal = 0.25
 
 	/// Queued for rebuild
-	var/list/obj/machinery/atmospherics/rebuild_queue = list()
+	var/static/list/obj/machinery/atmospherics/rebuild_queue = list()
+	/// Bluespace pipe networks - name = list(pipe_refs)
+	var/static/list/bluespace_pipe_networks = list()
 
 /datum/controller/subsystem/air/stat_entry(msg)
 	msg += "C:{"

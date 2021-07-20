@@ -76,7 +76,7 @@
 		return ..()
 
 /obj/machinery/atmospherics/pipe/analyzer_act(mob/living/user, obj/item/I)
-	atmosanalyzer_scan(parent.air, user, src)
+	atmosanalyzer_scan(pipeline.air, user, src)
 	return TRUE
 
 /obj/machinery/atmospherics/pipe/Destroy()

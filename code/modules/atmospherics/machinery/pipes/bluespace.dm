@@ -13,28 +13,28 @@ GLOBAL_LIST_EMPTY(bluespace_pipe_networks)
 	/// The name of the network we're connected to
 	var/bluespace_network_name
 
-/obj/machinery/atmospherics/pipe/bluespace/New()
-	icon_state = "pipe"
-	if(bluespace_network_name) // in case someone maps one in for some reason
-		if(!GLOB.bluespace_pipe_networks[bluespace_network_name])
-			GLOB.bluespace_pipe_networks[bluespace_network_name] = list()
-		GLOB.bluespace_pipe_networks[bluespace_network_name] |= src
-	..()
+/obj/machinery/atmospherics/pipe/bluespace/InitConstructed(set_color, set_dir, set_layer, set_network)
+	. = ..()
+	if(set_network)
+		bluespace_network_name = set_network
 
-/obj/machinery/atmospherics/pipe/bluespace/on_construction()
+/obj/machinery/atmospherics/pipe/bluespace/DirectConnection(datum/pipeline/querying, obj/machinery/atmospherics/source)
 	. = ..()
 	if(bluespace_network_name)
-		if(!GLOB.bluespace_pipe_networks[bluespace_network_name])
-			GLOB.bluespace_pipe_networks[bluespace_network_name] = list()
-		GLOB.bluespace_pipe_networks[bluespace_network_name] |= src
+		. += (SSair.bluespace_pipe_networks[bluespace_network_name] - src)
 
-/obj/machinery/atmospherics/pipe/bluespace/Destroy()
-	if(GLOB.bluespace_pipe_networks[bluespace_network_name])
-		GLOB.bluespace_pipe_networks[bluespace_network_name] -= src
-		for(var/p in GLOB.bluespace_pipe_networks[bluespace_network_name])
-			var/obj/machinery/atmospherics/pipe/bluespace/P = p
-			QDEL_NULL(P.parent)
-			P.build_network()
+/obj/machinery/atmospherics/pipe/bluespace/PreJoin()
+	. = ..()
+	if(!bluespace_network_name)
+		return
+	LAZYOR(SSair.bluespace_pipe_networks[bluespace_network_name], src)
+
+/obj/machinery/atmospherics/pipe/bluespace/Leave()
+	. = ..()
+	LAZYREMOVE(SSair.bluespace_pipe_networks[bluespace_network_name], src)
+
+/obj/machinery/atmospherics/pipe/bluespace/Initialize(mapload, process, setdir, setlayer, constructed)
+	icon_state = "pipe"
 	return ..()
 
 /obj/machinery/atmospherics/pipe/bluespace/examine(user)
@@ -43,9 +43,6 @@ GLOBAL_LIST_EMPTY(bluespace_pipe_networks)
 
 /obj/machinery/atmospherics/pipe/bluespace/SetInitDirections()
 	initialize_directions = dir
-
-/obj/machinery/atmospherics/pipe/bluespace/pipeline_expansion()
-	return ..() + GLOB.bluespace_pipe_networks[bluespace_network_name] - src
 
 /obj/machinery/atmospherics/pipe/bluespace/hide()
 	update_icon()
