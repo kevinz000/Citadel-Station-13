@@ -185,7 +185,7 @@
 	var/list/current = list()
 	var/list/node_order = GetNodeOrder()
 	for(var/i in 1 to device_type)
-		for(var/obj/machinery/atmospherics/target in get_step(src, node_order[i])))
+		for(var/obj/machinery/atmospherics/target in get_step(src, node_order[i]))
 			if(current[target])
 				continue
 			if(CanConnect(other, i))
@@ -327,10 +327,10 @@
  * And in both cases there needs to be special handling.
  */
 /// Unused for now - Attempting to have all behavior be generic for both one layer and all layer devices.
-// /obj/machinery/atmospherics/proc/FindConnecting(direction, layer = pipe_layer)
-// 	for(var/obj/machinery/atmospherics/other in get_step(src, direction))
-// 		if(CanConnect(other))
-// 			return other
+/obj/machinery/atmospherics/proc/FindConnecting(direction, layer = pipe_layer)
+	for(var/obj/machinery/atmospherics/other in get_step(src, direction))
+		if(CanConnect(other))
+			return other
 
 /**
  * Standard two-way connection check
@@ -508,14 +508,14 @@
 	if(user in buckled_mobs)// fixes buckle ventcrawl edgecase fuck bug
 		return
 
-	var/obj/machinery/atmospherics/target_move = findConnecting(direction, user.ventcrawl_layer)
+	var/obj/machinery/atmospherics/target_move = FindConnecting(direction, user.ventcrawl_layer)
 	if(target_move)
 		if(target_move.can_crawl_through())
 			if(is_type_in_typecache(target_move, GLOB.ventcrawl_machinery))
 				user.forceMove(target_move.loc) //handle entering and so on.
 				user.visible_message("<span class='notice'>You hear something squeezing through the ducts...</span>", "<span class='notice'>You climb out the ventilation system.")
 			else
-				var/list/pipenetdiff = returnPipenets() ^ target_move.returnPipenets()
+				var/list/pipenetdiff = ReturnPipelines() ^ target_move.ReturnPipelines()
 				if(pipenetdiff.len)
 					user.update_pipe_vision(target_move)
 				user.forceMove(target_move)
