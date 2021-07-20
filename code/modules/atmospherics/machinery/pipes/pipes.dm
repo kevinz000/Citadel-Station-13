@@ -67,6 +67,11 @@
 /obj/machinery/atmospherics/pipe/SetPipeline(datum/pipeline/setting, obj/machinery/atmospherics/source)
 	pipeline = setting
 
+/obj/machinery/atmospherics/pipe/NullifyPipeline(datum/pipeline/removing)
+	if(removing != pipeline)
+		stack_trace("Tried to nullify pipelinie on [src] ([COORD(src)]) but old didn't match. Real: [pipeline]. Old: [removing]")
+	pipeline = null
+
 /obj/machinery/atmospherics/pipe/attackby(obj/item/W, mob/user, params)
 	if(istype(W, /obj/item/pipe_meter))
 		var/obj/item/pipe_meter/meter = W

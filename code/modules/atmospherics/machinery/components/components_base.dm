@@ -21,14 +21,13 @@
 	var/moles_to_instant_pump = ATMOSMECH_INSTANT_PUMP_MOLES
 	/// Below this in pressure, anything left is instantly moved. This ensures you can't require infinite power to drain something.
 	var/pressure_to_instant_pump = ATMOSMECH_INSTANT_PUMP_PRESSURE
-	/// Pipelines this belongs to
+	/// Pipelines this belongs to. This should have the same indices as [connected]
 	var/list/datum/pipeline/pipelines
-	/// Gas mixtures we contain
+	/// Gas mixtures we contain. This should have the same indices as [connected]
 	var/list/datum/gas_mixture/airs
 	/// Volume of each of our airs
 	var/volume = 200
 
-	var/welded = FALSE //Used on pumps and scrubbers
 	var/showpipe = FALSE
 	var/shift_underlay_only = TRUE //Layering only shifts underlay?
 
@@ -82,49 +81,53 @@
 	else
 		. = getpipeimage('icons/obj/atmospherics/component/binary_devices.dmi', state, dir, pipe_layer = shift_underlay_only ? pipe_layer : 2)
 
-// Pipenet stuff; housekeeping
+/obj/machinery/atmospherics/component/Teardown()
+	for(var/i in 1 to pipelines.len)
+		if(pipelines[i])
+			QDEL_NULL(pipelines[i])
 
-/obj/machinery/atmospherics/component/nullifyNode(i)
-	if(nodes[i])
-		nullifyPipenet(parents[i])
-		QDEL_NULL(airs[i])
-	..()
+/obj/machinery/atmospherics/component/Build()
+	for(var/i in 1 to pipelines.len)
+		if(!pipelines[i])
+			var/datum/pipeline/PL = new
+			pipelines[i] = PL
+			PL.build_pipeline(src)
 
-/obj/machinery/atmospherics/component/on_construction()
-	..()
-	update_parents()
+/obj/machinery/atmospherics/component/NullifyPipeline(datum/pipeline/removing)
+	var/index = pipelines.Find(removing)
+	if(!index)
+		CRASH("FATAL: NullifyPipeline could not find [removing] in [src] ([COORD(src)])")
+	pipelines[index] = null
 
-/obj/machinery/atmospherics/component/build_network()
-	for(var/i in 1 to device_type)
-		if(!parents[i])
-			parents[i] = new /datum/pipeline()
-			var/datum/pipeline/P = parents[i]
-			P.build_pipeline(src)
+/obj/machinery/atmospherics/component/SetPipeline(datum/pipeline/setting, obj/machinery/atmospherics/source)
+	// We want to set the pipeline index that corrosponds to the node order
+	var/index = connected.Find(source)
+	if(!index)
+		CRASH("FATAL: SetPipeline could not find [source] in [src] ([COORD(src)])")
+	pipelines[index] = setting
 
-/obj/machinery/atmospherics/component/proc/nullifyPipenet(datum/pipeline/reference)
-	if(!reference)
-		CRASH("nullifyPipenet(null) called by [type] on [COORD(src)]")
-	var/i = parents.Find(reference)
-	reference.other_airs -= airs[i]
-	reference.other_atmosmch -= src
-	parents[i] = null
+/obj/machinery/atmospherics/component/ReplacePipeline(datum/pipeline/old, datum/pipeline/replacing)
+	var/index = pipelines.Find(old)
+	if(!index)
+		CRASH("FATAL: ReplacePipeline() could not find [old] in [src] ([COORD(src)])")
+	pipelines[index] = replacing
 
-/obj/machinery/atmospherics/component/returnPipenetAir(datum/pipeline/reference)
-	return airs[parents.Find(reference)]
+/obj/machinery/atmospherics/component/DirectConnection(datum/pipeline/querying, obj/machinery/atmospherics/source)
+	var/index = pipelines.Find(querying)
+	if(!index)
+		CRASH("FATAL: DirectConnection() could not find [querying] in [src] ([COORD(src)]). Source was [source]")
+	. = list()
+	if(connected[index])
+		. += connected[index]
 
-/obj/machinery/atmospherics/component/pipeline_expansion(datum/pipeline/reference)
-	if(reference)
-		return list(nodes[parents.Find(reference)])
-	return ..()
-
-/obj/machinery/atmospherics/component/setPipenet(datum/pipeline/reference, obj/machinery/atmospherics/A)
-	parents[nodes.Find(A)] = reference
-
-/obj/machinery/atmospherics/component/returnPipenet(obj/machinery/atmospherics/A = nodes[1]) //returns parents[1] if called without argument
-	return parents[nodes.Find(A)]
-
-/obj/machinery/atmospherics/component/replacePipenet(datum/pipeline/Old, datum/pipeline/New)
-	parents[parents.Find(Old)] = New
+/**
+ * Gets the air that corrosponds to a pipeline
+ */
+/obj/machinery/atmospherics/component/proc/ReturnPipenetAir(datum/pipeline/querying)
+	var/index = pipelines.Find(querying)
+	if(!index)
+		CRASH("FATAL: ReturnPipenetAir() could not find [querying] in [src] ([COORD(src)])")
+	return airs[index]
 
 /obj/machinery/atmospherics/component/unsafe_pressure_release(var/mob/user, var/pressures)
 	..()
@@ -152,24 +155,26 @@
 		return new_value
 	return default_set
 
+/obj/machinery/atmospherics/component/ReturnPipelines()
+	. = list()
+	for(var/datum/pipeline/PL in pipelines)
+		. += PL
+
 // Helpers
 
-/obj/machinery/atmospherics/component/proc/update_parents()
-	for(var/i in 1 to device_type)
-		var/datum/pipeline/parent = parents[i]
-		if(!parent)
-			stack_trace("Component is missing a pipenet! Rebuilding...")
-			SSair.add_to_rebuild_queue(src)
-		parent.update = 1
-
-/obj/machinery/atmospherics/component/returnPipenets()
-	. = list()
-	for(var/i in 1 to device_type)
-		. += returnPipenet(nodes[i])
-
+/**
+ * Marks all pipelines as needing to update
+ */
+/obj/machinery/atmospherics/component/proc/MarkDirty()
+	for(var/i in 1 to pipelines.len)
+		var/datum/pipeline/PL = pipelines[i]
+		if(!PL)
+			stack_trace("[src] is missing a pipenet. Rebuilding.")
+			QueueRebuild()
+			return
+		PL.update = TRUE
 
 // UI Stuff
-
 
 /obj/machinery/atmospherics/component/ui_status(mob/user)
 	if(allowed(user))
@@ -182,7 +187,6 @@
 	atmosanalyzer_scan(airs, O, src, FALSE)
 
 // Tool acts
-
 
 /obj/machinery/atmospherics/component/analyzer_act(mob/living/user, obj/item/I)
 	atmosanalyzer_scan(airs, user, src)

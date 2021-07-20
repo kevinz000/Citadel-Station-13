@@ -1,4 +1,11 @@
 /datum/pipeline
+	/// Next UID
+	var/static/uid_next = 0
+	/// UID
+	var/uid
+	/// Name for debug purposes
+	var/name
+
 	var/datum/gas_mixture/air
 	var/list/datum/gas_mixture/other_airs
 
@@ -8,6 +15,9 @@
 	var/update = TRUE
 
 /datum/pipeline/New()
+	uid = ++uid_next
+	name = "Pipeline #[uid]"
+
 	other_airs = list()
 	members = list()
 	other_atmosmch = list()
