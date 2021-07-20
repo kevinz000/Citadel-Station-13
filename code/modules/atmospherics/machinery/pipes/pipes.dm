@@ -80,31 +80,19 @@
 	return TRUE
 
 /obj/machinery/atmospherics/pipe/Destroy()
-	QDEL_NULL(parent)
-
-	releaseAirToTurf()
-	QDEL_NULL(air_temporary)
-
+	ReleaseAirToTurf()
+	if(air_temporary)
+		QDEL_NULL(air_temporary)
 	var/turf/T = loc
 	for(var/obj/machinery/meter/meter in T)
 		if(meter.target == src)
 			var/obj/item/pipe_meter/PM = new (T)
 			meter.transfer_fingerprints_to(PM)
 			qdel(meter)
-	. = ..()
+	return ..()
 
-/obj/machinery/atmospherics/pipe/update_icon()
-	. = ..()
-	update_alpha()
-
-/obj/machinery/atmospherics/pipe/proc/update_alpha()
+/obj/machinery/atmospherics/pipe/update_alpha()
 	alpha = invisibility ? 64 : 255
-
-/obj/machinery/atmospherics/pipe/proc/update_node_icon()
-	for(var/i in 1 to device_type)
-		if(nodes[i])
-			var/obj/machinery/atmospherics/N = nodes[i]
-			N.update_icon()
 
 /obj/machinery/atmospherics/pipe/ReturnPipelines()
 	. = ..()
@@ -119,12 +107,12 @@
 /obj/machinery/atmospherics/pipe/proc/paint(paint_color)
 	add_atom_colour(paint_color, FIXED_COLOUR_PRIORITY)
 	pipe_color = paint_color
-	update_node_icon()
+	UpdateConnectedIcons()
 	return TRUE
 
 /obj/machinery/atmospherics/pipe/attack_ghost(mob/dead/observer/O)
 	. = ..()
-	if(parent)
-		atmosanalyzer_scan(parent.air, O, src, FALSE)
+	if(pipeline)
+		atmosanalyzer_scan(pipeline.air, O, src, FALSE)
 	else
 		to_chat(O, "<span class='warning'>[src] doesn't have a pipenet, which is probably a bug.</span>")

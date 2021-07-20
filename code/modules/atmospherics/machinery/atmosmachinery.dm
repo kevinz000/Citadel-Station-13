@@ -235,6 +235,13 @@
 	return device_type * ((pipe_flags & PIPE_ALL_LAYER)? PIPE_LAYER_TOTAL : 1)
 
 /**
+ * Calls update appearance on all connected nodes
+ */
+/obj/machinery/atmospherics/proc/UpdateConnectedIcons()
+	for(var/obj/machinery/atmospherics/A in connected)
+		A.update_appearance()
+
+/**
  * If our pipe flags state to normalize cardinals, ensure that we're NORTH|SOUTH or EAST|WEST by normalizing to NORTH or EAST, instead of allowing all 4 directions.
  */
 /obj/machinery/atmospherics/proc/NormalizeCardinalDirections()
