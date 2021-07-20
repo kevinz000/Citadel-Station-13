@@ -67,9 +67,6 @@
 			SSair.atmos_air_machinery += src
 		else
 			SSair.atmos_machinery += src
-	if(!SSair.initialized)
-		return
-	InitAtmos()
 
 /**
  * Called once on init.
@@ -126,6 +123,7 @@
  */
 /obj/machinery/atmospherics/proc/Rebuild()
 	pipe_flags &= ~PIPE_REBUILD_QUEUED
+	Build()
 
 /**
  * Queues us for a pipenet rebuild.
@@ -160,8 +158,11 @@
 	var/list/node_order = GetNodeOrder()
 	for(var/i in 1 to device_type)
 		for(var/obj/machinery/atmospherics/target in get_step(src, node_order[i])))
+			if(current[target])
+				continue
 			if(CanConnect(other, i))
 				. = TRUE
+				current[target] = TRUE
 				connected[GetNodePosition(node_order[i], other.layer)] = other
 				var/their_order = other.GetNodePosition(get_dir(other, src), pipe_layer)
 				if(!their_order)
@@ -188,7 +189,7 @@
  * Gets the order to scan nodes in.
  * This should always be deterministic!
  */
-/obj/machinery/atmospheric/proc/GetNodeOrder()
+/obj/machinery/atmospherics/proc/GetNodeOrder()
 	. = new /list(device_type)
 	for(var/i in 1 to device_type)
 		for(var/D in GLOB.cardinals_multiz)
@@ -230,7 +231,7 @@
  * Gets the maximum number of nodes we can have.
  * This determines the size of our nodes list.
  */
-/obj/machineray/atmospherics/proc/MaximumPossibleNodes()
+/obj/machinery/atmospherics/proc/MaximumPossibleNodes()
 	return device_type * ((pipe_flags & PIPE_ALL_LAYER)? PIPE_LAYER_TOTAL : 1)
 
 /**
@@ -290,10 +291,11 @@
  * The only things that should connect to more than one layer at a time right now are layer manifolds, and mains pipes
  * And in both cases there needs to be special handling.
  */
-/obj/machinery/atmospherics/proc/FindConnecting(direction, layer = pipe_layer)
-	for(var/obj/machinery/atmospherics/other in get_step(src, direction))
-		if(CanConnect(other))
-			return other
+/// Unused for now - Attempting to have all behavior be generic for both one layer and all layer devices.
+// /obj/machinery/atmospherics/proc/FindConnecting(direction, layer = pipe_layer)
+// 	for(var/obj/machinery/atmospherics/other in get_step(src, direction))
+// 		if(CanConnect(other))
+// 			return other
 
 /**
  * Standard two-way connection check
@@ -332,6 +334,34 @@
 /obj/machinery/atmospherics/proc/NullifyPipeline(datum/pipeline/removing)
 	CRASH("Base NullifyPipeline called [removing] on [src]")
 
+/**
+ * Releases our air to the environment
+ */
+/obj/machinery/atmospherics/proc/ReleaseAirToTurf()
+	CRASH("Base ReleaseAirToTurf called on [src]")
+
+/**
+ * Returns all pipelines this is a part of.
+ */
+/obj/machinery/atmospherics/proc/ReturnPipelines()
+	return list()
+
+/**
+ * Icon update proc: Updates our pipe layer visuals
+ */
+/obj/machinery/atmospherics/proc/update_layer()
+	return
+
+/**
+ * Icon update proc: Updates our alpha
+ */
+/obj/machinery/atmospherics/proc/update_alpha()
+	return
+
+/obj/machinery/atmospherics/update_appearance(updates)
+	. = ..()
+	update_layer()
+	update_alpha()
 
 /obj/machinery/atmospherics/attackby(obj/item/W, mob/user, params)
 	if(istype(W, /obj/item/pipe)) //lets you autodrop
@@ -423,7 +453,7 @@
 		PIPE_LAYER_SHIFT(pipe_overlay, pipe_layer)
 
 /obj/machinery/atmospherics/on_construction(obj_color, set_layer)
-	#warn get rid of this
+	#warn modify this, it should call atmosinit but most of this should be handled in there.
 	if(can_unwrench)
 		add_atom_colour(obj_color, FIXED_COLOUR_PRIORITY)
 		pipe_color = obj_color
@@ -482,12 +512,8 @@
 		return SEND_SIGNAL(L, COMSIG_HANDLE_VENTCRAWL, src)
 	return ..()
 
-
 /obj/machinery/atmospherics/proc/can_crawl_through()
 	return TRUE
-
-/obj/machinery/atmospherics/proc/returnPipenets()
-	return list()
 
 /obj/machinery/atmospherics/update_remote_sight(mob/user)
 	user.sight |= (SEE_TURFS|BLIND)

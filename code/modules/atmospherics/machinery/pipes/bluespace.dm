@@ -10,6 +10,7 @@ GLOBAL_LIST_EMPTY(bluespace_pipe_networks)
 	device_type = UNARY
 	can_buckle = FALSE
 	construction_type = /obj/item/pipe/bluespace
+	/// The name of the network we're connected to
 	var/bluespace_network_name
 
 /obj/machinery/atmospherics/pipe/bluespace/New()
