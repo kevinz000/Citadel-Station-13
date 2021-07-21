@@ -185,12 +185,12 @@
 	var/list/current = list()
 	var/list/node_order = GetNodeOrder()
 	for(var/i in 1 to device_type)
-		for(var/obj/machinery/atmospherics/target in get_step(src, node_order[i]))
-			if(current[target])
+		for(var/obj/machinery/atmospherics/other in get_step(src, node_order[i]))
+			if(current[other])
 				continue
 			if(CanConnect(other, i))
 				. = TRUE
-				current[target] = TRUE
+				current[other] = TRUE
 				connected[GetNodePosition(node_order[i], other.layer)] = other
 				var/their_order = other.GetNodePosition(get_dir(other, src), pipe_layer)
 				if(!their_order)
@@ -385,7 +385,7 @@
  * Icon update proc: Updates our pipe layer visuals
  */
 /obj/machinery/atmospherics/proc/update_layer()
-	return
+	layer = initial(layer) + (pipe_layer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_LCHANGE
 
 /**
  * Icon update proc: Updates our alpha
@@ -541,6 +541,3 @@
 //Used for certain children of obj/machinery/atmospherics to not show pipe vision when mob is inside it.
 /obj/machinery/atmospherics/proc/can_see_pipes()
 	return TRUE
-
-/obj/machinery/atmospherics/proc/update_layer()
-	layer = initial(layer) + (pipe_layer - PIPE_LAYER_DEFAULT) * PIPE_LAYER_LCHANGE
