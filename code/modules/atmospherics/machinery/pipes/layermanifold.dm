@@ -2,6 +2,7 @@
  * Layer manifolds
  * Connects every layer together.
  */
+ATMOS_MAPPING_MINIMAL(/obj/machinery/atmospherics/pipe/layer_manifold, "manifoldlayer")
 
 /obj/machinery/atmospherics/pipe/layer_manifold
 	name = "layer adaptor"
@@ -29,6 +30,7 @@
 		. += add_attached_images(connected[i])
 
 /obj/machinery/atmospherics/pipe/layer_manifold/update_layer()
+	. = ..()
 	layer = initial(layer) + (PIPE_LAYER_MAX * PIPE_LAYER_LCHANGE)	//This is above everything else.
 
 /obj/machinery/atmospherics/pipe/layer_manifold/proc/add_attached_images(obj/machinery/atmospherics/A)

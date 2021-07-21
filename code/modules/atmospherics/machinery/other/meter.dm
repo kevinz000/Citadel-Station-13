@@ -15,6 +15,21 @@
 	var/id_tag
 	var/target_layer = PIPE_LAYER_DEFAULT
 
+/obj/machinery/meter/layer1
+	target_layer = 1
+
+/obj/machinery/meter/layer2
+	target_layer = 2
+
+/obj/machinery/meter/layer3
+	target_layer = 3
+
+/obj/machinery/meter/layer4
+	target_layer = 4
+
+/obj/machinery/meter/layer5
+	target_layer = 5
+
 /obj/machinery/meter/atmos
 	frequency = FREQ_ATMOS_STORAGE
 

@@ -1,4 +1,6 @@
 GLOBAL_LIST_EMPTY(bluespace_pipe_networks)
+ATMOS_MAPPING_LAYERS(/obj/machinery/atmospherics/pipe/bluespace, "map")
+
 /obj/machinery/atmospherics/pipe/bluespace
 	name = "bluespace pipe"
 	desc = "Transmits gas across large distances of space. Developed using bluespace technology."

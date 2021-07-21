@@ -2,9 +2,11 @@
  * Simple 2-directional pipes
  */
 
+ATMOS_MAPPING_FULL(/obj/machinery/atmospherics/pipe/simple, "pipe11")
+
 /obj/machinery/atmospherics/pipe/simple
 	icon = 'icons/obj/atmospherics/pipes/simple.dmi'
-	icon_state = "pipe11-2"
+	icon_state = "pipe11"
 
 	name = "pipe"
 	desc = "A one meter section of regular pipe."

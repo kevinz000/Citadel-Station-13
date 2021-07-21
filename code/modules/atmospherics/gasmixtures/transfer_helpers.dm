@@ -124,6 +124,7 @@
  * * dt - seconds to simulate
  * * conductivity
  */
+/proc/heat_exchange_gas_to_gas(datum/gas_mixture/gas1, datum/gas_mixture/gas2, volume = 200, dt = 1, conductivity = 0.8)
 
 /**
  * Heat exchange proc gas <--> turf
@@ -132,13 +133,23 @@
  *
  * @params
  * * gas
- * * turf
+ * * T - trf
  * * volume - volume exposed
  * * dt - seconds to simulate
  * * conductivity
 */
+/proc/heat_exchange_gas_to_turf(datum/gas_mixture/gas1, turf/T, volume = 200, dt = 1, conductivity = 0.8)
 
-
+/**
+ * Bidirectional gas share proc
+ *
+ * @params
+ * * gas1
+ * * gas2
+ * * max_volume - maximum volume to diffuse at once.
+ * * dt - Seconds to simulate.
+ */
+/proc/flow_gas(datum/gas_mixture/gas1, datum/gas_mixture/gas2, max_volume = ATMOSMECH_PUMP_RATE, dt = 1)
 
 //Generalized gas pumping proc.
 //Moves gas from one gas_mixture to another and returns the amount of power needed (assuming 1 second), or -1 if no gas was pumped.

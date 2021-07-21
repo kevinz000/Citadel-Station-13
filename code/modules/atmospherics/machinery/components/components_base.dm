@@ -18,7 +18,7 @@
 	var/max_rate = ATMOSMECH_PUMP_RATE
 	/// Current rate setting - defaults to max
 	var/rate_setting = ATMOSMECH_PUMP_RATE
-	/// Efficiency multiplier
+	/// Efficiency multiplier. This affects all machine ops, whether pumping/thermal operations for coolers/heaters and more.
 	var/power_efficiency = 1
 	/// Minimum volume to move per second before it gives up
 	var/futile_rate = ATMOSMECH_FUTILE_PUMP_RATE

@@ -1,3 +1,16 @@
+/// Fully registers a path for all 5 layers and every valid pipe color
+#define ATMOS_MAPPING_FULL(path, iconbase)
+
+/// Registers a path for every valid pipe color
+#define ATMOS_MAPPING_COLORS(path, iconbase)
+
+/// Registers a path for every pipe layer
+#define ATMOS_MAPPING_LAYERS(path, iconbase)
+
+/// Registers a path for default layer and color only
+#define ATMOS_MAPPING_MINIMAL(path, iconbase)
+
+
 //Colored pipes, use these for mapping
 
 #define HELPER_PARTIAL(Fulltype, Iconbase, Color) \

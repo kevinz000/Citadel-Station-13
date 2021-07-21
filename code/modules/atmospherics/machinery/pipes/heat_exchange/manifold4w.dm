@@ -1,8 +1,9 @@
 //4-Way Manifold
+ATMOS_MAPPING_LAYERS(/obj/machinery/atmospherics/pipe/heat_exchanging/manifold4w, "manifold4w")
 
 /obj/machinery/atmospherics/pipe/heat_exchanging/manifold4w
 	icon = 'icons/obj/atmospherics/pipes/he-manifold.dmi'
-	icon_state = "manifold4w-2"
+	icon_state = "manifold4w"
 
 	name = "4-way pipe manifold"
 	desc = "A manifold composed of heat-exchanging pipes."
@@ -37,12 +38,3 @@
 
 	update_layer()
 	update_alpha()
-
-
-/obj/machinery/atmospherics/pipe/heat_exchanging/manifold4w/layer1
-	pipe_layer = 1
-	icon_state = "manifold4w-1"
-
-/obj/machinery/atmospherics/pipe/heat_exchanging/manifold4w/layer3
-	pipe_layer = 3
-	icon_state = "manifold4w-3"
