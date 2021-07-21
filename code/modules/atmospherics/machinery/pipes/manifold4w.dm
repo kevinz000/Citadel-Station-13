@@ -2,7 +2,7 @@
  * 4 way manifolds.
  */
 
-ATMOS_MAPPING_FULL(/obj/machinery/atmospherics/pipe/manifold4w, "manifold4w")
+ATMOS_MAPPING_FULL_PX_DOUBLE(/obj/machinery/atmospherics/pipe/manifold4w)
 
 /obj/machinery/atmospherics/pipe/manifold4w
 	icon = 'icons/obj/atmospherics/pipes/manifold.dmi'

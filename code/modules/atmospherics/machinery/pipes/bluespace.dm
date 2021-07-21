@@ -1,5 +1,5 @@
 GLOBAL_LIST_EMPTY(bluespace_pipe_networks)
-ATMOS_MAPPING_LAYERS(/obj/machinery/atmospherics/pipe/bluespace, "map")
+ATMOS_MAPPING_LAYERS_PX(/obj/machinery/atmospherics/pipe/bluespace)
 
 /obj/machinery/atmospherics/pipe/bluespace
 	name = "bluespace pipe"

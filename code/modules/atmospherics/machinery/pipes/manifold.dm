@@ -2,7 +2,7 @@
  * Simple 3 way manifolds.
  */
 
-ATMOS_MAPPING_FULL(/obj/machinery/atmospherics/pipe/manifold, "manifold")
+ATMOS_MAPPING_FULL_PX_DOUBLE(/obj/machinery/atmospherics/pipe/manifold)
 
 /obj/machinery/atmospherics/pipe/manifold
 	icon = 'icons/obj/atmospherics/pipes/manifold.dmi'

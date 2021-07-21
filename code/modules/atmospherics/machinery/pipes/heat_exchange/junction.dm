@@ -1,4 +1,4 @@
-ATMOS_MAPPING_LAYERS(/obj/machinery/atmospherics/pipe/heat_exchanging/junction, "pipe11")
+ATMOS_MAPPING_LAYERS_IX(/obj/machinery/atmospherics/pipe/heat_exchanging/junction, "pipe11")
 
 /obj/machinery/atmospherics/pipe/heat_exchanging/junction
 	icon = 'icons/obj/atmospherics/pipes/he-junction.dmi'

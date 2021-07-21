@@ -17,8 +17,6 @@
 	buckle_lying = -1
 
 /obj/machinery/atmospherics/pipe/InitAtmos()
-	if(isnull(volume))
-		volume = 35 * device_type
 	. = ..()
 	add_atom_colour(pipe_color, FIXED_COLOUR_PRIORITY)
 	var/turf/T = loc
@@ -71,6 +69,9 @@
 	if(removing != pipeline)
 		stack_trace("Tried to nullify pipelinie on [src] ([COORD(src)]) but old didn't match. Real: [pipeline]. Old: [removing]")
 	pipeline = null
+
+/obj/machinery/atmospherics/pipe/PipelineVolume()
+	return volume || (35 * MaximumPossibleNodes())
 
 /obj/machinery/atmospherics/pipe/attackby(obj/item/W, mob/user, params)
 	if(istype(W, /obj/item/pipe_meter))

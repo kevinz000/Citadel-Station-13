@@ -1,34 +1,9 @@
-/**
- * Multiz up/down pipes
- */
-
-ATMOS_MAPPING_FULL_IX(/obj/machinery/atmospherics/pipe/up, "up")
-ATMOS_MAPPING_FULL_IX(/obj/machinery/atmospherics/pipe/down, "down")
-ATMOS_MAPPING_MINIMAL(/obj/machinery/atmospherics/pipe/multiz_deck)
-
-#warn implement
-
-/**
- * One side goes up
- */
-/obj/machinery/atmospherics/pipe/up
-
-/**
- * One side goes down
- */
-/obj/machinery/atmoshperics/pipe/down
-
-/**
- * Joins every layer to both up and down, without mixing layers.
- */
-/obj/machinery/atmospherics/pipe/multiz_deck
+/// This is an atmospherics pipe which can relay air up/down a deck.
+/obj/machinery/atmospherics/pipe/simple/multiz
 	name = "multi deck pipe adapter"
 	desc = "An adapter which allows pipes to connect to other pipenets on different decks."
 	icon_state = "multiz_pipe"
 	icon = 'icons/obj/atmos.dmi'
-	device_type = QUATERNARY
-
-
 
 /obj/machinery/atmospherics/pipe/simple/multiz/update_icon()
 	. = ..()

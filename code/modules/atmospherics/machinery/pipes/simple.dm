@@ -2,7 +2,7 @@
  * Simple 2-directional pipes
  */
 
-ATMOS_MAPPING_FULL(/obj/machinery/atmospherics/pipe/simple, "pipe11")
+ATMOS_MAPPING_FULL_IX(/obj/machinery/atmospherics/pipe/simple, "pipe11")
 
 /obj/machinery/atmospherics/pipe/simple
 	icon = 'icons/obj/atmospherics/pipes/simple.dmi'

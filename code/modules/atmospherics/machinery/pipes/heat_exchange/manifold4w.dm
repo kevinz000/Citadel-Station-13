@@ -1,5 +1,5 @@
 //4-Way Manifold
-ATMOS_MAPPING_LAYERS(/obj/machinery/atmospherics/pipe/heat_exchanging/manifold4w, "manifold4w")
+ATMOS_MAPPING_LAYERS_PX(/obj/machinery/atmospherics/pipe/heat_exchanging/manifold4w)
 
 /obj/machinery/atmospherics/pipe/heat_exchanging/manifold4w
 	icon = 'icons/obj/atmospherics/pipes/he-manifold.dmi'

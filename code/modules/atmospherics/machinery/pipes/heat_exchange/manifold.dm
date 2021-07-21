@@ -1,5 +1,5 @@
 //3-Way Manifold
-ATMOS_MAPPING_LAYERS(/obj/machinery/atmospherics/pipe/heat_exchanging/manifold, "manifold")
+ATMOS_MAPPING_LAYERS_PX(/obj/machinery/atmospherics/pipe/heat_exchanging/manifold)
 
 /obj/machinery/atmospherics/pipe/heat_exchanging/manifold
 	icon = 'icons/obj/atmospherics/pipes/he-manifold.dmi'

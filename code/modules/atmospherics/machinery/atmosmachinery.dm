@@ -7,9 +7,6 @@
 // Pipes -> Pipelines
 // Pipelines + Other Objects -> Pipe network
 
-#define PIPE_VISIBLE_LEVEL 2
-#define PIPE_HIDDEN_LEVEL 1
-
 /obj/machinery/atmospherics
 	anchored = TRUE
 	move_resist = INFINITY				//Moving a connected machine without actually doing the normal (dis)connection things will probably cause a LOT of issues.
@@ -183,8 +180,8 @@
 	. = FALSE
 	connected = list()
 	var/list/current = list()
-	var/list/node_order = GetNodeOrder()
-	for(var/i in 1 to device_type)
+	var/list/node_order = NodeScanOrder()
+	for(var/i in 1 to MaximumPossibleNodes())
 		for(var/obj/machinery/atmospherics/other in get_step(src, node_order[i]))
 			if(current[other])
 				continue
@@ -192,7 +189,7 @@
 				. = TRUE
 				current[other] = TRUE
 				connected[GetNodePosition(node_order[i], other.layer)] = other
-				var/their_order = other.GetNodePosition(get_dir(other, src), pipe_layer)
+				var/their_order = other.GetNodeIndex(get_dir(other, src), pipe_layer)
 				if(!their_order)
 					stack_trace("Couldn't find where to place ourselves in other's nodes. Us: [src]([COORD(src)]) Them: [other]([COORD(other)]")
 				else if(their_order != null)
@@ -204,20 +201,20 @@
  * Determines node order.
  * This should always be deterministic!
  */
-/obj/machinery/atmospherics/proc/GetNodePosition(dir, layer)
+/obj/machinery/atmospherics/proc/GetNodeIndex(dir, layer)
 	. = 0
 	for(var/D in GLOB.cardinals_multiz)
 		if(D & GetInitDirections())
 			++.
 		if(D == dir)
-			return D * ((pipe_flags * PIPE_ALL_LAYER)? (PIPE_LAYER_MIN - layer + 1) : 1)
-	CRASH("Failed to find valid position ([dir], [layer])")
+			return . * ((pipe_flags * PIPE_ALL_LAYER)? (PIPE_LAYER_MIN - layer + 1) : 1)
+	CRASH("Failed to find valid index ([dir], [layer])")
 
 /**
  * Gets the order to scan nodes in.
  * This should always be deterministic!
  */
-/obj/machinery/atmospherics/proc/GetNodeOrder()
+/obj/machinery/atmospherics/proc/NodeScanOrder()
 	. = new /list(device_type)
 	for(var/i in 1 to device_type)
 		for(var/D in GLOB.cardinals_multiz)
@@ -392,6 +389,12 @@
  */
 /obj/machinery/atmospherics/proc/update_alpha()
 	return
+
+/**
+ * Returns the volume we contribute to a pipeline. Currently ignored for components.
+ */
+/obj/machinery/atmospherics/proc/PipelineVolume()
+	CRASH("Base PipelineVolume() called on [src]")
 
 /obj/machinery/atmospherics/update_appearance(updates)
 	. = ..()

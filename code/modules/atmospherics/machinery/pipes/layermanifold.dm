@@ -2,7 +2,7 @@
  * Layer manifolds
  * Connects every layer together.
  */
-ATMOS_MAPPING_MINIMAL(/obj/machinery/atmospherics/pipe/layer_manifold, "manifoldlayer")
+ATMOS_MAPPING_MINIMAL(/obj/machinery/atmospherics/pipe/layer_manifold)
 
 /obj/machinery/atmospherics/pipe/layer_manifold
 	name = "layer adaptor"
@@ -14,7 +14,6 @@ ATMOS_MAPPING_MINIMAL(/obj/machinery/atmospherics/pipe/layer_manifold, "manifold
 	pipe_flags = PIPE_ALL_LAYER | PIPE_DEFAULT_LAYER_ONLY | PIPE_CARDINAL_AUTONORMALIZE
 	pipe_layer = PIPE_LAYER_DEFAULT
 	device_type = 0
-	volume = 260
 	construction_type = /obj/item/pipe/binary
 	pipe_state = "manifoldlayer"
 
