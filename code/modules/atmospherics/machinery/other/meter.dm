@@ -17,18 +17,23 @@
 
 /obj/machinery/meter/layer1
 	target_layer = 1
+	icon_State = "meter-1"
 
 /obj/machinery/meter/layer2
 	target_layer = 2
+	icon_state = "meter-2"
 
 /obj/machinery/meter/layer3
 	target_layer = 3
+	icon_state = "meter-3"
 
 /obj/machinery/meter/layer4
 	target_layer = 4
+	icon_state = "meter-4"
 
 /obj/machinery/meter/layer5
 	target_layer = 5
+	icon_state = "meter-5"
 
 /obj/machinery/meter/atmos
 	frequency = FREQ_ATMOS_STORAGE

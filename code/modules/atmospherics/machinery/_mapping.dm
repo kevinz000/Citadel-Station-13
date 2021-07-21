@@ -1,14 +1,20 @@
-/// Fully registers a path for all 5 layers and every valid pipe color
-#define ATMOS_MAPPING_FULL(path, iconbase)
+/// Fully registers a path for all 5 layers and every valid pipe color. Used for pipes that use pixel-shifting to visualize layers
+#define ATMOS_MAPPING_FULL_PX(path)
+
+/// Fully registers a path for all 5 layers and every valid pipe color. Used for pipes that use icon-# state changes to visualize layers.
+#define ATMOS_MAPPING_FULL_IX(path, iconbase)
 
 /// Registers a path for every valid pipe color
-#define ATMOS_MAPPING_COLORS(path, iconbase)
+#define ATMOS_MAPPING_COLORS(path)
 
-/// Registers a path for every pipe layer
-#define ATMOS_MAPPING_LAYERS(path, iconbase)
+/// Registers a path for every pipe layer. Used for pipes that use pixel-shifting to visualize layers
+#define ATMOS_MAPPING_LAYERSL_PX(path)
 
-/// Registers a path for default layer and color only
-#define ATMOS_MAPPING_MINIMAL(path, iconbase)
+/// Registers a path for every pipe layer. Used for pipes that use icon-# state changes to visualize layers.
+#define ATMOS_MAPPING_LAYERS_IX(path, iconbase)
+
+/// Registers a path for default layer and color only, without more colors/layers
+#define ATMOS_MAPPING_MINIMAL(path)
 
 
 //Colored pipes, use these for mapping
