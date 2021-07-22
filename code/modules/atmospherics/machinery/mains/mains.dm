@@ -45,9 +45,16 @@
 			PL.build_pipeline(src)
 
 /obj/machinery/atmospherics/mains/DirectConnection(datum/pipeline/querying, obj/machinery/atmospherics/source)
+	var/layer = source?.pipe_layer || pipelines.Find(querying)
+	if(!layer)
+		CRASH("Mains pipe failed to find connection. Querying: [querying] Source: [source]")
+	. = list()
+	for(var/i in layer to (MaximumPossibleNodes()) step PIPE_LAYER_TOTAL)
+		if(connected[i])
+			. += connected[i]
 
 /obj/machinery/atmospherics/mains/GetNodeIndex(dir, layer)
-
+	CRASH("Base mains GetNodeIndex called.")		// We could do it generically here since we know exactly how we arrange our nodes, but we don't for optimization reasons
 
 /obj/machinery/atmospherics/mains/ReleaseAirToTurf()
 	for(var/i in 1 to temporary_airs.len)

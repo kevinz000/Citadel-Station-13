@@ -207,7 +207,7 @@
 		if(D & GetInitDirections())
 			++.
 		if(D == dir)
-			return . * ((pipe_flags * PIPE_ALL_LAYER)? (PIPE_LAYER_MIN - layer + 1) : 1)
+			return (pipe_flags & PIPE_ALL_LAYER)? (. + ((. - 1) * PIPE_LAYER_TOTAL)) : .
 	CRASH("Failed to find valid index ([dir], [layer])")
 
 /**
@@ -223,7 +223,15 @@
 					continue
 				.[i] = D
 				break
-
+	if(pipe_flags & PIPE_ALL_LAYER)
+		if(PIPE_LAYER_TOTAL == 1)		// this won't happen but... :)
+			return
+		// duplicate the list by PIPE_LAYER_TOTAL
+		var/list/L = .
+		L.len *= PIPE_LAYER_TOTAL
+		for(var/i in 1 to device_type)
+			for(var/j in 2 to (PIPE_LAYER_TOTAL))
+				L[((j - 1) * PIPE_LAYER_TOTAL) + i] = L[i]
 /**
  * Disconnects us from our neighbors.
  * Immediately tears down networks.

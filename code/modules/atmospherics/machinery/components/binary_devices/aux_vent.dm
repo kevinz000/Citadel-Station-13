@@ -2,6 +2,7 @@
 #warn refactor the entire file
 #warn layers 1 apart? ensure they're on the same side
 #warn override: conflict check, connection check, node fetch, node order/get node index
+#warn might need a subtype of binary to handle this. GetNodeIndex() and NodeScanOrder() will need to be overridden.
 
 //Acts like a normal vent, but has an input AND output.
 

@@ -28,4 +28,4 @@
 		if(WEST)
 			. = 4
 	if(pipe_flags & PIPE_ALL_LAYER)
-		. *= layer
+		layer + ((. - 1) * PIPE_LAYER_TOTAL)
