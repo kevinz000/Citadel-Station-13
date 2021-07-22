@@ -58,7 +58,7 @@ ATMOS_MAPPING_COLORS(/obj/machinery/atmospherics/mains/manifold4)
 			return layer + ((i - 1) * PIPE_LAYER_TOTAL)
 	CRASH("Mains manifold failed to get node index for dir [dir] layer [layer] selfdir [src.dir]")
 
-/obj/machinery/atmospherics/mains/manifold
+/obj/machinery/atmospherics/mains/manifold4w
 	name = "mains 4-way manifold"
 	desc = "A massive pipe that connects every pipe layer at once, without intermixing them."
 	icon = 'icons/obj/atmospherics/pipes/manifold.dmi'

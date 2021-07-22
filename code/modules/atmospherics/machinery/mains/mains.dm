@@ -27,7 +27,7 @@
 /obj/machinery/atmospherics/mains/InitAtmos()
 	// For now, mains will ALWAYS hold max airs/pipelines
 	temporary_airs = new /list(PIPE_LAYER_TOTAL)
-	pipeliens = new /list(PIPE_LAYER_TOTAL)
+	pipelines = new /list(PIPE_LAYER_TOTAL)
 	. = ..()
 	var/turf/T = loc
 	hide(T.intact)
@@ -45,7 +45,14 @@
 			PL.build_pipeline(src)
 
 /obj/machinery/atmospherics/mains/DirectConnection(datum/pipeline/querying, obj/machinery/atmospherics/source)
-	var/layer = source?.pipe_layer || pipelines.Find(querying)
+	if(!istype(source))
+		CRASH("Mains pipe DirectConnection called without source. Source is necessary to determine if enemy pipe is also a mains pipe.")
+	var/layer
+	if(istype(source, /obj/machinery/atmospherics/mains))		// hahaaa :/
+		var/obj/machinery/atmospherics/mains/other_mains = other
+		layer = other_mains.pipelines.Find(querying)
+	else
+		layer = source?.pipe_layer || pipelines.Find(querying)
 	if(!layer)
 		CRASH("Mains pipe failed to find connection. Querying: [querying] Source: [source]")
 	. = list()
@@ -81,7 +88,7 @@
 	pipelines[index] = null
 
 /obj/machinery/atmospherics/mains/analyzer_act(mob/living/user, obj/item/I)
-	user.visible_message("[user] has used the analyzer on [icon2html(icon, viewers(user))] [target].", "<span class='notice'>You use the analyzer on [icon2html(icon, user)] [target].</span>")
+	user.visible_message("[user] has used the analyzer on [icon2html(icon, viewers(user))] [target].", "<span class='notice'>You use the analyzer on [icon2html(icon, user)] [src].</span>")
 	for(var/i in 1 to pipelines.len)
 		if(!pipelines[i])
 			continue
@@ -90,10 +97,9 @@
 		atmosanalyzer_scan(pipeline.air, user, src, FALSE)
 	return TRUE
 
-/obj/machinery/atmospherics/pipe/Destroy()
+/obj/machinery/atmospherics/mains/Destroy()
 	ReleaseAirToTurf()
-	if(air_temporary)
-		QDEL_NULL(air_temporary)
+	QDEL_LIST(temporary_airs)
 	var/turf/T = loc
 	for(var/obj/machinery/meter/meter in T)
 		if(meter.target == src)
@@ -117,7 +123,7 @@
 		return 0
 	. = ..()
 
-/obj/machinery/atmospherics/pipe/attack_ghost(mob/dead/observer/O)
+/obj/machinery/atmospherics/mains/attack_ghost(mob/dead/observer/O)
 	. = ..()
 	for(var/i in 1 to pipelines.len)
 		if(!pipelines[i])

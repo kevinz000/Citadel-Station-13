@@ -17,7 +17,7 @@ GLOBAL_LIST_INIT(atmos_trinary_lookup_dirs, list(
 	SOUTH = list(NORTH, EAST, WEST),
 	EAST = list(NORTH, WEST, SOUTH),
 	WEST = list(NORTH, SOUTH, EAST)
-)
+))
 
 GLOBAL_LIST_EMPTY(landmarks_list)				//list of all landmarks created
 GLOBAL_LIST_EMPTY(start_landmarks_list)			//list of all spawn points created

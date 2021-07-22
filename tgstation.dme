@@ -1836,6 +1836,7 @@
 #include "code\modules\atmospherics\machinery\components\unary_devices\unary_devices.dm"
 #include "code\modules\atmospherics\machinery\components\unary_devices\vent_pump.dm"
 #include "code\modules\atmospherics\machinery\components\unary_devices\vent_scrubber.dm"
+#include "code\modules\atmospherics\machinery\mains\mains.dm"
 #include "code\modules\atmospherics\machinery\mains\mainspipe.dm"
 #include "code\modules\atmospherics\machinery\other\meter.dm"
 #include "code\modules\atmospherics\machinery\other\miner.dm"
