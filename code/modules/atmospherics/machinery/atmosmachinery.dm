@@ -188,7 +188,7 @@
 			if(CanConnect(other, i))
 				. = TRUE
 				current[other] = TRUE
-				connected[GetNodePosition(node_order[i], other.layer)] = other
+				connected[GetNodeIndex(node_order[i], other.layer)] = other
 				var/their_order = other.GetNodeIndex(get_dir(other, src), pipe_layer)
 				if(!their_order)
 					stack_trace("Couldn't find where to place ourselves in other's nodes. Us: [src]([COORD(src)]) Them: [other]([COORD(other)]")
@@ -224,14 +224,17 @@
 				.[i] = D
 				break
 	if(pipe_flags & PIPE_ALL_LAYER)
-		if(PIPE_LAYER_TOTAL == 1)		// this won't happen but... :)
-			return
+#if PIPE_LAYER_TOTAL == 1
+		return
+#else
 		// duplicate the list by PIPE_LAYER_TOTAL
 		var/list/L = .
 		L.len *= PIPE_LAYER_TOTAL
 		for(var/i in 1 to device_type)
 			for(var/j in 2 to (PIPE_LAYER_TOTAL))
 				L[((j - 1) * PIPE_LAYER_TOTAL) + i] = L[i]
+#endif
+
 /**
  * Disconnects us from our neighbors.
  * Immediately tears down networks.

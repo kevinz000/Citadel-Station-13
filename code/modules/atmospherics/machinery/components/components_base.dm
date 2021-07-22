@@ -29,6 +29,7 @@
 	/// Last flow rate, set by gas transfer procs [code/modules/atmospherics/gasmixtures/transfer_helpers.dm]. Has different contexts based on what proc you used.
 	var/last_transfer_rate
 	/// Last power usage, set by gas transfer procs [code/modules/atmospherics/gasmixtures/transfer_helpers.dm].
+	var/last_power_draw
 	/// Pipelines this belongs to. This should have the same indices as [connected]
 	var/list/datum/pipeline/pipelines
 	/// Gas mixtures we contain. This should have the same indices as [connected]
